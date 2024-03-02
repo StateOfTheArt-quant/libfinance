@@ -5,8 +5,8 @@ from libfinance.api.calendar import _get_all_trading_dates
 
 from libfinance import get_trading_dates, get_previous_trading_date
 
-start_date = "2024-01-03"
-end_date = "2024-02-27"
+start_date = "2023-12-25"
+end_date = "2024-01-11"
 
 
 all_trading_dates = _get_all_trading_dates()

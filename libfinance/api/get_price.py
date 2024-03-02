@@ -14,13 +14,12 @@ def history_bars(
     order_book_ids: list,
     bar_count: int,
     frequency: str,
-    datetime: datetime.datetime,
+    datetime: str,
     fields: List[str]=None,
     skip_suspended: bool=True,
     include_now: bool=True,
     adjust_type: str="none",
-    adjust_orig:datetime.datetime = None,
-) -> pd.DataFrame:
+    adjust_orig:datetime.datetime = None) -> pd.DataFrame:
     """获取指定合约的历史 k 线行情，支持任意日频率xd(1d,5d)和任意分钟频率xm(1m,3m,5m,15m)的历史数据。
     
     :param order_book_ids: 多个标的合约代码
@@ -30,6 +29,7 @@ def history_bars(
     :param skip_suspended: 是否跳过停牌数据
     :param include_now: 是否包含当前数据
     :param adjust_type: 复权类型，默认为前复权 pre；可选 pre, none, post
+    
     =========================   ===================================================
     fields                      字段名
     =========================   ===================================================
@@ -48,7 +48,7 @@ def history_bars(
     
     Example1::
     
-    获取中国平安和万科 2020-04-20之前10天的交易数据
+        获取中国平安和万科 2020-04-20之前10天的交易数据
     
     ..  code-block:: python3
         
