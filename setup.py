@@ -21,7 +21,7 @@ setup(
     license='Apache License v2',
     package_data={'': ['*.*']},
     url='',
-    install_requires=read_file("requirements.txt").strip(),
+    install_requires=["dill>=0.3.8", "thriftpy2>=0.3.9","pandas>=0.16.2"],
     zip_safe=False,    
     classifiers=[
         'Programming Language :: Python',
