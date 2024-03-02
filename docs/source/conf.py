@@ -106,7 +106,6 @@ exclude_patterns = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
-nitpick_ignore =[("py::class", "type")]
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -332,6 +331,7 @@ autosummary_generate = True
 nitpicky = True
 # ignore links which can't be referenced
 nitpick_ignore = [
+    ("py::class", "type"),
     ("py:class", ".."),
     ("py:class", "TextIO"),
     ("py:class", "torch.device"),
