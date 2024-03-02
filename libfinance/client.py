@@ -126,7 +126,7 @@ class LibFinanceClient(object):
         return result
 
 
-_CLIENT = LibFinanceClient()
+_CLIENT = None#LibFinanceClient()
 
 
 def get_client():
