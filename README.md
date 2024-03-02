@@ -57,3 +57,6 @@ order_book_id datetime                 ...
 ~~~
 
 # Documentation
+
+More info for [Documentation](libfinance.readthedocs.io)
+
