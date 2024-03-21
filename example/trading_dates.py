@@ -13,11 +13,11 @@ all_trading_dates = _get_all_trading_dates()
 print(all_trading_dates)
 
 
-trading_dates = get_trading_dates(start_date, end_date)
-print(trading_dates)
+#trading_dates = get_trading_dates(start_date, end_date)
+#print(trading_dates)
 
 
 
 
-prev_date = get_previous_trading_date(date="2024-02-19",n=1)
-print(prev_date)
+#prev_date = get_previous_trading_date(date="2024-02-19",n=1)
+#print(prev_date)

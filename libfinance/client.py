@@ -34,7 +34,7 @@ class LibFinanceClient(object):
     _threading_local = threading.local()
     _auth_params = {}
 
-    _default_host = "127.0.0.1"
+    _default_host = "0.0.0.0"
     _default_port = 9090
 
     request_timeout = 300
@@ -111,6 +111,7 @@ class LibFinanceClient(object):
             #pdb.set_trace()
             #self.ensure_auth()
             response = self.client.query(request)
+            #print(response)
             #pdb.set_trace()
             if response.status is False:
                 # error occur
@@ -126,7 +127,7 @@ class LibFinanceClient(object):
         return result
 
 
-_CLIENT = None#LibFinanceClient()
+_CLIENT = LibFinanceClient()
 
 
 def get_client():
