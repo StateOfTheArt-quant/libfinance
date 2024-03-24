@@ -34,7 +34,7 @@ class LibFinanceClient(object):
     _threading_local = threading.local()
     _auth_params = {}
 
-    _default_host = "0.0.0.0"
+    _default_host = "101.201.30.6"#"0.0.0.0"
     _default_port = 9090
 
     request_timeout = 300
