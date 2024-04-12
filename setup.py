@@ -4,7 +4,7 @@ from os.path import dirname, join
 
 from setuptools import find_packages, setup
 
-__version__= "0.0.1"
+__version__= "0.0.3"
 
 def read_file(file):
     with open(file, "rt") as f:
