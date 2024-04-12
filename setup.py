@@ -22,7 +22,9 @@ setup(
     package_data={'': ['*.*']},
     url='',
     install_requires=["dill>=0.3.8", "thriftpy2>=0.3.9","pandas==1.3.4"],
-    zip_safe=False,    
+    zip_safe=False,
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',    
     classifiers=[
         'Programming Language :: Python',
         'Operating System :: Microsoft :: Windows',
