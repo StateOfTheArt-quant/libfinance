@@ -68,7 +68,7 @@ More info for [Documentation](https://libfinance.readthedocs.io/zh/latest/)
 Join us WeChat Official Accounts to get the [libfinance](https://github.com/StateOfTheArt-quant/libfinance) updated info:
 
 <div>
-    <img alt="ds" src="/docs/source/_static/img/code.png">
+    <img alt="ds" src="/docs/source/_static/img/code.png" width="400" height="220">
 </div>
 
 
