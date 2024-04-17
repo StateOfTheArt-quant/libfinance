@@ -1,4 +1,5 @@
 # libfinance
+\[ English | [中文](README_zh.md) \]
 
 `libfinance` is python library for accessing financial data easily. The goal of `libfinance` is to provide HIGH quality financial data for scholars, researchers and developers in research and production environment.
 
@@ -60,4 +61,14 @@ order_book_id datetime
 # Documentation
 
 More info for [Documentation](https://libfinance.readthedocs.io/zh/latest/)
+
+
+# join us community
+
+Join us WeChat Official Accounts to get the [libfinance](https://github.com/StateOfTheArt-quant/libfinance) updated info:
+
+<div>
+    <img alt="ds" src="/docs/source/_static/img/code.png">
+</div>
+
 
