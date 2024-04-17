@@ -63,12 +63,12 @@ order_book_id datetime
 More info for [Documentation](https://libfinance.readthedocs.io/zh/latest/)
 
 
-# join us community
+# Join us community
 
 Join us WeChat Official Accounts to get the [libfinance](https://github.com/StateOfTheArt-quant/libfinance) updated info:
 
 <div>
-    <img alt="ds" src="/docs/source/_static/img/code.png" width="400" height="220">
+    <img alt="ds" src="/docs/source/_static/img/code.png" width="600" height="220">
 </div>
 
 
