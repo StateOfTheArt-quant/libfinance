@@ -16,7 +16,7 @@ Method2: Install from source with a develop mode
 ~~~
 git clone https://github.com/StateOfTheArt-quant/libfinance.git
 cd libfinance
-pip install -e .
+python -m pip install --editable .
 ~~~
 
 # quick-start
