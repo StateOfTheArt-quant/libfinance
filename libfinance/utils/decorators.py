@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import time
 import types
 import warnings
@@ -148,4 +145,3 @@ def compatible_with_parm(func=None, name=None, value=None, replace=None):
         return func(*args, **kwargs)
 
     return wrap
-

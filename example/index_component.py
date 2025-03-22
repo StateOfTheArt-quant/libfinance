@@ -15,5 +15,3 @@ print(index_weight)
     
 index_weight = get_index_weights(index_id="000300.XSHG", date="2022-07-20")
 print(index_weight)
-
-

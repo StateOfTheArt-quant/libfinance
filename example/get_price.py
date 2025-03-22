@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import pandas as pd
-from libfinance import get_price
+from libfinance.api.get_price import get_price
 
 
 instrument_ids = ["000001.XSHE"]
@@ -23,5 +23,3 @@ frequency = "1d"
 fields = ['open', 'high', 'low', 'close', 'volume']
 trading_data  = get_price(order_book_ids=instrument_ids,start_date=start_date, end_date=end_date, fields=fields, frequency=frequency)
 print(trading_data)
-
-

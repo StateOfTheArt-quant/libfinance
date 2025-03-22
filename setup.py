@@ -6,9 +6,9 @@ from setuptools import find_packages, setup
 
 __version__= "0.0.3"
 
-def read_file(file):
-    with open(file, "rt") as f:
-        return f.read()
+
+install_requires = ["lz4","msgpack","pandas>=1.3.4"]
+
     
 
 setup(
@@ -21,7 +21,7 @@ setup(
     license='Apache License v2',
     package_data={'': ['*.*']},
     url='',
-    install_requires=["dill>=0.3.8", "thriftpy2>=0.3.9","pandas==1.3.4"],
+    install_requires=install_requires,
     zip_safe=False,
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',    

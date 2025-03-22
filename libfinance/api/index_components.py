@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import datetime
 from typing import Any, Union, Optional, Iterable, Dict, List, Sequence, Iterable
 
@@ -70,5 +67,3 @@ def get_index_weights(index_id: str = "000300.XSHG", date: Union[str, datetime.d
 
     """
     return get_client().get_index_weights(index_id=index_id, date = date)
-    
-

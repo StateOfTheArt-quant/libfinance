@@ -1,18 +1,21 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import bisect
 import datetime
 import pandas as pd
-
+import json
 from libfinance.client import get_client
 from libfinance.utils.decorators import export_as_api, ttl_cache, compatible_with_parm
+
 
 def _to_timestamp(d):
     return pd.Timestamp(d).replace(hour=0, minute=0, second=0, microsecond=0)
 
 @ttl_cache(24 * 3600)
-def _get_all_trading_dates():
-    return get_client().get_trading_calendar()
+def get_all_trading_dates():
+    trading_calendar_json = get_client().get_trading_calendar()
+    return pd.to_datetime(json.loads(trading_calendar_json))
+
+def public_api():
+    return get_client().public_api()
 
 @export_as_api
 def get_trading_dates(start_date, end_date):
@@ -38,7 +41,7 @@ def get_trading_dates(start_date, end_date):
            '2020-05-15', '2020-05-18', '2020-05-19', '2020-05-20'],
           dtype='datetime64[ns]', freq=None)
     """
-    trading_dates = _get_all_trading_dates()
+    trading_dates = get_all_trading_dates()
     
     start_date = _to_timestamp(start_date)
     end_date = _to_timestamp(end_date)
@@ -64,7 +67,7 @@ def get_previous_trading_date(date, n=1):
         >>> get_previous_trading_date(date='2020-05-18', n=3)
         Timestamp('2020-05-13 00:00:00')
     """    
-    trading_dates = _get_all_trading_dates()
+    trading_dates = get_all_trading_dates()
     pos = trading_dates.searchsorted(_to_timestamp(date))
     if pos >= n:
         return trading_dates[pos - n]
@@ -88,7 +91,7 @@ def get_next_trading_date(date, n=1):
         >>> get_next_trading_date(date='2020-05-13', n=3)
         Timestamp('2020-05-18 00:00:00')
     """    
-    trading_dates = _get_all_trading_dates()
+    trading_dates = get_all_trading_dates()
     pos = trading_dates.searchsorted(_to_timestamp(date), side='right')
     if pos + n > len(trading_dates):
         return trading_dates[-1]
@@ -98,13 +101,13 @@ def get_next_trading_date(date, n=1):
 @export_as_api
 def is_trading_date(date):
     date = _to_timestamp(date)
-    trading_dates = _get_all_trading_dates()
+    trading_dates = get_all_trading_dates()
     pos = trading_dates.searchsorted(date)
     return pos < len(trading_dates) and trading_dates[pos] == date
 
 @export_as_api
 def get_n_trading_dates_until(date, n):
-    trading_dates = _get_all_trading_dates()
+    trading_dates = get_all_trading_dates()
     pos = trading_dates.searchsorted(_to_timestamp(date), side='right')
     if pos >= n:
         return trading_dates[pos - n:pos]
@@ -114,7 +117,7 @@ def get_n_trading_dates_until(date, n):
 def count_trading_dates(start_date, end_date):
     start_date = _to_timestamp(start_date)
     end_date = _to_timestamp(end_date)
-    trading_dates = _get_all_trading_dates()
+    trading_dates = get_all_trading_dates()
     return trading_dates.searchsorted(end_date, side='right') - trading_dates.searchsorted(start_date)
 
 
@@ -123,7 +126,3 @@ if __name__ == "__main__":
     end_date = "2024-02-27"
     
     trading_dates = get_trading_dates(start_date, end_date)
-    
-    
-
-

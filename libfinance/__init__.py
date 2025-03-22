@@ -1,5 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+from .client import init_client
+
+init_client(host="libfinance.tech", port=8080)
+
 
 __all__ = ["__version__"]
 

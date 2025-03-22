@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import datetime
 from typing import Any, Union, Optional, Iterable, Dict, List, Sequence, Iterable
 
@@ -39,7 +37,7 @@ def get_concept_meta(source:str="THS") -> pd.DataFrame:
     return get_client().get_concept_meta(source=source)
 
 @export_as_api
-def get_concept_weights(concept_ids:list, source:str="THS") -> pd.DataFrame:
+def get_concept_weights(concept_ids:list, date=None, source:str="THS") -> pd.DataFrame:
     """
     获取某一个概念的成分股及其权重数据
     :param concept_ids: 概念id的列表
@@ -84,4 +82,3 @@ def get_concept_weights(concept_ids:list, source:str="THS") -> pd.DataFrame:
         [25 rows x 7 columns]
     """
     return get_client().get_concept_weights(concept_ids=concept_ids, source = source)
-    
