@@ -5,9 +5,152 @@ import datetime
 
 import pandas as pd
 import json
+import warnings
+import pdb
+
 from libfinance.client import get_client
 from libfinance.utils.decorators import export_as_api, ttl_cache, compatible_with_parm
 from libfinance.utils.datetime_func import convert_dateteime_to_timestamp
+from libfinance.utils.utils import to_date_str
+
+from libfinance.utils.validators import (
+    ensure_string,
+    ensure_list_of_string,
+    check_items_in_container,
+    ensure_instruments,
+    ensure_date_range,
+    is_panel_removed,
+)
+
+DAYBAR_FIELDS = {
+    "future": ["settlement", "prev_settlement", "open_interest", "limit_up", "limit_down",
+               "day_session_open"],
+    "common": ["open", "close", "high", "low", "total_turnover", "volume", "prev_close"],
+    "stock": ["limit_up", "limit_down"],
+    "fund": ["limit_up", "limit_down", "num_trades", "iopv"],
+    "spot": ["settlement", "prev_settlement", "open_interest", "limit_up", "limit_down"],
+    "option": ["open_interest", "strike_price", "contract_multiplier", "prev_settlement", "settlement", "limit_up",
+               "limit_down", "day_session_open"],
+    "convertible": ["limit_up", "limit_down", "num_trades"],
+    "index": [],
+    "repo": ["num_trades"],
+}
+
+WEEKBAR_FIELDS = {
+    "future": ["settlement", "prev_settlement", "open_interest", "day_session_open"],
+    "common": ["open", "close", "high", "low", "total_turnover", "volume"],
+    "stock": ["num_trades"],
+    "fund": ["num_trades", "iopv"],
+    "spot": ["settlement", "prev_settlement", "open_interest"],
+    "option": ["open_interest", "strike_price", "contract_multiplier", "settlement", "day_session_open"],
+    "convertible": ["num_trades"],
+    "index": [],
+    "repo": ["num_trades"],
+}
+
+MINBAR_FIELDS = {
+    "future": ["trading_date", "open_interest"],
+    "common": ["open", "close", "high", "low", "total_turnover", "volume"],
+    "stock": ["num_trades"],
+    "fund": ["num_trades", "iopv"],
+    "spot": ["trading_date", "open_interest"],
+    "option": ["trading_date", "open_interest"],
+    "convertible": ["num_trades"],
+    "index": [],
+    "repo": [],
+}
+
+def classify_order_book_ids(order_book_ids):
+    ins_list = ensure_instruments(order_book_ids)
+    _order_book_ids = []
+    stocks = []
+    funds = []
+    indexes = []
+    futures = []
+    futures_888 = {}
+    spots = []
+    options = []
+    convertibles = []
+    repos = []
+    for ins in ins_list:
+        if ins.order_book_id not in _order_book_ids:
+            _order_book_ids.append(ins.order_book_id)
+            if ins.type == "CS":
+                stocks.append(ins.order_book_id)
+            elif ins.type == "INDX":
+                indexes.append(ins.order_book_id)
+            elif ins.type in {"ETF", "LOF", "SF", "FUND"}:
+                funds.append(ins.order_book_id)
+            elif ins.type == "Future":
+                if ins.order_book_id.endswith(("88", "889")):
+                    futures_888[ins.order_book_id] = ins.underlying_symbol
+                futures.append(ins)
+            elif ins.type == "Spot":
+                spots.append(ins.order_book_id)
+            elif ins.type == "Option":
+                options.append(ins.order_book_id)
+            elif ins.type == "Convertible":
+                convertibles.append(ins.order_book_id)
+            elif ins.type == "Repo":
+                repos.append(ins.order_book_id)
+    return _order_book_ids, stocks, funds, indexes, futures, futures_888, spots, options, convertibles, repos
+
+def _ensure_date(start_date, end_date, stocks, funds, indexes, futures, spots, options, convertibles, repos):
+    default_start_date, default_end_date = ensure_date_range(start_date, end_date)
+
+    start_date = to_date_str(start_date) if start_date else default_start_date
+    end_date = to_date_str(end_date) if end_date else default_end_date
+    if start_date < "2000-01-04":
+        warnings.warn("start_date is earlier than 2000-01-04, adjusted to 2000-01-04")
+        start_date = "2000-01-04"
+    return start_date, end_date
+
+def _ensure_fields(fields, fields_dict, stocks, funds, futures, futures888, spots, options, convertibles, indexes,
+                   repos):
+    has_dominant_id = False
+    future_only = futures and not any([stocks, funds, spots, options, convertibles, indexes, repos])
+    all_fields = set(fields_dict["common"])
+    if futures:
+        all_fields.update(fields_dict["future"])
+    if stocks:
+        all_fields.update(fields_dict["stock"])
+    if funds:
+        all_fields.update(fields_dict["fund"])
+    if spots:
+        all_fields.update(fields_dict["spot"])
+    if options:
+        all_fields.update(fields_dict["option"])
+    if convertibles:
+        all_fields.update(fields_dict["convertible"])
+    if indexes:
+        all_fields.update(fields_dict["index"])
+    if repos:
+        all_fields.update(fields_dict["repo"])
+    if future_only and futures888 and len(futures) == len(futures888) and not fields:
+        has_dominant_id = True
+
+    if fields:
+        fields = ensure_list_of_string(fields, "fields")
+        fields_set = set(fields)
+        if len(fields_set) < len(fields):
+            warnings.warn("duplicated fields: %s" % [f for f in fields if fields.count(f) > 1])
+            fields = list(fields_set)
+        # 只有期货类型
+        if 'dominant_id' in fields:
+            fields.remove("dominant_id")
+            if not fields:
+                raise ValueError("can't get dominant_id separately, please use futures.get_dominant")
+            if futures888:
+                has_dominant_id = True
+            else:
+                warnings.warn(
+                    "only if one of the order_book_id is future and contains 88/888/99/889 can the dominant_id be selected in fields")
+        check_items_in_container(fields, all_fields, "fields")
+        return fields, has_dominant_id
+    else:
+        return list(all_fields), has_dominant_id
+
+
 
 @export_as_api
 def get_price(
@@ -77,8 +220,44 @@ def get_price(
                       2024-03-11   7.13   7.17   7.06   7.11   26195498.0
     
     """
+    if not frequency.endswith(("d", "w")):
+        return ValueError("current, only suport xd and xw frequency data")
+    
+    # tick数据
+    if frequency == "tick":
+        return ValueError("current, only suport xd and xw data")
+    elif frequency.endswith(("d", "m", "w")):
+        duration = int(frequency[:-1])
+        _frequency = frequency[-1]
+        assert 1 <= duration <= 240, "frequency should in range [1, 240]"
+        if _frequency == "m" and duration not in (1, 5, 15, 30, 60):
+            raise ValueError("frequency should be str like 1m, 5m, 15m 30m,or 60m")
+        elif _frequency == 'w' and duration not in (1,):
+            raise ValueError("Weekly frequency should be str '1w'")
+    else:
+       raise ValueError("frequency should be str like 1d, 1m, 5m or tick")
+    
+    valid_adjust = ["pre", "post", "none"]
+    ensure_string(adjust_type, "adjust_type")
+    check_items_in_container(adjust_type, valid_adjust, "adjust_type")
+    order_book_ids = ensure_list_of_string(order_book_ids, "order_book_ids")
+    
+    assert isinstance(skip_suspended, bool), "'skip_suspended' should be a bool"
+    
+    
+    order_book_ids, stocks, funds, indexes, futures, futures888, spots, options, convertibles, repos = classify_order_book_ids(order_book_ids)
+    if not order_book_ids:
+        warnings.warn("no valid instrument")
+        return
+    
+    start_date, end_date = _ensure_date(
+        start_date, end_date, stocks, funds, indexes, futures, spots, options, convertibles, repos
+    )
+    
+    fields, has_dominant_id = _ensure_fields(fields, DAYBAR_FIELDS, stocks, funds, futures, futures888, spots, options, convertibles, indexes, repos)
     #start_date = convert_dateteime_to_timestamp(start_date)
     #end_date = convert_dateteime_to_timestamp(end_date)
+    #pdb.set_trace()
     return get_client().get_price(order_book_ids=order_book_ids,
                                            start_date=start_date,
                                            end_date=end_date,
