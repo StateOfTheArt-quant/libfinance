@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from libfinance.api.calendar import get_all_trading_dates, public_api, get_trading_dates
+from libfinance import get_all_trading_dates, get_trading_dates
 
 all_trading_dates = get_all_trading_dates()
 print(all_trading_dates)

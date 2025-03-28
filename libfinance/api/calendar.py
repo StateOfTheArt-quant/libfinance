@@ -9,6 +9,7 @@ from libfinance.utils.decorators import export_as_api, ttl_cache, compatible_wit
 def _to_timestamp(d):
     return pd.Timestamp(d).replace(hour=0, minute=0, second=0, microsecond=0)
 
+@export_as_api
 @ttl_cache(24 * 3600)
 def get_all_trading_dates():
     trading_calendar_json = get_client().get_trading_calendar()

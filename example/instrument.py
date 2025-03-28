@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from libfinance.api.instrument import instruments, all_instruments
+from libfinance import instruments, all_instruments
 
 
 stock_instrument_df = all_instruments(type="CS")

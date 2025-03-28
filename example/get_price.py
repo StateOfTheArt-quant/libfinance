@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import pandas as pd
-from libfinance.api.get_price import get_price
+from libfinance import get_price
 
 
 instrument_ids = ["000001.XSHE"]
