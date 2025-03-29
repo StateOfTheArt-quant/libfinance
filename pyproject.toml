@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "libfinance"
-version = "0.0.3"
+version = "0.0.4"
 
-dependencies = ["lz4","msgpack","pandas>=1.3.4"]
+dependencies = ["lz4","msgpack","pandas"]
 description = "libfinance is a modern finance API"
 readme = "README.md"
