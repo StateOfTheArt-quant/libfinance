@@ -116,8 +116,8 @@ def unpack_sub_rsp(data: bytes) -> SubRsp:
     )
 
 
-# ── WireQuote ─────────────────────────────────────────────────────
-# 字段顺序严格对齐 C++ WireQuote（#pragma pack(1)）
+# ── Quote ─────────────────────────────────────────────────────────
+# 字段顺序严格对齐 C++ Quote（#pragma pack(1)）
 #
 # char[9] trading_day, char[32] instrument_id, char[8] exchange_id,
 # int32 instrument_type,
@@ -190,7 +190,7 @@ class Quote:
     data_time: int
 
 
-def unpack_wire_quote(data: bytes) -> Quote:
+def unpack_quote(data: bytes) -> Quote:
     fields = struct.unpack(WIRE_QUOTE_FMT, data[:WIRE_QUOTE_SIZE])
     idx = 0
     def _s():

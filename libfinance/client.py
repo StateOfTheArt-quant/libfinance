@@ -397,6 +397,10 @@ class RpcClient:
         return response
 
 
+# 默认懒连接参数；可在 import libfinance 之后、第一次调 api 之前显式 init_client(...) 覆盖
+_DEFAULT_HOST = "0.0.0.0"
+_DEFAULT_PORT = 8080
+
 # 初始化函数
 def init_client(host: str = "127.0.0.1", port: int = 8080):
     global _CLIENT
@@ -405,6 +409,14 @@ def init_client(host: str = "127.0.0.1", port: int = 8080):
         _CLIENT.connect()
 
 def get_client():
+    global _CLIENT
     if _CLIENT is None:
-        raise RuntimeError("Client not initialized. Call init_client() first")
+        try:
+            init_client(host=_DEFAULT_HOST, port=_DEFAULT_PORT)
+        except Exception as e:
+            _CLIENT = None
+            raise RuntimeError(
+                f"Client auto-connect to {_DEFAULT_HOST}:{_DEFAULT_PORT} failed: {e}. "
+                "Call init_client(host=..., port=...) explicitly before using libfinance.api.*"
+            ) from e
     return _CLIENT
