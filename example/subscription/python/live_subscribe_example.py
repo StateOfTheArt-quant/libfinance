@@ -7,7 +7,7 @@ import signal
 import time
 import threading
 
-from libfinance.subscribe.md_protocol import LoginRsp, SubRsp, WireQuote
+from libfinance.subscribe.md_protocol import LoginRsp, SubRsp, Quote
 from libfinance.subscribe.quote_api import QuoteApi, QuoteSpi
 
 g_stop = threading.Event()  # 初始 unset，收到信号后 set 表示该停了
@@ -54,15 +54,15 @@ class MyQuoteSpi(QuoteSpi):
     def on_rsp_unsubscribe(self, rsp: SubRsp, request_id: int):
         print(f"[SPI] unsubscribed {rsp.exchange_id}.{rsp.instrument_id}")
 
-    def on_depth_market_data(self, q: WireQuote):
+    def on_depth_market_data(self, q: Quote):
         self.count += 1
         print(
             f"[QUOTE #{self.count:5d}] "
             f"{q.exchange_id}.{q.instrument_id}"
-            f"  last={q.last_price:8.1f}"
-            f"  bid1={q.bid_price[0]:8.1f}"
-            f"  ask1={q.ask_price[0]:8.1f}"
-            f"  vol={q.volume}"
+            f"  last={q.last_price:10.3f}"
+            f"  bid1={q.bid_price[0]:10.3f}"
+            f"  ask1={q.ask_price[0]:10.3f}"
+            f"  vol={q.bid_volume[0]}"
         )
 
     def on_heartbeat(self):

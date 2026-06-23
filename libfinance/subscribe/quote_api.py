@@ -17,7 +17,7 @@ from typing import List, Optional
 from libfinance.subscribe.md_protocol import (
     MAGIC, HEADER_SIZE, MsgType,
     unpack_header, pack_login_req, pack_sub_req,
-    unpack_login_rsp, unpack_sub_rsp, unpack_wire_quote,
+    unpack_login_rsp, unpack_sub_rsp, unpack_quote,
     make_frame, make_heartbeat,
     LoginRsp, SubRsp, Quote,
     LOGIN_REQ_SIZE, SUB_REQ_SIZE,
@@ -213,6 +213,6 @@ class QuoteApi:
         elif t == MsgType.RSP_UNSUBSCRIBE:
             self._spi.on_rsp_unsubscribe(unpack_sub_rsp(body), seq_no)
         elif t == MsgType.MD_QUOTE:
-            self._spi.on_depth_market_data(unpack_wire_quote(body))
+            self._spi.on_depth_market_data(unpack_quote(body))
         elif t == MsgType.HEARTBEAT:
             self._spi.on_heartbeat()

@@ -1,9 +1,12 @@
 from .client import init_client
 
-#init_client(host="libfinance.tech", port=8080)
-init_client(host="0.0.0.0", port=8080)
+# 不再 import 时连接 RPC（服务 A）；第一次调用 libfinance.api.* 会按 client.py 的
+# _DEFAULT_HOST/_DEFAULT_PORT 懒自动连接，需要自定义可显式：
+#   from libfinance import init_client
+#   init_client(host="libfinance.tech", port=8080)
+# 这样 RPC 服务未就绪时，libfinance.subscribe 等子模块也可以独立使用。
 
-__all__ = ["__version__"]
+__all__ = ["__version__", "init_client"]
 
 __version__ = "0.0.1"
 #from libfinance.api import *
