@@ -59,10 +59,10 @@ class MyQuoteSpi(QuoteSpi):
         print(
             f"[QUOTE #{self.count:5d}] "
             f"{q.exchange_id}.{q.instrument_id}"
-            f"  last={q.last_price:8.1f}"
-            f"  bid1={q.bid_price[0]:8.1f}"
-            f"  ask1={q.ask_price[0]:8.1f}"
-            f"  vol={q.volume}"
+            f"  last={q.last_price:10.3f}"
+            f"  bid1={q.bid_price[0]:10.3f}"
+            f"  ask1={q.ask_price[0]:10.3f}"
+            f"  vol={q.bid_volume[0]}"
         )
 
     def on_heartbeat(self):

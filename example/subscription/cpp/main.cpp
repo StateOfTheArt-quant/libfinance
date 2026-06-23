@@ -58,13 +58,13 @@ public:
 
     void OnDepthMarketData(const md_proto::Quote* q) override {
         uint64_t n = ++count_;
-        std::cout << std::fixed << std::setprecision(1)
+        std::cout << std::fixed << std::setprecision(3)
                   << "[QUOTE #" << std::setw(5) << n << "] "
                   << q->exchange_id << "." << q->instrument_id
-                  << "  last=" << std::setw(8) << q->last_price
-                  << "  bid1=" << std::setw(8) << q->bid_price[0]
-                  << "  ask1=" << std::setw(8) << q->ask_price[0]
-                  << "  vol="  << q->volume << "\n";
+                  << "  last=" << std::setw(10) << q->last_price
+                  << "  bid1=" << std::setw(10) << q->bid_price[0]
+                  << "  ask1=" << std::setw(10) << q->ask_price[0]
+                  << "  bid_volume[0]="  << q->bid_volume[0] << "\n";
     }
 
     void OnHeartbeat() override {}
