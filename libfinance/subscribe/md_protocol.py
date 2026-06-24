@@ -10,8 +10,9 @@ from enum import IntEnum
 
 # ── 常量 ──────────────────────────────────────────────────────────
 MAGIC = 0x4B463235  # "KF25"
-VERSION = 1
+VERSION = 2          # v2: SubReq/SubRsp/Quote 增 source[16]
 HEADER_SIZE = 16
+SOURCE_LEN = 16
 
 # ── 消息类型 ──────────────────────────────────────────────────────
 class MsgType(IntEnum):
@@ -78,24 +79,26 @@ def unpack_login_rsp(data: bytes) -> LoginRsp:
     )
 
 
-# ── SubReq: char[8] + char[32] = 40 bytes ────────────────────────
-SUB_REQ_FMT = "<8s32s"
+# ── SubReq: char[16] + char[8] + char[32] = 56 bytes ─────────────
+SUB_REQ_FMT = "<16s8s32s"
 SUB_REQ_SIZE = struct.calcsize(SUB_REQ_FMT)
 
-def pack_sub_req(exchange_id: str, instrument_id: str) -> bytes:
+def pack_sub_req(exchange_id: str, instrument_id: str, source: str = "") -> bytes:
     return struct.pack(
         SUB_REQ_FMT,
+        source.encode().ljust(16, b"\x00")[:16],
         exchange_id.encode().ljust(8, b"\x00")[:8],
         instrument_id.encode().ljust(32, b"\x00")[:32],
     )
 
 
-# ── SubRsp: char[8] + char[32] + int32 + char[64] + int32 + int32 = 116 bytes
-SUB_RSP_FMT = "<8s32si64sii"
+# ── SubRsp: char[16] + char[8] + char[32] + int32 + char[64] + int32 + int32 = 132 bytes
+SUB_RSP_FMT = "<16s8s32si64sii"
 SUB_RSP_SIZE = struct.calcsize(SUB_RSP_FMT)
 
 @dataclass
 class SubRsp:
+    source: str
     exchange_id: str
     instrument_id: str
     error_id: int
@@ -104,9 +107,10 @@ class SubRsp:
     max_subs: int        # 最大订阅数，-1 无限制
 
 def unpack_sub_rsp(data: bytes) -> SubRsp:
-    exch, inst, error_id, error_msg_raw, current_subs, max_subs = struct.unpack(
+    src, exch, inst, error_id, error_msg_raw, current_subs, max_subs = struct.unpack(
         SUB_RSP_FMT, data[:SUB_RSP_SIZE])
     return SubRsp(
+        src.split(b"\x00", 1)[0].decode(),
         exch.split(b"\x00", 1)[0].decode(),
         inst.split(b"\x00", 1)[0].decode(),
         error_id,
@@ -157,6 +161,7 @@ WIRE_QUOTE_FMT = (
     "10q"      # ask_volume[10]
     "8s"       # trading_phase_code
     "q"        # data_time
+    "16s"      # source（追加在末尾）
 )
 WIRE_QUOTE_SIZE = struct.calcsize(WIRE_QUOTE_FMT)
 
@@ -188,6 +193,7 @@ class Quote:
     ask_volume: list      # [10]
     trading_phase_code: str
     data_time: int
+    source: str
 
 
 def unpack_quote(data: bytes) -> Quote:
@@ -217,6 +223,7 @@ def unpack_quote(data: bytes) -> Quote:
         bid_price=_fa(10), ask_price=_fa(10),
         bid_volume=_ia(10), ask_volume=_ia(10),
         trading_phase_code=_s(), data_time=_i(),
+        source=_s(),
     )
 
 
