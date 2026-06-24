@@ -6,7 +6,9 @@ quote_api.py — Python 客户端 SDK（XTP 风格，对齐 C++ client/quote_api
     api.register_spi(my_spi)
     api.connect("127.0.0.1", 9001)
     api.login("trader1", "pass1234")
-    api.subscribe(["rb2501", "hc2501"], "SHFE")
+    # 按行情源订阅（一条连接可混订多源，回调里 quote.source 区分）
+    api.subscribe(["600519"], "SSE", source="webquote")
+    api.subscribe(["600519"], "SSE", source="sim")
 """
 
 import socket
@@ -87,21 +89,23 @@ class QuoteApi:
         return seq
 
     # ── 订阅 ──────────────────────────────────────────────────────
-    def subscribe(self, instruments: List[str], exchange_id: str) -> int:
+    # source：行情源（sim / cxxquote / webquote / ...）。空 = 网关默认源。
+    # 一条连接可对不同 source 分别 subscribe，行情回调里靠 quote.source 区分。
+    def subscribe(self, instruments: List[str], exchange_id: str, source: str = "") -> int:
         last = 0
         for inst in instruments:
             seq = self._next_seq()
-            body = pack_sub_req(exchange_id, inst)
+            body = pack_sub_req(exchange_id, inst, source)
             self._enqueue(make_frame(MsgType.REQ_SUBSCRIBE, seq, body))
             last = seq
         return last
 
     # ── 退订 ──────────────────────────────────────────────────────
-    def unsubscribe(self, instruments: List[str], exchange_id: str) -> int:
+    def unsubscribe(self, instruments: List[str], exchange_id: str, source: str = "") -> int:
         last = 0
         for inst in instruments:
             seq = self._next_seq()
-            body = pack_sub_req(exchange_id, inst)
+            body = pack_sub_req(exchange_id, inst, source)
             self._enqueue(make_frame(MsgType.REQ_UNSUBSCRIBE, seq, body))
             last = seq
         return last
