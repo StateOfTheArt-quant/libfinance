@@ -100,6 +100,15 @@ class QuoteApi:
             last = seq
         return last
 
+    # ── 全市场订阅（按 source）────────────────────────────────────
+    # 一条请求让网关触发该源 subscribe_all（webquote→yunhq 全量 list，覆盖全沪深 ~5000+ 只），
+    # 之后本连接收到该源所有 instrument 的行情，无需逐只订阅。须已登录。
+    def subscribe_all(self, source: str = "") -> int:
+        seq = self._next_seq()
+        body = pack_sub_req("", "", source)
+        self._enqueue(make_frame(MsgType.REQ_SUBSCRIBE_ALL, seq, body))
+        return seq
+
     # ── 退订 ──────────────────────────────────────────────────────
     def unsubscribe(self, instruments: List[str], exchange_id: str, source: str = "") -> int:
         last = 0
@@ -212,7 +221,7 @@ class QuoteApi:
         t = MsgType(msg_type)
         if t == MsgType.RSP_LOGIN:
             self._spi.on_rsp_login(unpack_login_rsp(body), seq_no)
-        elif t == MsgType.RSP_SUBSCRIBE:
+        elif t == MsgType.RSP_SUBSCRIBE or t == MsgType.RSP_SUBSCRIBE_ALL:
             self._spi.on_rsp_subscribe(unpack_sub_rsp(body), seq_no)
         elif t == MsgType.RSP_UNSUBSCRIBE:
             self._spi.on_rsp_unsubscribe(unpack_sub_rsp(body), seq_no)

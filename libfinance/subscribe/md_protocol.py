@@ -22,6 +22,8 @@ class MsgType(IntEnum):
     RSP_SUBSCRIBE   = 0x0004
     REQ_UNSUBSCRIBE = 0x0005
     RSP_UNSUBSCRIBE = 0x0006
+    REQ_SUBSCRIBE_ALL = 0x0007   # 全市场订阅（按 source）；body 复用 SubReq，仅 source 有效
+    RSP_SUBSCRIBE_ALL = 0x0008
     MD_QUOTE        = 0x0010
     HEARTBEAT       = 0x00FF
 
