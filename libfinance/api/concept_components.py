@@ -81,4 +81,4 @@ def get_concept_weights(concept_ids:list, date=None, source:str="THS") -> pd.Dat
         
         [25 rows x 7 columns]
     """
-    return get_client().get_concept_weights(concept_ids=concept_ids, source = source)
+    return get_client().get_concept_weights(concept_ids=concept_ids, date=date, source=source)
