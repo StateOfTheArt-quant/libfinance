@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-fullmarket_health_check.py —— 实时行情源「全市场」体检
+fullmarket_health_check.py —— 实时行情「全市场」体检
 
-对某个行情源做【全市场订阅】(subscribe_all)，统计覆盖（出数标的数）、吞吐、
-延迟/新鲜度，判断该源是否健康。
+用【整市场订阅】(subscribe_all) 统计覆盖（出数标的数）、吞吐、延迟/新鲜度，
+判断当前承接源是否健康。
 
-走 subscribe_all：网关让源端走全量推送（如 webquote→yunhq 全沪深 ~5289 只），
-**客户端不枚举任何代码** —— 因此覆盖即真实全市场、不含空号（旧版按代码段位生成
-11000 含大量空号的问题不复存在）。
+subscribe_all 按「市场 × 品种 × 数据类型」下单，**客户端不枚举任何代码** ——
+网关自己挑一个申报 whole_market 的健康源承接推送，回执里回显是哪个源。
+因此覆盖即真实全市场、不含空号。
+
+前提：账号订阅配额必须无限制（整市场订阅绕开逐合约计数，受限账号会被拒，error_id=6）。
 
 用法:
-    python fullmarket_health_check.py --source webquote \\
-        --user admin --password 'AdminPass123!' --duration 20
+    python fullmarket_health_check.py --duration 20
+    python fullmarket_health_check.py --market SSE --instrument-type Stock
 
 退出码: 0=健康, 1=不健康(0行情 / 出数标的<--min-instruments / p95滞后超阈值), 2=连接或登录失败
 """
@@ -24,6 +26,9 @@ import threading
 import time
 
 from libfinance.subscribe.quote_api import QuoteApi, QuoteSpi
+from libfinance.subscribe.md_protocol import (
+    MarketType, SubscribeInstrumentType, SubscribeDataType,
+)
 
 
 class HealthSpi(QuoteSpi):
@@ -33,6 +38,8 @@ class HealthSpi(QuoteSpi):
         self.login_ok = False
         self.sub_ok = False
         self.sub_err = ""
+        self.sub_errno = -1
+        self.feed_source = ""      # 网关实际挑中的承接源
         self.first = {}       # "exch.inst" -> 首条到达 wall 时间
         self.first_dt = {}    # "exch.inst" -> 首条 data_time（算新鲜度）
         self.total = 0
@@ -45,9 +52,11 @@ class HealthSpi(QuoteSpi):
               f"{'' if self.login_ok else rsp.error_msg}")
         self.logged_in.set()
 
-    def on_rsp_subscribe(self, rsp, _):   # subscribe_all 的应答也走这里
+    def on_rsp_subscribe_all(self, rsp, _):
         self.sub_ok = (rsp.error_id == 0)
         self.sub_err = rsp.error_msg
+        self.sub_errno = rsp.error_id
+        self.feed_source = rsp.source
 
     def on_depth_market_data(self, q):
         now = time.time()
@@ -60,7 +69,7 @@ class HealthSpi(QuoteSpi):
 
 
 def lag_ms(data_time, wall):
-    """kungfu data_time 多为 ns epoch；解析为 now-data_time(ms)，无法判定返回 None。"""
+    """data_time 为 ns epoch；解析为 now-data_time(ms)，无法判定返回 None。"""
     if not data_time or data_time <= 0:
         return None
     for scale in (1e9, 1e6, 1e3, 1.0):
@@ -79,8 +88,16 @@ def main():
     ap = argparse.ArgumentParser(description="实时行情源全市场体检（subscribe_all）")
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=9001)
-    ap.add_argument("--source", required=True, help="行情源名 sim/webquote/...")
-    ap.add_argument("--user", default="", help="登录账户（subscribe_all 需登录的高配额账户）")
+    ap.add_argument("--market", default="All",
+                    choices=[m.name for m in MarketType],
+                    help="市场维度，All=不限（默认）")
+    ap.add_argument("--instrument-type", default="All",
+                    choices=[t.name for t in SubscribeInstrumentType],
+                    help="品种维度，All=不限（默认）")
+    ap.add_argument("--data-type", default="All",
+                    choices=[t.name for t in SubscribeDataType],
+                    help="数据类型维度，All=不限（默认）")
+    ap.add_argument("--user", default="", help="登录账户（整市场订阅要求配额无限制）")
     ap.add_argument("--password", default="")
     ap.add_argument("--duration", type=int, default=20, help="采集时长(秒)")
     ap.add_argument("--min-instruments", type=int, default=0,
@@ -105,12 +122,16 @@ def main():
             api.disconnect()
             return 2
     else:
-        print("[health][warn] 未登录(guest)：subscribe_all 需登录账户，可能被拒")
+        print("[health][warn] 未登录(guest)：整市场订阅需登录且配额无限制，可能被拒")
 
-    # 全市场订阅：一条 subscribe_all，网关让源端走全量推送（不枚举代码、无空号）
-    print(f"[health] subscribe_all(source={args.source})，采集 {args.duration}s ...")
+    # 整市场订阅：一条 subscribe_all，网关挑承接源并让它走全量推送（不枚举代码、无空号）
+    market = MarketType[args.market]
+    itype = SubscribeInstrumentType[args.instrument_type]
+    dtype = SubscribeDataType[args.data_type]
+    print(f"[health] subscribe_all(market={market.name}, instrument={itype.name}, "
+          f"data={dtype.name})，采集 {args.duration}s ...")
     t_sub = time.time()
-    api.subscribe_all(args.source)
+    api.subscribe_all(market, itype, dtype)
 
     deadline = t_sub + args.duration
     while time.time() < deadline and not stop.is_set():
@@ -130,12 +151,16 @@ def main():
                             for k in list(spi.first)[:2000]) if v is not None]
     elapsed = max(1e-9, time.time() - t_sub)
     if not spi.sub_ok:
-        print(f"[health] subscribe_all 应答: {spi.sub_err or '(未收到)'}", file=sys.stderr)
+        hint = {4: "网关侧没有可承接整市场的源（源须申报 whole_market、健康且覆盖该条件）",
+                6: "账号订阅配额受限——整市场订阅要求配额无限制"}.get(spi.sub_errno, "")
+        print(f"[health] subscribe_all 应答({spi.sub_errno}): {spi.sub_err or '(未收到)'}"
+              f"{chr(10) + '         ' + hint if hint else ''}", file=sys.stderr)
 
     print("\n" + "=" * 60)
-    print(f"实时源体检  source={args.source}  {args.host}:{args.port}")
+    print(f"实时源体检  承接源={spi.feed_source or '(未知)'}  "
+          f"条件={market.name}/{itype.name}/{dtype.name}  {args.host}:{args.port}")
     print("=" * 60)
-    print(f"覆盖      出数标的={covered}（subscribe_all 全市场，无空号）")
+    print(f"覆盖      出数标的={covered}（整市场订阅，无空号）")
     print(f"吞吐      总行情={total}  采集={elapsed:.1f}s  qps≈{total/elapsed:.0f}")
     if first_lat:
         print(f"首条延迟  中位={statistics.median(first_lat):.0f}ms  "
@@ -155,7 +180,7 @@ def main():
     if args.fail_lag_ms and lags and pct(lags, 95) > args.fail_lag_ms:
         bad.append(f"p95 滞后 {pct(lags,95):.0f}ms > {args.fail_lag_ms:.0f}ms")
     print("\n[结论] " + ("✗ 不健康：" + "；".join(bad) if bad
-                        else "✓ 健康：该源全市场持续出数"))
+                        else f"✓ 健康：'{spi.feed_source}' 全市场持续出数"))
     print("=" * 60)
     return 1 if bad else 0
 
