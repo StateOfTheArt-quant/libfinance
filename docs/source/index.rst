@@ -78,6 +78,7 @@ The following snippet showcases the core usage of *libfinance*.
    trading_data
    index_component
    concept_component
+   shares
 
 .. toctree::
    :maxdepth: 2
