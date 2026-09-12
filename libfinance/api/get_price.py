@@ -22,10 +22,20 @@ from libfinance.utils.validators import (
     is_panel_removed,
 )
 
+# 日频字段。股票这两组必须与上游 daybar 的权威列集逐字一致——
+# pystockdaybarcn.dataset.VALUE_COLUMNS =
+#     ("open", "high", "low", "close", "volume", "turnover", "limit_up", "limit_down")
+# reader 对未知字段是 InvalidFieldError，不会静默忽略。此前这里写的是 rqdatac 口径的
+# total_turnover 与 prev_close：前者在上游叫 turnover，后者上游根本没有，于是
+# fields=None（默认）的每一次调用都会被 reader 拒掉。
+#
+# 其余几组（future / fund / spot / option / convertible / repo）上游**都还没有 artifact**，
+# libfinanced 目前只出 CN 股票日频。留着它们只是为了 classify_order_book_ids 的分支不动；
+# 真传了这些标的，服务端会明确报错而不是给出半份数据。
 DAYBAR_FIELDS = {
     "future": ["settlement", "prev_settlement", "open_interest", "limit_up", "limit_down",
                "day_session_open"],
-    "common": ["open", "close", "high", "low", "total_turnover", "volume", "prev_close"],
+    "common": ["open", "close", "high", "low", "turnover", "volume"],
     "stock": ["limit_up", "limit_down"],
     "fund": ["limit_up", "limit_down", "num_trades", "iopv"],
     "spot": ["settlement", "prev_settlement", "open_interest", "limit_up", "limit_down"],
@@ -258,7 +268,7 @@ def get_price(
     #start_date = convert_dateteime_to_timestamp(start_date)
     #end_date = convert_dateteime_to_timestamp(end_date)
     #pdb.set_trace()
-    return get_client().get_price(order_book_ids=order_book_ids,
+    frame = get_client().get_price(order_book_ids=order_book_ids,
                                            start_date=start_date,
                                            end_date=end_date,
                                            frequency=frequency, 
@@ -267,3 +277,26 @@ def get_price(
                                            include_now=include_now,
                                            adjust_type=adjust_type, 
                                            adjust_orig=adjust_orig)
+    return _to_panel(frame)
+
+
+def _to_panel(frame):
+    """把 daybar 的扁平列还原成本函数文档里承诺的形状。
+
+    上游按 ``exchange_id`` + ``trading_code`` + ``session_date`` 三列组织（那是 daybar
+    artifact 的 KEY_COLUMNS），而本接口对外一直是 ``(order_book_id, datetime)``
+    的 MultiIndex。拼接在这里做，不要求调用方自己拼。
+    """
+    if frame is None or not isinstance(frame, pd.DataFrame) or frame.empty:
+        return frame
+    keys = {"exchange_id", "trading_code", "session_date"}
+    if not keys.issubset(frame.columns):
+        # 服务端换了形状——原样返回，让调用方看见真实的列，而不是在这里猜。
+        return frame
+    frame = frame.copy()
+    frame["order_book_id"] = (
+        frame["trading_code"].astype(str) + "." + frame["exchange_id"].astype(str)
+    )
+    frame["datetime"] = pd.to_datetime(frame["session_date"])
+    frame = frame.drop(columns=["exchange_id", "trading_code", "session_date"])
+    return frame.set_index(["order_book_id", "datetime"]).sort_index()
