@@ -2,14 +2,12 @@
 # -*- coding: utf-8 -*-
 """证券基础信息。
 
-**字段命名在这里做了一次翻译，不是笔误。** 服务端的列名与本客户端的历史约定相反：
+对外契约：``order_book_id`` 是代码（``600000.XSHG``），``symbol`` 是名称（浦发银行）
+—— 与 rqdata 一致。
 
-    服务端 symbol        = "000001.XSHE"  代码   -> 客户端 order_book_id
-    服务端 display_name  = "平安银行"      名称   -> 客户端 symbol
-
-客户端这套叫法是既有公开契约（example/application 里就有
-``concept_weight.set_index('order_book_id')['symbol']`` 取名称的写法），所以翻译放在
-这一层，不去动服务端，也不让用户承担这个差异。
+翻译在**服务端的能力层**做，不在这里：libfinanced 内部按 instrument spec 用
+``symbol`` 表示代码、``display_name`` 表示名称，那套三层身份模型不动；服务端在对外
+边界上改名。这样直连 RPC 的人和用本客户端的人看到同一套名字。
 """
 from typing import List, Optional, Union
 
@@ -23,9 +21,6 @@ from libfinance.utils.validators import ensure_list_of_string
 
 #: 服务端 all_instruments 认得的 type。传别的会被服务端拒绝。
 VALID_TYPES = ("CS", "INDX")
-
-#: 服务端列名 -> 客户端列名。只翻译有冲突的两个，其余原样透出。
-_COLUMN_ALIASES = {"symbol": "order_book_id", "display_name": "symbol"}
 
 #: 常用别名，历史上一直支持。
 _TYPE_ALIASES = {"STOCK": "CS", "INDEX": "INDX"}
@@ -68,14 +63,19 @@ def _normalize_types(type_):
 
 
 def _rename(frame):
-    """把服务端列名翻译成客户端约定，并把 order_book_id 放在第一列。"""
+    """把 order_book_id 放在第一列。**列名不再在这里翻译。**
+
+    服务端的能力层现在直接输出对外契约的列名（order_book_id = 代码，symbol = 名称），
+    所以客户端退化成纯透传。此前这里有一份 {symbol: order_book_id,
+    display_name: symbol} 的别名表 —— 那意味着直连 RPC 的人拿到的是另一套名字，
+    而他们手上没有这张表。边界应该只有一处，在服务端。
+    """
     if not isinstance(frame, pd.DataFrame) or frame.empty:
         return frame
-    renamed = frame.rename(columns=_COLUMN_ALIASES)
-    if "order_book_id" in renamed.columns:
-        ordered = ["order_book_id"] + [c for c in renamed.columns if c != "order_book_id"]
-        renamed = renamed[ordered]
-    return renamed
+    if "order_book_id" in frame.columns:
+        ordered = ["order_book_id"] + [c for c in frame.columns if c != "order_book_id"]
+        return frame[ordered]
+    return frame
 
 
 @versioned_cache
