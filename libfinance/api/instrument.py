@@ -111,22 +111,22 @@ def _instrument_index(as_of=None):
     return {row["order_book_id"]: Instrument(row) for row in frame.to_dict("records")}
 
 
-def all_cached_obid_to_type_mapping():
+def all_cached_obid_to_type_mapping(as_of=None):
     """代码 → 类型。**validators.ensure_instruments 依赖这个名字。**
 
     它曾经是 get_all_obid_to_type() 这个 RPC 的薄封装，而服务端早已没有那个 handler
     （Function not found）。现在从 all_instruments 的全表推导，语义不变。
     """
-    return _obid_to_type()
+    return _obid_to_type(to_date_str(as_of) if as_of else None)
 
 
-def _get_instrument(type_, order_book_id):
+def _get_instrument(type_, order_book_id, as_of=None):
     """**validators.ensure_instruments 依赖这个名字。**
 
     ``type_`` 保留在签名里只为兼容旧调用点；索引是按 order_book_id 建的，代码本身
     已经唯一，不需要先知道类型。
     """
-    return _instrument_index()[order_book_id]
+    return _instrument_index(to_date_str(as_of) if as_of else None)[order_book_id]
 
 
 @export_as_api

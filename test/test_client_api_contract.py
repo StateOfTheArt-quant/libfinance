@@ -105,3 +105,28 @@ def test_instrument_helpers_that_validators_depends_on_exist():
 
     source = (_ROOT / "libfinance" / "utils" / "validators.py").read_text(encoding="utf-8")
     assert "all_cached_obid_to_type_mapping" in source and "_get_instrument" in source
+
+
+def test_get_price_resolves_codes_as_of_the_window_end_not_today():
+    """代码表按**查询窗口末端**解析，不是按今天 —— 与服务端 compose/price.py 同口径。
+
+    不这样的话，已退市的证券在客户端就被 ensure_instruments 当成"无效代码"整个丢掉，
+    服务端根本没机会回答：
+
+        get_price(['600837.XSHG'], '2022-09-01', '2022-09-20')
+        -> ValueError: order_book_ids: at least one valid instrument expected, got none
+
+    而 600837.XSHG（海通证券）在 2022 年确实在交易。服务端那侧已经按窗口末端解析了，
+    客户端这一层不跟上就等于白改。
+    """
+    source = (_ROOT / "libfinance" / "api" / "get_price.py").read_text(encoding="utf-8")
+    assert "classify_order_book_ids(\n        order_book_ids, as_of=end_date)" in source, \
+        "get_price 没把 end_date 传给代码解析"
+
+    import inspect
+
+    from libfinance.api.instrument import _get_instrument, all_cached_obid_to_type_mapping
+    from libfinance.utils.validators import ensure_instruments
+
+    for func in (ensure_instruments, all_cached_obid_to_type_mapping, _get_instrument):
+        assert "as_of" in inspect.signature(func).parameters, func.__name__

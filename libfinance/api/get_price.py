@@ -71,8 +71,9 @@ MINBAR_FIELDS = {
     "repo": [],
 }
 
-def classify_order_book_ids(order_book_ids):
-    ins_list = ensure_instruments(order_book_ids)
+def classify_order_book_ids(order_book_ids, as_of=None):
+    """按类型给标的分流。``as_of`` 决定用哪个时点的代码表 —— 见 ensure_instruments。"""
+    ins_list = ensure_instruments(order_book_ids, as_of=as_of)
     _order_book_ids = []
     stocks = []
     funds = []
@@ -334,7 +335,10 @@ def get_price(
     assert isinstance(skip_suspended, bool), "'skip_suspended' should be a bool"
     
     
-    order_book_ids, stocks, funds, indexes, futures, futures888, spots, options, convertibles, repos = classify_order_book_ids(order_book_ids)
+    # 按**查询窗口末端**解析代码，不是按今天 —— 与服务端 compose/price.py 同口径。
+    # 否则已退市的证券在这里就被当成无效代码丢掉，服务端根本没机会回答。
+    order_book_ids, stocks, funds, indexes, futures, futures888, spots, options, convertibles, repos = classify_order_book_ids(
+        order_book_ids, as_of=end_date)
     if not order_book_ids:
         warnings.warn("no valid instrument")
         return
