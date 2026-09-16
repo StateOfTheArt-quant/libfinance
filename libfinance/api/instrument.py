@@ -16,7 +16,8 @@ from typing import List, Optional, Union
 import pandas as pd
 
 from libfinance.client import get_client
-from libfinance.utils.decorators import export_as_api, ttl_cache
+from libfinance.utils.cache import versioned_cache
+from libfinance.utils.decorators import export_as_api
 from libfinance.utils.utils import to_date_str
 from libfinance.utils.validators import ensure_list_of_string
 
@@ -77,10 +78,55 @@ def _rename(frame):
     return renamed
 
 
-@ttl_cache(3 * 3600)
+@versioned_cache
 def _all_instruments_cached(type_key, as_of):
+    """全表。按**数据版本**缓存，不是按时间 —— 见 utils/cache.py。
+
+    这张表是 get_price 的前置：它要先知道每个代码是股票还是指数才能分流。实测一次
+    75 ms / 14 rps，不缓存的话每次 get_price 都额外背一次重查询，而单个用户的限额
+    （20 rps）就能把服务端打满。
+    """
     types = list(type_key) if type_key else None
     return _rename(get_client().all_instruments(type=types, as_of=as_of))
+
+
+@versioned_cache
+def _obid_to_type(as_of=None):
+    """``{order_book_id: type}``。get_price 分流标的时每次都要。
+
+    建在 _all_instruments_cached 上，所以两者共享同一次网络往返。
+    """
+    frame = _all_instruments_cached(None, as_of)
+    if frame is None or frame.empty:
+        return {}
+    return dict(zip(frame["order_book_id"], frame["type"]))
+
+
+@versioned_cache
+def _instrument_index(as_of=None):
+    """``{order_book_id: Instrument}``。"""
+    frame = _all_instruments_cached(None, as_of)
+    if frame is None or frame.empty:
+        return {}
+    return {row["order_book_id"]: Instrument(row) for row in frame.to_dict("records")}
+
+
+def all_cached_obid_to_type_mapping():
+    """代码 → 类型。**validators.ensure_instruments 依赖这个名字。**
+
+    它曾经是 get_all_obid_to_type() 这个 RPC 的薄封装，而服务端早已没有那个 handler
+    （Function not found）。现在从 all_instruments 的全表推导，语义不变。
+    """
+    return _obid_to_type()
+
+
+def _get_instrument(type_, order_book_id):
+    """**validators.ensure_instruments 依赖这个名字。**
+
+    ``type_`` 保留在签名里只为兼容旧调用点；索引是按 order_book_id 建的，代码本身
+    已经唯一，不需要先知道类型。
+    """
+    return _instrument_index()[order_book_id]
 
 
 @export_as_api

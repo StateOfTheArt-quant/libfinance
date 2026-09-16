@@ -9,6 +9,7 @@ import warnings
 import pdb
 
 from libfinance.client import get_client
+from libfinance.utils.cache import versioned_cache, warn_if_clamped
 from libfinance.utils.decorators import export_as_api, ttl_cache, compatible_with_parm
 from libfinance.utils.datetime_func import convert_dateteime_to_timestamp
 from libfinance.utils.utils import to_date_str
@@ -163,17 +164,95 @@ def _ensure_fields(fields, fields_dict, stocks, funds, futures, futures888, spot
 
 
 @export_as_api
+@versioned_cache
+def get_price_coverage(market=None) -> dict:
+    """日频行情各交易所的覆盖区间，形如 ``{"XSHG": {"start": ..., "end": ...}}``。
+
+    **与交易日历的覆盖不是一回事**：日历是提前发布的（本机实测到 2026-12-31），
+    而行情只到最后一个已收盘交易日（2026-09-15）。"查最近 10 天"之所以会失败，
+    正是因为它把 end_date 取成了今天。
+
+    ``end`` 是**复权价**能查到的最后一天（默认 adjust_type="pre" 要用 exfactor，而它的
+    cutoff 通常比日频更早）；``raw_end`` 是未复权价能到哪天。
+
+    用它先问一句，就不必靠试错：
+
+        cov = get_price_coverage()["XSHG"]
+        df = get_price(ids, start_date=..., end_date=cov["end"])
+    """
+    args = {} if market is None else {"market": market}
+    info = get_client().call("daybar.dataset_info", args)
+    out = {}
+    for mic, item in (info or {}).items():
+        if isinstance(item, dict) and item.get("coverage_end"):
+            out[mic] = {"start": item.get("coverage_start"), "end": item["coverage_end"],
+                        "raw_end": item["coverage_end"]}
+    # 复权价还要 exfactor，而它的 cutoff 通常**更早**（实测 daybar 到 09-14、exfactor
+    # 到 09-12）。默认 adjust_type="pre" 时真正的上界是两者的较小值，所以这里直接把
+    # end 夹到它 —— 否则调用方按 end 去查会撞上
+    # "2026-09-14 is past this release's cutoff 2026-09-12"。
+    # raw_end 保留未复权价能到哪天。
+    try:
+        cutoff = (get_client().call("exfactor.dataset_info", args) or {}).get("cutoff")
+    except Exception:
+        cutoff = None
+    if cutoff:
+        for item in out.values():
+            item["adjust_cutoff"] = cutoff
+            if item["end"] > cutoff:
+                item["end"] = cutoff
+    return out
+
+
+def _warn_beyond_coverage(end_date):
+    """end_date 超出行情覆盖时先说清楚，而不是让调用方拿到一句 RPC 报错。
+
+    服务端的拒绝本身是对的 ——"a date this release does not reach is not a date with
+    no trading" —— 它拒绝把"数据还没到"伪装成"那天没交易"。这里不改写调用方的请求，
+    只是提前把原因和可用的上界说出来。
+    """
+    if not end_date:
+        return
+    try:
+        cov = get_price_coverage()
+    except Exception:
+        return
+    ends = [v["end"] for v in cov.values() if v.get("end")]
+    if not ends:
+        return
+    latest = max(ends)
+    if str(end_date) > latest:
+        warnings.warn(
+            "get_price: end_date={} 超出行情覆盖（最新已收盘交易日 {}）。服务端会拒绝"
+            "这个区间——数据还没到不等于那天没交易。用 get_price_coverage() 查上界。"
+            .format(end_date, latest),
+            stacklevel=3,
+        )
+
+
+@export_as_api
 def get_price(
     order_book_ids: list,
     start_date: str,
     end_date: str,
     frequency: str="1d",
     fields: List[str]=None,
-    skip_suspended: bool=True,
+    skip_suspended: bool=False,
     include_now: bool=True,
-    adjust_type: str="none",
+    adjust_type: str="pre",
     adjust_orig:datetime.datetime = None) -> pd.DataFrame:
     """获取指定合约的历史 k 线行情，支持任意日频率xd(1d,5d)和任意分钟频率xm(1m,3m,5m,15m)的历史数据。
+
+    .. warning::
+
+       **0.0.2 起 ``adjust_type`` 的默认值从 ``"none"`` 改为 ``"pre"``**（同时
+       ``skip_suspended`` 从 ``True`` 改为 ``False``），与服务端的默认值一致。
+
+       这是一个**静默的数值变化**：不会报错，但不传 ``adjust_type`` 时拿到的价格
+       从不复权变成了前复权。依赖旧行为的代码请显式写 ``adjust_type="none"``。
+
+       改的理由是此前两边默认值相反 —— 同一个语义调用，走客户端和走服务端内部会得到
+       不同的数字，而这种不一致没有任何人能从文档上看出来。
     
     :param order_book_ids: 多个标的合约代码, 必填项
     :param start_date: 开始日期，必填项
@@ -263,6 +342,10 @@ def get_price(
     start_date, end_date = _ensure_date(
         start_date, end_date, stocks, funds, indexes, futures, spots, options, convertibles, repos
     )
+    # 分档限制会把 start_date 夹到边界，end_date 早于边界时也一起上拉 —— 结果是一张
+    # 空表，而调用方无从知道是档位问题还是真的没数据。先说出来。
+    warn_if_clamped("get_price", start_date)
+    _warn_beyond_coverage(end_date)
     
     fields, has_dominant_id = _ensure_fields(fields, DAYBAR_FIELDS, stocks, funds, futures, futures888, spots, options, convertibles, indexes, repos)
     #start_date = convert_dateteime_to_timestamp(start_date)

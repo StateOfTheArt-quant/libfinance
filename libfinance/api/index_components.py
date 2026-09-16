@@ -6,13 +6,21 @@ from libfinance.client import get_client
 from libfinance.utils.decorators import export_as_api, ttl_cache, compatible_with_parm
 
 @export_as_api
-def get_instrument_industry(order_book_ids: list, date: Union[str, datetime.datetime], source: str = "010303") -> pd.DataFrame:
+def get_instrument_industry(order_book_ids: list, date=None, source: str = "sw",
+                            level: int = 1, market=None) -> pd.DataFrame:
     """
     获取股票合约的所属行业信息
     
     :param order_book_ids: 股票合约的id列表
-    :param date: 日期
-    :param source: 来源(010303-申万行业分类, 010314-中证行业分类（2016版),010321-申万行业分类（2021版), 010317-中信行业分类)
+    :param date: 以该日的分类为准；省略则取最新
+    :param source: 分类来源。**当前服务端只支持 ``"sw"``（申万）** —— 用
+                   ``get_industry_mapping()`` 看这一份分类表的全貌。
+
+                   此前这里的默认值是 ``"010303"``，那是旧数据源的申万分类编码，
+                   服务端不认（``unsupported source: 010303; available: sw``），
+                   所以这个接口用默认参数调一直是报错的。
+    :param level: 行业层级，1/2/3，默认 1（一级行业）
+    :param market: 市场，省略则用服务端默认
         
     :example:
     
@@ -30,13 +38,14 @@ def get_instrument_industry(order_book_ids: list, date: Union[str, datetime.date
         600000.XSHG     申万行业分类      1030321            银行    103032101            银行
 
     """
-    return get_client().get_instrument_industry(order_book_ids=order_book_ids, date=date, source=source)
+    return get_client().get_instrument_industry(
+        order_book_ids=order_book_ids, source=source, level=level, date=date, market=market)
 
 @export_as_api
 def get_index_weights(
-    index_code: str = "000300.XSHG",
+    index_code: str,
     date: Union[str, datetime.datetime] = None,
-    market: str = "cn",
+    market: str = None,
 ) -> pd.DataFrame:
     """
     获取指数在**任意交易日**的成分股及其权重

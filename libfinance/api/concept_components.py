@@ -1,12 +1,16 @@
 import datetime
+import warnings
 from typing import Any, Union, Optional, Iterable, Dict, List, Sequence, Iterable
 
 import pandas as pd
 from libfinance.client import get_client
-from libfinance.utils.decorators import export_as_api, ttl_cache, compatible_with_parm
+from libfinance.utils.cache import versioned_cache
+from libfinance.utils.compat import renamed
+from libfinance.utils.decorators import export_as_api
 
 @export_as_api
-def get_concept_meta(source:str="THS") -> pd.DataFrame:
+@versioned_cache
+def get_concept_meta(source: str = "THS", fields=None, market=None) -> pd.DataFrame:
     """
     获取某个数据源的概念分类的元信息
     
@@ -34,14 +38,18 @@ def get_concept_meta(source:str="THS") -> pd.DataFrame:
         405  2000-01-01        PM2.5              NaN              300134    THS
         406  2000-01-01          石墨烯           NaN              300337    THS
     """   
-    return get_client().get_concept_meta(source=source)
+    return get_client().get_concept_meta(source=source, fields=fields, market=market)
 
 @export_as_api
-def get_concept_weights(concept_ids:list, date=None, source:str="THS") -> pd.DataFrame:
+def get_concept_weights(concept_ids: list, as_of=None, source: str = "THS",
+                        market=None, **kwargs) -> pd.DataFrame:
     """
     获取某一个概念的成分股及其权重数据
     :param concept_ids: 概念id的列表
+    :param as_of: 以该时点**已知**的成分为准；省略则取最新。旧名 ``date`` 仍可用，
+                  但会发 DeprecationWarning。
     :param source: 来源(当前仅支持的同花顺(THS)这一来源的概念分类)
+    :param market: 市场，省略则用服务端默认
         
     :example:
         
@@ -81,4 +89,32 @@ def get_concept_weights(concept_ids:list, date=None, source:str="THS") -> pd.Dat
         
         [25 rows x 7 columns]
     """
-    return get_client().get_concept_weights(concept_ids=concept_ids, date=date, source=source)
+    kwargs = renamed("date", "as_of", dict(kwargs, as_of=as_of), "get_concept_weights")
+    _warn_unknown_concepts(concept_ids, source)
+    return get_client().get_concept_weights(
+        concept_ids=concept_ids, source=source, market=market, **kwargs)
+
+
+def _warn_unknown_concepts(concept_ids, source):
+    """概念 id 不存在时给一句警告，而不是静默返回空表。
+
+    服务端对没见过的 id 只是返回 0 行 —— 从调用方看，"这个概念今天没有成分"和"这个
+    id 根本不存在"长得一模一样。example 里那个 886074 就是失效 id，一直静默返回空。
+
+    元信息表是版本化缓存的（get_concept_meta），所以这次检查不额外产生网络往返。
+    查不到元信息时直接放行 —— 校验不该让查询失败。
+    """
+    try:
+        meta = get_concept_meta(source=source)
+        known = set(meta["concept_id"].astype(str))
+    except Exception:
+        return
+    if not known:
+        return
+    missing = [str(c) for c in concept_ids if str(c) not in known]
+    if missing:
+        warnings.warn(
+            "未知的 concept_id: {}（source={!r}）。用 get_concept_meta() 查可用的概念。"
+            .format(", ".join(missing[:5]), source),
+            stacklevel=3,
+        )
