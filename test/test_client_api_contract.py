@@ -130,3 +130,49 @@ def test_get_price_resolves_codes_as_of_the_window_end_not_today():
 
     for func in (ensure_instruments, all_cached_obid_to_type_mapping, _get_instrument):
         assert "as_of" in inspect.signature(func).parameters, func.__name__
+
+
+# ---------------------------------------------------------------------------
+# 面板形状：两个市场给身份的方式不同，返回形状必须一样
+# ---------------------------------------------------------------------------
+def _panel(rows):
+    pd = pytest.importorskip("pandas")
+    from libfinance.api.get_price import _to_panel
+
+    return _to_panel(pd.DataFrame(rows))
+
+
+@pytest.mark.parametrize("namespace,code,expected", [
+    ("XSHG", "600000", "600000.XSHG"),
+    ("US", "AAPL", "AAPL.US"),
+])
+def test_both_markets_become_the_documented_panel(namespace, code, expected):
+    """契约形状：`symbol_namespace` + `trading_code`，两个市场逐列同形。"""
+    out = _panel([{"symbol_namespace": namespace, "trading_code": code,
+                   "session_date": "2026-08-17", "close": 1.1}])
+    assert list(out.index.names) == ["order_book_id", "datetime"]
+    assert out.index.get_level_values("order_book_id").tolist() == [expected]
+    assert "session_date" not in out.columns
+
+
+def test_the_previous_cn_column_name_still_composes():
+    """`exchange_id` 是 CN 上一版的列名：镜像回滚到旧 libfinanced 时还会出现。"""
+    out = _panel([{"exchange_id": "XSHG", "trading_code": "600000",
+                   "session_date": "2026-08-17", "close": 1.1}])
+    assert out.index.get_level_values("order_book_id").tolist() == ["600000.XSHG"]
+
+
+def test_a_composed_order_book_id_is_taken_as_is():
+    """US 统一前给的就是整的一列，仍要拼成同一个面板。"""
+    out = _panel([{"order_book_id": "AAPL.US", "session_date": "2026-08-17",
+                   "close": 305.59}])
+    assert list(out.index.names) == ["order_book_id", "datetime"]
+    assert out.index.get_level_values("order_book_id").tolist() == ["AAPL.US"]
+
+
+def test_an_unrecognised_shape_is_still_returned_as_is():
+    """服务端换了形状就原样返回，让调用方看见真实的列，而不是在这里猜。"""
+    pd = pytest.importorskip("pandas")
+    out = _panel([{"something_else": 1, "close": 2.0}])
+    assert isinstance(out, pd.DataFrame)
+    assert "close" in out.columns

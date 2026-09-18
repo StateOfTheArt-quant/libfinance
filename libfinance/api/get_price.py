@@ -370,20 +370,35 @@ def get_price(
 def _to_panel(frame):
     """把 daybar 的扁平列还原成本函数文档里承诺的形状。
 
-    上游按 ``exchange_id`` + ``trading_code`` + ``session_date`` 三列组织（那是 daybar
-    artifact 的 KEY_COLUMNS），而本接口对外一直是 ``(order_book_id, datetime)``
-    的 MultiIndex。拼接在这里做，不要求调用方自己拼。
+    本接口对外一直是 ``(order_book_id, datetime)`` 的 MultiIndex。上游给的是符号规范
+    §4.1 那个形式 ``<code>.<namespace>`` 的两列 —— ``symbol_namespace`` +
+    ``trading_code``，两个市场逐列同形：``XSHG`` + ``600000``、``US`` + ``AAPL``。
+    拼接在这里做，不要求调用方自己拼。
+
+    两条兼容分支，各有各的由来：``exchange_id`` 是 CN 上一版的列名（服务端镜像回滚到
+    旧 libfinanced 时还会出现）；``order_book_id`` 是出参改名的产物，US 统一前给的就
+    是它。真正不认识的形状原样返回 —— 那时候该让调用方看见真实的列，而不是在这里猜。
     """
     if frame is None or not isinstance(frame, pd.DataFrame) or frame.empty:
         return frame
-    keys = {"exchange_id", "trading_code", "session_date"}
-    if not keys.issubset(frame.columns):
+    if "session_date" not in frame.columns:
         # 服务端换了形状——原样返回，让调用方看见真实的列，而不是在这里猜。
         return frame
-    frame = frame.copy()
-    frame["order_book_id"] = (
-        frame["trading_code"].astype(str) + "." + frame["exchange_id"].astype(str)
+    # 契约形状：`symbol_namespace` + `trading_code`，两个市场逐列同形。
+    # `exchange_id` 是 CN 上一版的列名，服务端镜像回滚到旧 libfinanced 时还会出现。
+    namespace = next(
+        (c for c in ("symbol_namespace", "exchange_id") if c in frame.columns), None
     )
+    if namespace is not None and "trading_code" in frame.columns:
+        frame = frame.copy()
+        frame["order_book_id"] = (
+            frame["trading_code"].astype(str) + "." + frame[namespace].astype(str)
+        )
+        frame = frame.drop(columns=[namespace, "trading_code"])
+    elif "order_book_id" in frame.columns:
+        frame = frame.copy()
+    else:
+        return frame
     frame["datetime"] = pd.to_datetime(frame["session_date"])
-    frame = frame.drop(columns=["exchange_id", "trading_code", "session_date"])
+    frame = frame.drop(columns=["session_date"])
     return frame.set_index(["order_book_id", "datetime"]).sort_index()
