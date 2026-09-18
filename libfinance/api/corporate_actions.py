@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""公司行动：分红、拆股、配股。
+"""公司行动：分红、拆股、配股、分拆。
 
-这三者是除权因子的**成因** —— 价格出现跳空时，答案在这里。三个接口的参数与返回
+这四者是除权因子的**成因** —— 价格出现跳空时，答案在这里。四个接口的参数与返回
 形状完全一致，所以共用同一套参数处理。
+
+``get_spinoffs`` 只有美股有：A 股的分拆上市走另一套流程，不产生这种除权事件，
+所以它不带 ``market`` 默认值之外的特殊处理 —— 传 ``market="cn"`` 会从服务端得到
+"未绑定"，那不是"这段时间没有分拆"。
 """
 from typing import List, Optional, Union
 
@@ -76,3 +80,22 @@ def get_allotments(
 ) -> pd.DataFrame:
     """获取配股事件。参数含义同 :func:`get_dividends`。"""
     return get_client().get_allotments(**_args(order_book_ids, start_date, end_date, fields, as_of, market))
+
+
+@export_as_api
+def get_spinoffs(
+    order_book_ids: Union[str, List[str]],
+    start_date=None, end_date=None,
+    fields: Optional[Union[str, List[str]]] = None,
+    as_of=None, market: Optional[str] = None,
+) -> pd.DataFrame:
+    """获取分拆事件（**仅美股**）。参数含义同 :func:`get_dividends`。
+
+    母公司股东按比例获得子公司股份。除权要的是钱，而子公司在除权当日往往还没有独立
+    市价，所以 ``valuation_price`` 是估出来的 —— ``valuation_basis`` 与
+    ``valuation_source`` 说的就是按哪种口径估的。这三列要一起看：只取价格不看口径，
+    等于替数据假定了一个它没说的东西。``d_spin_per_share`` 是折算到每股的分拆价值。
+
+    A 股不产生这种事件，``market="cn"`` 会得到"未绑定"而不是空表。
+    """
+    return get_client().get_spinoffs(**_args(order_book_ids, start_date, end_date, fields, as_of, market))
