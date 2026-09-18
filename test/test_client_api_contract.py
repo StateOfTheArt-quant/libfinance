@@ -130,3 +130,42 @@ def test_get_price_resolves_codes_as_of_the_window_end_not_today():
 
     for func in (ensure_instruments, all_cached_obid_to_type_mapping, _get_instrument):
         assert "as_of" in inspect.signature(func).parameters, func.__name__
+
+
+# ---------------------------------------------------------------------------
+# 面板形状：两个市场给身份的方式不同，返回形状必须一样
+# ---------------------------------------------------------------------------
+def _panel(rows):
+    pd = pytest.importorskip("pandas")
+    from libfinance.api.get_price import _to_panel
+
+    return _to_panel(pd.DataFrame(rows))
+
+
+def test_cn_rows_become_the_documented_panel():
+    """CN 的身份是两片，拼成 `600000.XSHG`。"""
+    out = _panel([{"exchange_id": "XSHG", "trading_code": "600000",
+                   "session_date": "2026-08-17", "close": 1.1}])
+    assert list(out.index.names) == ["order_book_id", "datetime"]
+    assert out.index.get_level_values("order_book_id").tolist() == ["600000.XSHG"]
+
+
+def test_us_rows_become_the_same_panel():
+    """US 不带 exchange_id / trading_code —— ticker 全国唯一，转板不改身份。
+
+    只认 CN 那一套时，这一行会走进"形状不认识就原样返回"的降级分支：同一个函数对 CN
+    返回 MultiIndex、对 US 返回扁平表，而文档只承诺了一种。
+    """
+    out = _panel([{"order_book_id": "AAPL.US", "session_date": "2026-08-17",
+                   "close": 305.59}])
+    assert list(out.index.names) == ["order_book_id", "datetime"]
+    assert out.index.get_level_values("order_book_id").tolist() == ["AAPL.US"]
+    assert "session_date" not in out.columns
+
+
+def test_an_unrecognised_shape_is_still_returned_as_is():
+    """服务端换了形状就原样返回，让调用方看见真实的列，而不是在这里猜。"""
+    pd = pytest.importorskip("pandas")
+    out = _panel([{"something_else": 1, "close": 2.0}])
+    assert isinstance(out, pd.DataFrame)
+    assert "close" in out.columns

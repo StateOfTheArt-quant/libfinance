@@ -370,20 +370,34 @@ def get_price(
 def _to_panel(frame):
     """把 daybar 的扁平列还原成本函数文档里承诺的形状。
 
-    上游按 ``exchange_id`` + ``trading_code`` + ``session_date`` 三列组织（那是 daybar
-    artifact 的 KEY_COLUMNS），而本接口对外一直是 ``(order_book_id, datetime)``
-    的 MultiIndex。拼接在这里做，不要求调用方自己拼。
+    本接口对外一直是 ``(order_book_id, datetime)`` 的 MultiIndex，而上游给身份的方式
+    **两个市场不一样**：
+
+    * CN 按 ``exchange_id`` + ``trading_code`` 两列组织（daybar artifact 的
+      KEY_COLUMNS），``600000`` + ``XSHG`` 在这里拼成 ``600000.XSHG``；
+    * US 不带这两列 —— ticker 全国唯一、转板不改身份，所以那边直接给整的
+      ``order_book_id``（服务端把 artifact 的 ``symbol`` 改名而来），已经是 ``AAPL.US``。
+
+    只认 CN 那一套的后果不是报错，是 ``market="us"`` 悄悄走进下面的降级分支，于是
+    同一个函数对 CN 返回 MultiIndex、对 US 返回扁平表。调用方拿到的形状取决于查的是
+    哪个市场，而文档只承诺了一种。
     """
     if frame is None or not isinstance(frame, pd.DataFrame) or frame.empty:
         return frame
-    keys = {"exchange_id", "trading_code", "session_date"}
-    if not keys.issubset(frame.columns):
+    if "session_date" not in frame.columns:
         # 服务端换了形状——原样返回，让调用方看见真实的列，而不是在这里猜。
         return frame
-    frame = frame.copy()
-    frame["order_book_id"] = (
-        frame["trading_code"].astype(str) + "." + frame["exchange_id"].astype(str)
-    )
+    parts = {"exchange_id", "trading_code"}
+    if parts.issubset(frame.columns):
+        frame = frame.copy()
+        frame["order_book_id"] = (
+            frame["trading_code"].astype(str) + "." + frame["exchange_id"].astype(str)
+        )
+        frame = frame.drop(columns=["exchange_id", "trading_code"])
+    elif "order_book_id" in frame.columns:
+        frame = frame.copy()
+    else:
+        return frame
     frame["datetime"] = pd.to_datetime(frame["session_date"])
-    frame = frame.drop(columns=["exchange_id", "trading_code", "session_date"])
+    frame = frame.drop(columns=["session_date"])
     return frame.set_index(["order_book_id", "datetime"]).sort_index()
