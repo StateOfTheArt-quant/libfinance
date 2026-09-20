@@ -8,7 +8,7 @@ from .client import init_client
 
 __all__ = ["__version__", "init_client"]
 
-__version__ = "0.0.1"
+__version__ = "0.0.6"
 #from libfinance.api import *
 def __go():
     import sys

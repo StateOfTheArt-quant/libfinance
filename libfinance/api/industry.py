@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""行业分类。
+r"""行业分类。
 
-``get_instrument_industry``（按证券查行业）在 index_components 里，这里是反向的两个：
+``get_instrument_industry``\ （按证券查行业）在 index_components 里，这里是反向的两个：
 按行业查成分、以及取整张分类表。
 """
 from typing import Optional
@@ -24,10 +24,10 @@ def get_industry(
     date=None,
     market: Optional[str] = None,
 ):
-    """获取某个行业下的全部证券。
+    r"""获取某个行业下的全部证券。
 
     :param industry: 行业代码或名称
-    :param source: 分类来源，默认 ``"sw"``（申万）
+    :param source: 分类来源，默认 ``"sw"``\ （申万）
     :param date: 以该日的分类为准，省略则取最新
     :param market: 市场，省略则用服务端默认
     """
@@ -45,9 +45,9 @@ def get_industry_mapping(
     date=None,
     market: Optional[str] = None,
 ) -> pd.DataFrame:
-    """获取整张行业分类表（行业代码、名称、层级）。
+    r"""获取整张行业分类表（行业代码、名称、层级）。
 
-    :param source: 分类来源，默认 ``"sw"``（申万）
+    :param source: 分类来源，默认 ``"sw"``\ （申万）
     :param date: 以该日的分类为准，省略则取最新
     :param market: 市场，省略则用服务端默认
     """

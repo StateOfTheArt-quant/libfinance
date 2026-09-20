@@ -108,13 +108,13 @@ def ensure_date_range(start_date, end_date, delta=relativedelta(months=3)):
 
 
 def ensure_instruments(order_book_ids, type=None, as_of=None):
-    """代码 -> Instrument 列表。
+    r"""代码 -> Instrument 列表。
 
-    ``as_of`` 是**数据时间**（要哪一段的数据），按它解析代码表 —— 与服务端
+    ``as_of`` 是\ **数据时间**\ （要哪一段的数据），按它解析代码表 —— 与服务端
     ``compose/price.py`` 同口径。不传就按今天的表解析。
 
     不带 as_of 时，已退市的证券在今天的表里不存在，这里会把它当成"无效代码"整个丢掉，
-    于是 ``get_price(['600837.XSHG'], '2022-09-01', '2022-09-20')`` 在**客户端**就被
+    于是 ``get_price(['600837.XSHG'], '2022-09-01', '2022-09-20')`` 在\ **客户端**\ 就被
     拒了 —— 哪怕服务端已经能按 2022 年的表解析它。
     """
     order_book_ids = ensure_list_of_string(order_book_ids)

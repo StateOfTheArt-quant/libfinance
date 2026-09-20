@@ -398,11 +398,11 @@ class RpcClient:
 
 
 # 默认懒连接参数；可在 import libfinance 之后、第一次调 api 之前显式 init_client(...) 覆盖
-_DEFAULT_HOST = "0.0.0.0"
+_DEFAULT_HOST = "libfinance.tech"
 _DEFAULT_PORT = 8080
 
 # 初始化函数
-def init_client(host: str = "127.0.0.1", port: int = 8080):
+def init_client(host: str = _DEFAULT_HOST, port: int = _DEFAULT_PORT):
     global _CLIENT
     if _CLIENT is None:
         _CLIENT = RpcClient(host, port)

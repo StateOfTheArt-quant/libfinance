@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""财务数据：PIT 财报与衍生因子。
+r"""财务数据：PIT 财报与衍生因子。
 
-两个接口都按**季度**取数，并且都带 ``as_of``：财报会被追溯修订，``as_of`` 决定用
+两个接口都按\ **季度**\ 取数，并且都带 ``as_of``\ ：财报会被追溯修订，\ ``as_of`` 决定用
 "当时能看到的"还是"现在最新的"那一版。做回测时这个参数决定了有没有前视偏差。
 """
 from typing import List, Optional, Union
@@ -36,15 +36,15 @@ def get_pit_financials_ex(
     statements: str = "latest",
     market: Optional[str] = None,
 ) -> pd.DataFrame:
-    """获取 point-in-time 财务数据。
+    r"""获取 point-in-time 财务数据。
 
     :param order_book_ids: 单个代码或代码列表
     :param fields: 需要的财务字段
     :param start_quarter: 起始季度，如 ``"2024q1"``
     :param end_quarter: 结束季度
-    :param as_of: 以该时点**已知**的版本为准；省略则取最新。回测里应当传入，否则会
+    :param as_of: 以该时点\ **已知**\ 的版本为准；省略则取最新。回测里应当传入，否则会
                   用到当时还没发布的修订值。
-    :param statements: ``"latest"``（每个季度取最新那一版）或 ``"all"``（返回全部修订版本）
+    :param statements: ``"latest"``\ （每个季度取最新那一版）或 ``"all"``\ （返回全部修订版本）
     :param market: 市场，省略则用服务端默认
     """
     ids = ensure_list_of_string(order_book_ids, "order_book_ids")

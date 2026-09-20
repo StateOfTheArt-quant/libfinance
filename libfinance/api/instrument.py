@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""证券基础信息。
+r"""证券基础信息。
 
-对外契约：``order_book_id`` 是代码（``600000.XSHG``），``symbol`` 是名称（浦发银行）
+对外契约：\ ``order_book_id`` 是代码（\ ``600000.XSHG``\ ），\ ``symbol`` 是名称（浦发银行）
 —— 与 rqdata 一致。
 
-翻译在**服务端的能力层**做，不在这里：libfinanced 内部按 instrument spec 用
-``symbol`` 表示代码、``display_name`` 表示名称，那套三层身份模型不动；服务端在对外
+翻译在\ **服务端的能力层**\ 做，不在这里：libfinanced 内部按 instrument spec 用
+``symbol`` 表示代码、\ ``display_name`` 表示名称，那套三层身份模型不动；服务端在对外
 边界上改名。这样直连 RPC 的人和用本客户端的人看到同一套名字。
 """
 from typing import List, Optional, Union
@@ -136,11 +136,11 @@ def all_instruments(
     market: Optional[str] = None,
     cached: bool = True,
 ) -> pd.DataFrame:
-    """获取全部证券的基础信息。
+    r"""获取全部证券的基础信息。
 
-    :param type: ``"CS"``（股票）或 ``"INDX"``（指数），也接受 ``"STOCK"`` / ``"INDEX"``
+    :param type: ``"CS"``\ （股票）或 ``"INDX"``\ （指数），也接受 ``"STOCK"`` / ``"INDEX"``
                  这两个别名；可以是列表。省略则返回全部。
-    :param date: 以该日为准的快照（服务端参数名是 ``as_of``）。省略则取最新。
+    :param date: 以该日为准的快照（服务端参数名是 ``as_of``\ ）。省略则取最新。
     :param market: 市场，省略则用服务端默认。
     :param cached: 是否使用本地 3 小时缓存。基础信息变动很慢，默认开。
     :returns: 以 ``order_book_id`` 打头的 DataFrame。
@@ -158,13 +158,13 @@ def instruments(
     date=None,
     market: Optional[str] = None,
 ):
-    """获取指定证券的详细信息。
+    r"""获取指定证券的详细信息。
 
-    :param order_book_ids: 单个代码或代码列表，如 ``"000001.XSHE"``。
-    :param date: 以该日为准的快照（服务端参数名是 ``as_of``）。
+    :param order_book_ids: 单个代码或代码列表，如 ``"000001.XSHE"``\ 。
+    :param date: 以该日为准的快照（服务端参数名是 ``as_of``\ ）。
     :param market: 市场，省略则用服务端默认。
-    :returns: 传入单个代码时返回一个 :class:`Instrument`（查不到则返回 ``None``）；
-              传入列表时返回 :class:`Instrument` 列表，查不到的代码会被跳过。
+    :returns: 传入单个代码时返回一个 :class:`~libfinance.api.instrument.Instrument`\ （查不到则返回 ``None``\ ）；
+              传入列表时返回 :class:`~libfinance.api.instrument.Instrument` 列表，查不到的代码会被跳过。
     """
     single = isinstance(order_book_ids, str)
     ids = ensure_list_of_string(order_book_ids, "order_book_ids")

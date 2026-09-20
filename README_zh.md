@@ -1,70 +1,88 @@
 # libfinance
+
 \[ [English](README.md) | 中文 \]
 
-`libfinance`是一个python函数库，用以更方便的获取金融数据。她的目标是为学术研究人员，研究者，开发者提供研究环境和生产环境下的高质量的金融数据。
+`libfinance` 为量化研究者提供 A 股与美股的历史数据：行情、证券主数据、交易日历、
+公司行动、财务、股本、行业分类、指数与概念成分，以及实时行情订阅。
 
-# 安装
+## 安装
 
-方法1: 通过python的包管理器pip的方式安装libfinance
-
-``` {.sourceCode .bash}
+```bash
 $ pip install libfinance
 ```
 
-方法2: 源代码的安装(以开发者的模式)
-~~~
-git clone https://github.com/StateOfTheArt-quant/libfinance.git
-cd libfinance
-pip install -e .
-~~~
+或从源码安装：
 
-# quick-start
+```bash
+$ git clone https://github.com/StateOfTheArt-quant/libfinance.git
+$ cd libfinance
+$ pip install -e .
+```
 
-~~~
+## 快速开始
+
+`libfinance` 是一个客户端，数据在服务端——所以第一次查询之前要先指明服务地址：
+
+```python
+import libfinance
 from libfinance import get_trading_dates, get_price
 
-trading_dates = get_trading_dates(start_date="2023-12-25", end_date="2024-01-11")
+libfinance.init_client(host="libfinance.tech", port=8080)
+
+trading_dates = get_trading_dates(start_date="2024-05-11", end_date="2024-05-20")
 print(trading_dates)
 
-
-DatetimeIndex(['2023-12-25', '2023-12-26', '2023-12-27', '2023-12-28',
-               '2023-12-29', '2024-01-02', '2024-01-03', '2024-01-04',
-               '2024-01-05', '2024-01-08', '2024-01-09', '2024-01-10',
-               '2024-01-11'],
-              dtype='datetime64[ns]', freq=None)
-              
-
-
-
-data = get_price(order_book_ids=["000001.XSHE","600000.XSHG"], start_date="2024-03-01", end_date="2024-03-11")
+data = get_price(["000001.XSHE", "600000.XSHG"], "2024-03-01", "2024-03-06")
 print(data)
-        
-                           open   high    low  close       volume
-order_book_id datetime                                           
-000001.XSHE   2024-03-01  10.59  10.60  10.43  10.49  182810290.0
-              2024-03-04  10.45  10.50  10.32  10.33  165592954.0
-              2024-03-05  10.30  10.47  10.26  10.43  181731907.0
-              2024-03-06  10.40  10.45  10.33  10.33  134564016.0
-              2024-03-07  10.33  10.64  10.33  10.38  201616589.0
-              2024-03-08  10.35  10.44  10.30  10.38  111397428.0
-              2024-03-11  10.38  10.47  10.34  10.47  121067298.0
-600000.XSHG   2024-03-01   7.13   7.16   7.10   7.11   29431801.0
-              2024-03-04   7.12   7.12   7.05   7.07   27855963.0
-              2024-03-05   7.05   7.18   7.04   7.16   41756232.0
-              2024-03-06   7.17   7.22   7.12   7.12   25918749.0
-              2024-03-07   7.12   7.20   7.11   7.14   24690348.0
-              2024-03-08   7.12   7.17   7.11   7.12   19861794.0
-              2024-03-11   7.13   7.17   7.06   7.11   26195498.0
-~~~
+```
 
-# 文档
+```text
+DatetimeIndex(['2024-05-13', '2024-05-14', '2024-05-15', '2024-05-16',
+               '2024-05-17', '2024-05-20'],
+              dtype='datetime64[ns]', freq=None)
 
-更多的信息以及函数说明及用例见 [Documentation](https://libfinance.readthedocs.io/zh/latest/)
+                          open      high       low     close        volume      turnover
+order_book_id datetime
+000001.XSHE   2024-03-01  8.897049  8.905450  8.762627  8.813035  2.175959e+08  1.917689e+09
+              2024-03-04  8.779430  8.821436  8.670212  8.678613  1.971024e+08  1.719563e+09
+              2024-03-05  8.653409  8.796232  8.619804  8.762627  2.163123e+08  1.889144e+09
+              2024-03-06  8.737423  8.779430  8.678613  8.678613  1.601692e+08  1.396940e+09
+600000.XSHG   2024-03-01  6.373316  6.400132  6.346500  6.355438  3.292615e+07  2.094740e+08
+              2024-03-04  6.364377  6.364377  6.301806  6.319683  3.116322e+07  1.971570e+08
+              2024-03-05  6.301806  6.418009  6.292867  6.400132  4.671382e+07  2.976761e+08
+              2024-03-06  6.409071  6.453764  6.364377  6.364377  2.899600e+07  1.858478e+08
+```
 
+> **上面这些不是当时的成交价。** `adjust_type` 默认是 `"pre"`（前复权）。
+> `000001.XSHE` 在 2024-03-01 的实际成交价是 10.49，不是 8.81。要真实成交价请传
+> `adjust_type="none"`——见
+> [行情与复权](https://libfinance.readthedocs.io/zh/latest/data/price.html)。
 
-# 加入我们的社区
-通过微信公众号-群入口的方式加入[libfinance](https://github.com/StateOfTheArt-quant/libfinance)获取更多以及及时的信息:
+## 文档
+
+- [中文](https://libfinance.readthedocs.io/zh/latest/)
+- [English](https://libfinance.readthedocs.io/en/latest/)
+
+在依赖这些数字之前，建议先读三篇：
+
+| 主题 | 为什么 |
+| --- | --- |
+| [行情与复权](https://libfinance.readthedocs.io/zh/latest/data/price.html) | 默认是前复权；成交量也被复权，成交额不被 |
+| [数据更新到哪一天](https://libfinance.readthedocs.io/zh/latest/data/freshness.html) | `end_date` 不能写今天 |
+| [财报修订与 as_of](https://libfinance.readthedocs.io/zh/latest/data/point_in_time.html) | 财报会被追溯修订，回测必须传 `as_of` |
+
+## 示例
+
+可直接运行的脚本在 [`example/`](example/)。默认连公网服务，本地自建时用环境变量覆盖：
+
+```bash
+$ LIBFINANCE_HOST=127.0.0.1 python example/get_price.py
+```
+
+## 社区
+
+关注公众号获取更新：
 
 <div>
-    <img alt="ds" src="/docs/source/_static/img/code.png" width="600" height="220">
+    <img alt="qr" src="/docs/_shared/_static/img/code.png" width="600" height="220">
 </div>
