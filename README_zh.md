@@ -51,20 +51,20 @@ order_book_id datetime
 > **上面这些不是当时的成交价。** `adjust_type` 默认是 `"pre"`（前复权）。
 > `000001.XSHE` 在 2024-03-01 的实际成交价是 10.49，不是 8.81。要真实成交价请传
 > `adjust_type="none"`——见
-> [行情与复权](https://libfinance.readthedocs.io/zh/latest/data/price.html)。
+> [行情与复权](https://libfinance.readthedocs.io/zh-cn/latest/data/price.html)。
 
 ## 文档
 
-- [中文](https://libfinance.readthedocs.io/zh/latest/)
+- [中文](https://libfinance.readthedocs.io/zh-cn/latest/)
 - [English](https://libfinance.readthedocs.io/en/latest/)
 
 在依赖这些数字之前，建议先读三篇：
 
 | 主题 | 为什么 |
 | --- | --- |
-| [行情与复权](https://libfinance.readthedocs.io/zh/latest/data/price.html) | 默认是前复权；成交量也被复权，成交额不被 |
-| [数据更新到哪一天](https://libfinance.readthedocs.io/zh/latest/data/freshness.html) | `end_date` 不能写今天 |
-| [财报修订与 as_of](https://libfinance.readthedocs.io/zh/latest/data/point_in_time.html) | 财报会被追溯修订，回测必须传 `as_of` |
+| [行情与复权](https://libfinance.readthedocs.io/zh-cn/latest/data/price.html) | 默认是前复权；成交量也被复权，成交额不被 |
+| [数据更新到哪一天](https://libfinance.readthedocs.io/zh-cn/latest/data/freshness.html) | `end_date` 不能写今天 |
+| [财报修订与 as_of](https://libfinance.readthedocs.io/zh-cn/latest/data/point_in_time.html) | 财报会被追溯修订，回测必须传 `as_of` |
 
 ## 示例
 

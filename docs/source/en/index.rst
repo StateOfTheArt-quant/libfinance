@@ -2,7 +2,7 @@
 libfinance
 ==========
 
-\[ English | `中文 <https://libfinance.readthedocs.io/zh/latest/>`_ \]
+\[ English | `中文 <https://libfinance.readthedocs.io/zh-cn/latest/>`_ \]
 
 ``libfinance`` gives quantitative researchers historical data for Chinese A-share
 and US equity markets: prices, security master data, trading calendars, corporate
