@@ -1,13 +1,22 @@
 # Read the Docs 配置 —— **中文文档**（父项目）
 #
-# 中英文是两棵独立的源码树，Read the Docs 要求一个语言一个项目，所以这里有两份配置：
+# 中英文是两棵独立的源码树，而 Read the Docs 要求一个语言一个项目，所以有两份配置：
 #
-#   .readthedocs.yaml      中文，项目语言设为 zh-cn（父项目，用默认路径）
-#   .readthedocs.en.yaml   英文，项目语言设为 en
+#   .readthedocs.yaml                   中文，项目语言设为 zh-cn
+#   docs/source/en/.readthedocs.yaml    英文，项目语言设为 en
 #
-# 英文项目要在它的 Admin → Settings → "Build configuration file" 里把路径指向
-# .readthedocs.en.yaml，再到中文项目的 Admin → Translations 里把它挂为翻译项目；
-# 挂上之后 flyout 菜单里就有语言切换。
+# **文件名必须正好是 `.readthedocs.yaml`**，只能换目录。RTD 的表单校验
+# （projects/validators.py 的 validate_build_config_file）里
+# valid_filenames = [".readthedocs.yaml"]，路径要么等于它、要么以 /.readthedocs.yaml
+# 结尾，其余一律拒绝。所以第二份配置是靠**放在英文树目录下**来区分的，
+# 不能叫 .readthedocs.en.yaml。
+#
+# 英文项目要在它的 Admin → Settings → "Build configuration file" 里把路径填成
+# docs/source/en/.readthedocs.yaml，再到中文项目的 Admin → Translations 里把它挂为
+# 翻译项目；挂上之后 flyout 菜单里就有语言切换。
+#
+# 注意：配置文件里的路径**一律相对于仓库根目录**，与配置文件本身放在哪无关——
+# 所以英文那份里的 sphinx.configuration 同样写 docs/source/en/conf.py。
 version: 2
 
 build:

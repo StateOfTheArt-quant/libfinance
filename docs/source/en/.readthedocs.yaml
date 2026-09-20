@@ -1,0 +1,31 @@
+# Read the Docs configuration — **English docs**
+#
+# Read the Docs requires one project per language, and the config filename must be
+# exactly `.readthedocs.yaml` (only the directory may differ), so this second
+# config lives in the English tree rather than being named `.readthedocs.en.yaml`.
+#
+# The English project must point at it under
+# Admin → Settings → "Build configuration file":
+#
+#     docs/source/en/.readthedocs.yaml
+#
+# Then attach it as a translation of the Chinese project under
+# Admin → Translations there.
+#
+# Note: paths inside this file are relative to the **repository root**, not to the
+# directory holding this file.
+version: 2
+
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.12"
+
+sphinx:
+  configuration: docs/source/en/conf.py
+
+python:
+  install:
+    - requirements: docs/requirements.txt
+    - method: pip
+      path: .
