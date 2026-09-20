@@ -1,13 +1,8 @@
 ==========
-连接与异常
+异常与缓存
 ==========
 
 ..  currentmodule:: libfinance
-
-连接
-====
-
-..  autofunction:: init_client
 
 异常
 ====

@@ -14,15 +14,6 @@ to real securities, or the final step comes back mysteriously empty.
     Every output below is a real run. Dates and values depend on how current your
     service is — **do not copy the dates**.
 
-Setup
-=====
-
-.. code-block:: python
-
-    import libfinance
-
-    libfinance.init_client(host="libfinance.tech", port=8080)
-
 Step 1: sessions
 ================
 

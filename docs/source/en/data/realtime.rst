@@ -19,8 +19,8 @@ There are two paths to live data, for different purposes:
         - Continuously receiving updates as they happen
 
 The two are **independent**: subscriptions go through a market data gateway on a
-different address and port from the service :func:`~libfinance.init_client`
-connects to. They merely share the
+different address and port from the service that serves historical data. They
+merely share the
 :class:`~libfinance.subscribe.md_protocol.Quote` type.
 
 Snapshot queries

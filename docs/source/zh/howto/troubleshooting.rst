@@ -29,8 +29,7 @@
         - 换一个区间
     *   - 超出了可查的历史区间
         - 看有没有"可查区间起点是…"的警告
-        - 把 ``start_date`` 调到警告给出的边界之内，见
-          :doc:`../getting_started/connect`
+        - 把 ``start_date`` 调到警告给出的边界之内，见 :doc:`../data/freshness`
     *   - 这个市场没有这类数据
         - 换成明确支持的市场试一次
         - 见 :doc:`us_market` 的可用性表
@@ -74,9 +73,9 @@
 
     *   - 报错
         - 含义与处理
-    *   - ``Client auto-connect to ... failed``
-        - 还没连上服务。在第一次取数\ **之前**\ 调
-          :func:`~libfinance.init_client`\ ，见 :doc:`../getting_started/connect`
+    *   - ``Client auto-connect to ... failed`` / ``ConnectionError``
+        - 连不上数据服务。先确认网络可达，再联系服务管理员——服务地址是部署时配好的，
+          不需要你在代码里指定
     *   - ``... is outside coverage ...; a date this release does not reach is
           not a date with no trading``
         - ``end_date`` 超出了行情覆盖。用
@@ -95,6 +94,10 @@
         - 这个接口在该市场没有数据，见 :doc:`us_market`
     *   - ``AmbiguousMarketError: ... 绑定了多个市场``
         - 需要显式传 ``market=``
+    *   - ``RpcError(code=1401): 今日流量已用尽``
+        - 服务端按\ **响应字节数**\ 计当日额度，不是按调用次数——拉一次全市场证券表
+          比查一只票十天贵几百倍。报错里会写明已用量、上限和重置时间。等重置，或者
+          缩小查询范围（少取几只、短一点的区间、用 ``fields`` 只要需要的列）
     *   - ``RpcError(code=1201)`` / ``(code=1202)``
         - 服务端拒绝了这次调用的权限，联系服务管理员
     *   - ``Array type doesn't match type of values set``

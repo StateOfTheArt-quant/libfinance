@@ -21,13 +21,8 @@ $ pip install -e .
 
 ## 快速开始
 
-`libfinance` 是一个客户端，数据在服务端——所以第一次查询之前要先指明服务地址：
-
 ```python
-import libfinance
 from libfinance import get_trading_dates, get_price
-
-libfinance.init_client(host="libfinance.tech", port=8080)
 
 trading_dates = get_trading_dates(start_date="2024-05-11", end_date="2024-05-20")
 print(trading_dates)
@@ -73,11 +68,7 @@ order_book_id datetime
 
 ## 示例
 
-可直接运行的脚本在 [`example/`](example/)。默认连公网服务，本地自建时用环境变量覆盖：
-
-```bash
-$ LIBFINANCE_HOST=127.0.0.1 python example/get_price.py
-```
+可直接运行的脚本在 [`example/`](example/)。
 
 ## 社区
 

@@ -1,12 +1,3 @@
-import os
-
-import libfinance
-
-# 默认连公网服务；本地自建时用环境变量覆盖：
-#   LIBFINANCE_HOST=127.0.0.1 python example/application/project1_concept_and_leading_stocks/concept_returns.py
-libfinance.init_client(host=os.environ.get("LIBFINANCE_HOST", "libfinance.tech"),
-                       port=int(os.environ.get("LIBFINANCE_PORT", "8080")))
-
 # 数据接口：获取概念成分股、行情数据
 from libfinance import get_concept_weights, get_price
 import matplotlib.pyplot as plt

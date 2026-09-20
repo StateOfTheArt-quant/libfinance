@@ -12,15 +12,6 @@
     下面所有输出都是真实运行结果。日期和数值取决于你连的服务更新到哪天，
     **不要照抄日期**\ 。
 
-准备
-====
-
-..  code-block:: python
-
-    import libfinance
-
-    libfinance.init_client(host="libfinance.tech", port=8080)
-
 第一步：交易日
 ==============
 

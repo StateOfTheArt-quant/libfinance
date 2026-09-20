@@ -21,8 +21,8 @@ To understand the semantics before looking up a signature, start at
 
     *   - Page
         - Contents
-    *   - :doc:`client`
-        - Connecting and exceptions
+    *   - :doc:`errors`
+        - Exceptions and caching
     *   - :doc:`calendar`
         - Trading calendar
     *   - :doc:`instrument`
@@ -50,7 +50,7 @@ To understand the semantics before looking up a signature, start at
     :maxdepth: 1
     :hidden:
 
-    client
+    errors
     calendar
     instrument
     price

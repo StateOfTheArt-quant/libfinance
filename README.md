@@ -23,14 +23,8 @@ $ pip install -e .
 
 ## Quick start
 
-`libfinance` is a client — the data lives on a server, so point it at one before
-your first query:
-
 ```python
-import libfinance
 from libfinance import get_trading_dates, get_price
-
-libfinance.init_client(host="libfinance.tech", port=8080)
 
 trading_dates = get_trading_dates(start_date="2024-05-11", end_date="2024-05-20")
 print(trading_dates)
@@ -76,12 +70,7 @@ Worth reading before you rely on the numbers:
 
 ## Examples
 
-Runnable scripts live in [`example/`](example/). They connect to the public
-service by default; point them elsewhere with an environment variable:
-
-```bash
-$ LIBFINANCE_HOST=127.0.0.1 python example/get_price.py
-```
+Runnable scripts live in [`example/`](example/).
 
 ## Community
 

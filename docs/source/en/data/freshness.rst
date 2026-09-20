@@ -110,6 +110,35 @@ The calendar bound is separate
     {'history_start': Timestamp('1990-12-19 00:00:00'),
      'confirmed_through': Timestamp('2026-12-31 00:00:00')}
 
+The other end can be clamped too
+================================
+
+Everything above concerns the **right-hand** end of the range. The left end may
+be limited as well: the server may only allow querying the last two years or so,
+and an earlier ``start_date`` is silently pulled forward to that boundary.
+
+The awkward part is that if ``end_date`` is also earlier than the boundary, it is
+**pulled forward with it** — start and end collide and you get an empty table.
+And an empty table cannot tell you whether the period has no data or the range was
+clamped.
+
+So the client warns before a request gets clamped, naming the boundary date. The
+warning takes this shape (client warnings are emitted in Chinese):
+
+.. code-block:: text
+
+    UserWarning: get_price: 可查区间的起点是 <boundary>，比它更早的
+                 start_date=<yours> 会被服务端夹到边界（end_date 早于边界时也会
+                 一起上拉，结果可能是空表）。
+
+Move ``start_date`` inside that boundary when you see it. No warning means your
+range was not clamped.
+
+.. note::
+
+    Not every deployment applies this limit. When the server declares no range
+    restriction, this warning never appears and history is not clamped.
+
 The correct pattern
 ===================
 

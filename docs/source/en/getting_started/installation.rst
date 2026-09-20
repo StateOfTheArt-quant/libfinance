@@ -3,8 +3,7 @@ Installation
 ============
 
 ``libfinance`` is a pure Python client — the data lives on a server, so installing
-is light. Afterwards you still need to :doc:`connect to a service <connect>`
-before you can query anything.
+is light.
 
 Requires Python 3.7 or newer.
 
@@ -41,4 +40,4 @@ A ``ModuleNotFoundError`` here means a dependency is missing; reinstall.
 ``libfinance`` requires ``pandas``, ``numpy``, ``lz4``, ``msgpack``, ``six`` and
 ``python-dateutil``, all pulled in automatically by pip.
 
-Next: :doc:`connect`.
+Next: :doc:`quickstart`.
