@@ -171,7 +171,20 @@ libfinance
     :caption: API 参考
     :hidden:
 
-    reference/index
+    reference/contracts
+    reference/market_data
+    reference/fundamentals
+    reference/classification
+    5 公司行动信息 <reference/corporate_actions>
+    6 实时行情 <reference/realtime>
+
+.. toctree::
+    :maxdepth: 1
+    :caption: 字段与使用支持
+    :hidden:
+
+    reference/fields
+    reference/errors
 
 ..  toctree::
     :maxdepth: 1

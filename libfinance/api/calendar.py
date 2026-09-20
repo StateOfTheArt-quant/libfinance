@@ -70,27 +70,22 @@ def _sessions(market, *dates):
 @export_as_api
 @ttl_cache(24 * 3600)
 def get_all_trading_dates(market=DEFAULT_MARKET):
-    """获取全部交易日。
+    r"""获取全部交易日。
 
     :param market: 市场，cn（默认）或 us
+
+    :returns: pandas.DatetimeIndex，当前日历内全部交易日。
     """
     return _calendar(market)[0]
 
 
 @export_as_api
 def get_calendar_coverage(market=DEFAULT_MARKET):
-    """获取日历的权威区间——本 release 确认到哪一天。
+    r"""获取日历的权威区间——本 release 确认到哪一天。
 
     :param market: 市场，cn（默认）或 us
-    :returns: ``{"history_start": ..., "confirmed_through": ...}``
 
-    ..  code-block:: python3
-
-        from libfinance import get_calendar_coverage
-
-        >>> get_calendar_coverage()
-        {'history_start': Timestamp('1991-07-03 00:00:00'),
-         'confirmed_through': Timestamp('2026-09-10 00:00:00')}
+    :returns: dict，包含 history_start（历史起点）和 confirmed_through（确认上界），值为 pandas.Timestamp。
     """
     _, lower, upper = _calendar(market)
     return {"history_start": lower, "confirmed_through": upper}
@@ -104,19 +99,7 @@ def get_trading_dates(start_date, end_date, market=DEFAULT_MARKET):
     :param end_date: 结束日期
     :param market: 市场，cn（默认）或 us
 
-    Example::
-
-        获取2020-05-10至2020-05-20之间的交易日期
-
-    ..  code-block:: python3
-
-        from libfinance import get_trading_dates
-
-        >>> trading_dates = get_trading_dates(start_date = "2020-05-11", end_date="2020-05-20")
-        >>> print(trading_dates)
-        DatetimeIndex(['2020-05-11', '2020-05-12', '2020-05-13', '2020-05-14',
-           '2020-05-15', '2020-05-18', '2020-05-19', '2020-05-20'],
-          dtype='datetime64[ns]', freq=None)
+    :returns: pandas.DatetimeIndex，包含起止日期之间的交易日（含两端）。
     """
     start_date, end_date = _to_timestamp(start_date), _to_timestamp(end_date)
     sessions = _sessions(market, start_date, end_date)
@@ -127,22 +110,13 @@ def get_trading_dates(start_date, end_date, market=DEFAULT_MARKET):
 
 @export_as_api
 def get_previous_trading_date(date, n=1, market=DEFAULT_MARKET):
-    """获取指定日期之前的第 n 个交易日
+    r"""获取指定日期之前的第 n 个交易日
 
     :param date: 指定日期
     :param n: 第 n 个交易日
     :param market: 市场，cn（默认）或 us
 
-    Example::
-
-        2020-05-18之前3天的交易日
-
-    ..  code-block:: python3
-
-        from libfinance import get_previous_trading_date
-
-        >>> get_previous_trading_date(date='2020-05-18', n=3)
-        Timestamp('2020-05-13 00:00:00')
+    :returns: pandas.Timestamp，严格早于输入日期的第 n 个交易日。
     """
     date = _to_timestamp(date)
     sessions = _sessions(market, date)
@@ -160,20 +134,13 @@ def get_previous_trading_date(date, n=1, market=DEFAULT_MARKET):
 
 @export_as_api
 def get_next_trading_date(date, n=1, market=DEFAULT_MARKET):
-    """获取指定日期之后的第 n 个交易日
+    r"""获取指定日期之后的第 n 个交易日
 
     :param date: 指定日期
     :param n: 第 n 个交易日
     :param market: 市场，cn（默认）或 us
 
-    :example:
-
-    ..  code-block:: python3
-
-        from libfinance import get_next_trading_date
-
-        >>> get_next_trading_date(date='2020-05-13', n=3)
-        Timestamp('2020-05-18 00:00:00')
+    :returns: pandas.Timestamp，严格晚于输入日期的第 n 个交易日。
     """
     date = _to_timestamp(date)
     sessions = _sessions(market, date)
@@ -190,10 +157,12 @@ def get_next_trading_date(date, n=1, market=DEFAULT_MARKET):
 
 @export_as_api
 def is_trading_date(date, market=DEFAULT_MARKET):
-    """判断指定日期是否为交易日
+    r"""判断指定日期是否为交易日
 
     :param date: 指定日期
     :param market: 市场，cn（默认）或 us
+
+    :returns: bool，交易日为 True，非交易日为 False；超出日历范围会报错。
     """
     date = _to_timestamp(date)
     sessions = _sessions(market, date)
@@ -203,11 +172,13 @@ def is_trading_date(date, market=DEFAULT_MARKET):
 
 @export_as_api
 def get_n_trading_dates_until(date, n, market=DEFAULT_MARKET):
-    """获取截至指定日期（含）的最后 n 个交易日
+    r"""获取截至指定日期（含）的最后 n 个交易日
 
     :param date: 指定日期
     :param n: 交易日个数
     :param market: 市场，cn（默认）或 us
+
+    :returns: pandas.DatetimeIndex，截至该日的最近 n 个交易日；历史不足 n 个时返回已有日期。
     """
     date = _to_timestamp(date)
     sessions = _sessions(market, date)
@@ -219,11 +190,13 @@ def get_n_trading_dates_until(date, n, market=DEFAULT_MARKET):
 
 @export_as_api
 def count_trading_dates(start_date, end_date, market=DEFAULT_MARKET):
-    """统计区间内的交易日数量
+    r"""统计区间内的交易日数量
 
     :param start_date: 开始日期
     :param end_date: 结束日期
     :param market: 市场，cn（默认）或 us
+
+    :returns: int，区间内的交易日数量（含两端）。
     """
     start_date, end_date = _to_timestamp(start_date), _to_timestamp(end_date)
     sessions = _sessions(market, start_date, end_date)

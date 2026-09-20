@@ -17,7 +17,7 @@ Three differences
     from libfinance import get_trading_dates, all_instruments, get_price
 
     get_trading_dates("2024-01-01", "2024-01-31", market="us")   # needs market
-    all_instruments(type="CS", market="us")                      # needs market
+    all_instruments(market="us")                      # needs market
     get_price(["AAPL.US"], "2026-03-02", "2026-03-06")           # does not
 
 What has US data

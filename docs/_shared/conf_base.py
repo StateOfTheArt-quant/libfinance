@@ -58,6 +58,7 @@ html_theme = "pytorch_sphinx_theme"
 html_theme_path = [pytorch_sphinx_theme.get_html_theme_path()]
 html_theme_options = {
     "collapse_navigation": False,
+    "navigation_depth": 4,
     "display_version": True,
     "logo_only": True,
     "navigation_with_keys": True,
@@ -80,7 +81,8 @@ htmlhelp_basename = "libfinancedoc"
 
 autodoc_inherit_docstrings = True
 autoclass_content = "both"
-autodoc_typehints = "description"
+# 参数与返回说明由 docstring 统一表达，不再从注解另生成“返回类型”。
+autodoc_typehints = "none"
 autodoc_member_order = "bysource"
 napoleon_attr_annotations = True
 autosummary_generate = True

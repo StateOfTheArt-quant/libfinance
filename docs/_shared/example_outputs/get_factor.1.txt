@@ -1,0 +1,5 @@
+                       net_profit_ttm
+order_book_id quarter
+600000.XSHG   2024q1      410000000.0
+              2024q2      420000000.0
+              2024q3      450000000.0

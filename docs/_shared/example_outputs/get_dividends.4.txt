@@ -1,0 +1,3 @@
+  order_book_id     ex_date  cash_per_share
+0   600000.XSHG  2024-06-20            0.30
+1        AAPL.US  2024-05-10            0.25

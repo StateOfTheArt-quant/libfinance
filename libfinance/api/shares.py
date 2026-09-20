@@ -31,14 +31,14 @@ def get_shares(
     end_date=None,
     fields: Optional[Union[str, List[str]]] = None,
 ) -> pd.DataFrame:
-    """获取股票在指定日期范围内的股本结构。
-
-    返回值以 ``order_book_id`` 和 ``date`` 为 MultiIndex，股本字段的单位均为股。
+    r"""获取股票在指定日期范围内的股本结构。
 
     :param order_book_ids: 单个股票代码或股票代码列表
     :param start_date: 开始日期；省略时从首个股本事件开始
     :param end_date: 结束日期；省略时截至最后一个股本事件
     :param fields: 需要返回的股本字段；省略时返回全部字段
+
+    :returns: pandas.DataFrame，以 (order_book_id, date) 为索引；所有股本字段单位均为股。
     """
     order_book_ids = ensure_list_of_string(order_book_ids, "order_book_ids")
     if not order_book_ids:

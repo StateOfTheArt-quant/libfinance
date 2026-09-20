@@ -1,0 +1,2 @@
+{'600000.XSHG': Quote(instrument_id='600000', exchange_id='XSHG',
+                       last_price=10.2, volume=100000.0, ...)}

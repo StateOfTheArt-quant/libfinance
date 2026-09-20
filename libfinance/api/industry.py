@@ -30,6 +30,8 @@ def get_industry(
     :param source: 分类来源，默认 ``"sw"``\ （申万）
     :param date: 以该日的分类为准，省略则取最新
     :param market: 市场，省略则用服务端默认
+
+    :returns: list[str]，属于指定行业的证券代码列表。
     """
     industry = ensure_string(industry, "industry")
     return get_client().get_industry(
@@ -50,6 +52,8 @@ def get_industry_mapping(
     :param source: 分类来源，默认 ``"sw"``\ （申万）
     :param date: 以该日的分类为准，省略则取最新
     :param market: 市场，省略则用服务端默认
+
+    :returns: pandas.DataFrame，包含行业代码、名称和层级。
     """
     return get_client().get_industry_mapping(
         source=source,

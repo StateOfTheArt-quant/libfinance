@@ -5,7 +5,7 @@ r"""财务数据：PIT 财报与衍生因子。
 两个接口都按\ **季度**\ 取数，并且都带 ``as_of``\ ：财报会被追溯修订，\ ``as_of`` 决定用
 "当时能看到的"还是"现在最新的"那一版。做回测时这个参数决定了有没有前视偏差。
 """
-from typing import List, Optional, Union
+from typing import List, Union
 
 import pandas as pd
 
@@ -34,7 +34,6 @@ def get_pit_financials_ex(
     end_quarter: str,
     as_of=None,
     statements: str = "latest",
-    market: Optional[str] = None,
 ) -> pd.DataFrame:
     r"""获取 point-in-time 财务数据。
 
@@ -45,7 +44,8 @@ def get_pit_financials_ex(
     :param as_of: 以该时点\ **已知**\ 的版本为准；省略则取最新。回测里应当传入，否则会
                   用到当时还没发布的修订值。
     :param statements: ``"latest"``\ （每个季度取最新那一版）或 ``"all"``\ （返回全部修订版本）
-    :param market: 市场，省略则用服务端默认
+
+    :returns: pandas.DataFrame，包含请求的财报字段，以及 info_date（披露日期）和 if_adjusted（是否修订）。
     """
     ids = ensure_list_of_string(order_book_ids, "order_book_ids")
     if not ids:
@@ -58,7 +58,7 @@ def get_pit_financials_ex(
         order_book_ids=ids, fields=fields,
         start_quarter=_quarter(start_quarter, "start_quarter"),
         end_quarter=_quarter(end_quarter, "end_quarter"),
-        as_of=as_of, statements=statements, market=market,
+        as_of=as_of, statements=statements,
     )
 
 
@@ -69,16 +69,16 @@ def get_factor(
     start_quarter: str,
     end_quarter: str,
     as_of=None,
-    market: Optional[str] = None,
 ) -> pd.DataFrame:
-    """获取财务衍生因子。
+    r"""获取财务衍生因子。
 
     :param order_book_ids: 单个代码或代码列表
     :param factors: 因子名；可用因子见服务端的 ``financialmetrics.factor_catalog``
     :param start_quarter: 起始季度，如 ``"2024q1"``
     :param end_quarter: 结束季度
     :param as_of: 同 :func:`get_pit_financials_ex`
-    :param market: 市场，省略则用服务端默认
+
+    :returns: pandas.DataFrame，按证券、季度返回请求的财务衍生因子。
     """
     ids = ensure_list_of_string(order_book_ids, "order_book_ids")
     if not ids:
@@ -90,5 +90,5 @@ def get_factor(
         order_book_ids=ids, factors=factors,
         start_quarter=_quarter(start_quarter, "start_quarter"),
         end_quarter=_quarter(end_quarter, "end_quarter"),
-        as_of=as_of, market=market,
+        as_of=as_of,
     )

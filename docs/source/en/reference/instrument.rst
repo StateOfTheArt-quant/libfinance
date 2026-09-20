@@ -4,6 +4,18 @@ Security codes and master data
 
 .. currentmodule:: libfinance
 
+.. list-table::
+    :header-rows: 1
+    :widths: 40 60
+
+    * - Function / class
+      - Purpose
+    * - :func:`~libfinance.all_instruments`
+      - List securities by market, type and historical date
+    * - :func:`~libfinance.instruments`
+      - Resolve one or more codes, including mixed markets
+
+
 Semantics are covered in :doc:`../data/instruments`.
 
 .. py:function:: all_instruments(type=None, date=None, market=None, cached=True)
@@ -15,43 +27,134 @@ Semantics are covered in :doc:`../data/instruments`.
         Omit for everything.
     :param date: Snapshot as of this day (the server calls this ``as_of``).
         Omit for the latest.
-    :param market: Market; omit for the server default.
-    :param cached: Use the local cache. Master data changes slowly, so this
-        defaults to on.
+    :param market: Market; omit to combine all bound markets.
+    :param cached: Use the data-version cache when market is omitted; explicit market queries bypass it.
     :returns: ``DataFrame`` with ``order_book_id`` as the first column
 
-    .. code-block:: python
+    **Examples**
 
-        >>> all_instruments(type="CS").shape
-        (10616, 6)
-        >>> all_instruments(type="CS", market="us").shape
-        (5395, 6)
+    Run these blocks in order. Printed results below are **illustrative**, not captured
+    from a live service. Values, identifiers and events are not market facts; ellipses
+    mark omitted content.
 
-.. py:function:: instruments(order_book_ids, date=None, market=None)
+    .. literalinclude:: ../../../../example/0a_instrument.py
+        :language: python
+        :start-after: # [all_instruments.1]
+        :end-before: # [/all_instruments.1]
+        :prepend: from libfinance import all_instruments
 
-    Master data for specific securities.
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/all_instruments.1.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/0a_instrument.py
+        :language: python
+        :start-after: # [all_instruments.2]
+        :end-before: # [/all_instruments.2]
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/all_instruments.2.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/0a_instrument.py
+        :language: python
+        :start-after: # [all_instruments.3]
+        :end-before: # [/all_instruments.3]
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/all_instruments.3.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/0a_instrument.py
+        :language: python
+        :start-after: # [all_instruments.4]
+        :end-before: # [/all_instruments.4]
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/all_instruments.4.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/0a_instrument.py
+        :language: python
+        :start-after: # [all_instruments.5]
+        :end-before: # [/all_instruments.5]
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/all_instruments.5.txt
+        :language: text
+
+    Reading the result: The type and market filters change the universe; date selects an identity snapshot. A historical query may still contain the same securities.
+
+    :download:`Download the full example <../../../../example/0a_instrument.py>`
+
+.. py:function:: instruments(order_book_ids, date=None)
+
+    Master data for specific securities. Codes from multiple markets may be mixed;
+    no market parameter is needed.
 
     :param order_book_ids: One code or a list, e.g. ``"000001.XSHE"``
     :param date: Snapshot as of this day (the server calls this ``as_of``)
-    :param market: Market; omit for the server default
     :returns: A single :py:class:`~libfinance.api.instrument.Instrument` for a single code (``None`` if not
         found), or a list of them for a list of codes. Codes that cannot be
         resolved are skipped, so the list may be shorter than the input.
 
-    .. code-block:: python
-
-        >>> instruments("600000.XSHG")
-        Instrument(order_book_id='600000.XSHG', symbol='浦发银行', type='CS',
-                   market='cn', listed_date='1999-11-10T00:00:00.000')
-
     Pass ``date`` to resolve securities that have since been delisted:
 
-    .. code-block:: python
+    **Examples**
 
-        >>> instruments("600837.XSHG")                        # today
-        None
-        >>> instruments("600837.XSHG", date="2022-09-20")     # as of 2022
-        Instrument(order_book_id='600837.XSHG', symbol='海通证券', ...)
+    Run these blocks in order. Printed results below are **illustrative**, not captured
+    from a live service. Values, identifiers and events are not market facts; ellipses
+    mark omitted content.
+
+    .. literalinclude:: ../../../../example/0a_instrument.py
+        :language: python
+        :start-after: # [instruments.1]
+        :end-before: # [/instruments.1]
+        :prepend: from libfinance import instruments
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/instruments.1.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/0a_instrument.py
+        :language: python
+        :start-after: # [instruments.2]
+        :end-before: # [/instruments.2]
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/instruments.2.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/0a_instrument.py
+        :language: python
+        :start-after: # [instruments.3]
+        :end-before: # [/instruments.3]
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/instruments.3.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/0a_instrument.py
+        :language: python
+        :start-after: # [instruments.4]
+        :end-before: # [/instruments.4]
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/instruments.4.txt
+        :language: text
+
+    Reading the result: A string returns one object; a list returns objects in input order. Historical queries resolve the code valid at that date.
+
+    :download:`Download the full example <../../../../example/0a_instrument.py>`
 
 .. currentmodule:: libfinance.api.instrument
 

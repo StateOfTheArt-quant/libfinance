@@ -188,11 +188,6 @@ def get_price_coverage(market: str = "cn") -> dict:
     adjust_cutoff   除权因子的 cutoff
     ==============  ==========================================================
 
-    用它先问一句，就不必靠试错::
-
-        cov = get_price_coverage()["XSHG"]
-        df = get_price(ids, start_date=..., end_date=cov["end"])
-
     .. note::
 
        ``market`` 有默认值是必需的：服务端的 ``daybar`` 命名空间同时绑了 CN 与 US，
@@ -201,6 +196,8 @@ def get_price_coverage(market: str = "cn") -> dict:
 
     :raises RuntimeError: 服务端没有给出任何可用的覆盖信息时抛出。\ **不返回空字典**
         —— 否则"查不到覆盖信息"和"这个市场没有行情"在调用方看来一模一样。
+
+    :returns: dict，以交易所代码为键，值包含 start、end 等日期边界。
     """
     args = {"market": market}
     info = get_client().call("daybar.dataset_info", args) or {}
@@ -278,73 +275,22 @@ def get_price(
     include_now: bool=True,
     adjust_type: str="pre",
     adjust_orig:datetime.datetime = None) -> pd.DataFrame:
-    r"""获取指定合约的历史 k 线行情，支持任意日频率xd(1d,5d)和任意分钟频率xm(1m,3m,5m,15m)的历史数据。
+    r"""获取一个或多个证券的历史日频行情。
 
-    .. warning::
+    :param order_book_ids: 单个代码或代码列表
+    :param start_date: 开始日期，必填
+    :param end_date: 结束日期，必填；应落在行情覆盖范围内
+    :param frequency: 当前支持日频 ``"1d"``
+    :param fields: 返回字段，省略取全部适用字段。常用 ``open`` / ``high`` /
+        ``low`` / ``close`` / ``volume`` / ``turnover``；股票另有涨跌停价字段
+    :param skip_suspended: 是否跳过停牌行，默认 False
+    :param include_now: 日频数据不受此参数影响，保留用于调用兼容
+    :param adjust_type: ``"pre"`` 前复权（默认）、``"none"`` 原始价或 ``"post"`` 后复权
+    :param adjust_orig: 复权基准日；省略使用服务端数据的复权截止日
+    :returns: 以 ``(order_book_id, datetime)`` 为索引的 DataFrame。
 
-       **0.0.2 起 ``adjust_type`` 的默认值从 ``"none"`` 改为 ``"pre"``**\ （同时
-       ``skip_suspended`` 从 ``True`` 改为 ``False``\ ），与服务端的默认值一致。
-
-       这是一个\ **静默的数值变化**\ ：不会报错，但不传 ``adjust_type`` 时拿到的价格
-       从不复权变成了前复权。依赖旧行为的代码请显式写 ``adjust_type="none"``\ 。
-
-       改的理由是此前两边默认值相反 —— 同一个语义调用，走客户端和走服务端内部会得到
-       不同的数字，而这种不一致没有任何人能从文档上看出来。
-    
-    :param order_book_ids: 多个标的合约代码, 必填项
-    :param start_date: 开始日期，必填项
-    :param end_date: 结束日期，必填项
-    :param frequency: 获取数据什么样的频率进行。'1d'或'1m'分别表示每日和每分钟
-    :param fields: 返回数据字段
-    :param skip_suspended: 是否跳过停牌数据
-    :param include_now: 是否包含当前数据
-    :param adjust_type: 复权类型，默认为前复权 pre；可选 pre, none, post
-    
-    =========================   ===================================================
-    fields                      字段名
-    =========================   ===================================================
-    datetime                    时间戳
-    open                        开盘价
-    high                        最高价
-    low                         最低价
-    close                       收盘价
-    volume                      成交量
-    total_turnover              成交额
-    open_interest               持仓量（期货专用）
-    basis_spread                期现差（股指期货专用）
-    settlement                  结算价（期货日线专用）
-    prev_settlement             结算价（期货日线专用）
-    =========================   ===================================================
-    
-    Example1::
-    
-        获取中国平安和浦发银行 2024-03-01至2024-03-11之间的交易数据
-    
-    ..  code-block:: python3
-        
-        import pandas as pd
-        from libfinance import get_price
-    
-        >>> data = get_price(order_book_ids=["000001.XSHE","600000.XSHG"], start_date="2024-03-01", end_date="2024-03-11")
-        >>> print(data)
-        
-                                   open   high    low  close       volume
-        order_book_id datetime                                           
-        000001.XSHE   2024-03-01  10.59  10.60  10.43  10.49  182810290.0
-                      2024-03-04  10.45  10.50  10.32  10.33  165592954.0
-                      2024-03-05  10.30  10.47  10.26  10.43  181731907.0
-                      2024-03-06  10.40  10.45  10.33  10.33  134564016.0
-                      2024-03-07  10.33  10.64  10.33  10.38  201616589.0
-                      2024-03-08  10.35  10.44  10.30  10.38  111397428.0
-                      2024-03-11  10.38  10.47  10.34  10.47  121067298.0
-        600000.XSHG   2024-03-01   7.13   7.16   7.10   7.11   29431801.0
-                      2024-03-04   7.12   7.12   7.05   7.07   27855963.0
-                      2024-03-05   7.05   7.18   7.04   7.16   41756232.0
-                      2024-03-06   7.17   7.22   7.12   7.12   25918749.0
-                      2024-03-07   7.12   7.20   7.11   7.14   24690348.0
-                      2024-03-08   7.12   7.17   7.11   7.12   19861794.0
-                      2024-03-11   7.13   7.17   7.06   7.11   26195498.0
-    
+    成交量随复权反向缩放，成交额 ``turnover`` 不受复权影响。
+    查询上界可通过 :func:`get_price_coverage` 获取。
     """
     # 这里曾经写的是 return ValueError(...) —— 把异常**返回**给了调用方而不是抛出。
     # 于是 get_price(..., frequency="1m") 不报错，返回一个 ValueError 对象，调用方
@@ -363,15 +309,15 @@ def get_price(
             raise ValueError("Weekly frequency should be str '1w'")
     else:
        raise ValueError("frequency should be str like 1d, 1m, 5m or tick")
-    
+
     valid_adjust = ["pre", "post", "none"]
     ensure_string(adjust_type, "adjust_type")
     check_items_in_container(adjust_type, valid_adjust, "adjust_type")
     order_book_ids = ensure_list_of_string(order_book_ids, "order_book_ids")
-    
+
     assert isinstance(skip_suspended, bool), "'skip_suspended' should be a bool"
-    
-    
+
+
     # 按**查询窗口末端**解析代码，不是按今天 —— 与服务端 compose/price.py 同口径。
     # 否则已退市的证券在这里就被当成无效代码丢掉，服务端根本没机会回答。
     order_book_ids, stocks, funds, indexes, futures, futures888, spots, options, convertibles, repos = classify_order_book_ids(
@@ -379,7 +325,7 @@ def get_price(
     if not order_book_ids:
         warnings.warn("no valid instrument")
         return
-    
+
     start_date, end_date = _ensure_date(
         start_date, end_date, stocks, funds, indexes, futures, spots, options, convertibles, repos
     )
@@ -387,7 +333,7 @@ def get_price(
     # 空表，而调用方无从知道是档位问题还是真的没数据。先说出来。
     warn_if_clamped("get_price", start_date)
     _warn_beyond_coverage(end_date)
-    
+
     fields, has_dominant_id = _ensure_fields(fields, DAYBAR_FIELDS, stocks, funds, futures, futures888, spots, options, convertibles, indexes, repos)
     #start_date = convert_dateteime_to_timestamp(start_date)
     #end_date = convert_dateteime_to_timestamp(end_date)

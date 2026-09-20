@@ -1,0 +1,9 @@
+              first_industry_code first_industry_name
+order_book_id
+000001.XSHE                480000                  银行
+600000.XSHG                480000                  银行
+
+              third_industry_code third_industry_name
+order_book_id
+000001.XSHE                480201                股份制银行
+600000.XSHG                480201                股份制银行
