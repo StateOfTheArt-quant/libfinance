@@ -58,7 +58,7 @@ order_book_id datetime
 ## Documentation
 
 - [English](https://libfinance.readthedocs.io/en/latest/)
-- [中文](https://libfinance.readthedocs.io/zh/latest/)
+- [中文](https://libfinance.readthedocs.io/zh-cn/latest/)
 
 Worth reading before you rely on the numbers:
 

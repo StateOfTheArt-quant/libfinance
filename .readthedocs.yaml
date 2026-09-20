@@ -5,6 +5,12 @@
 #   .readthedocs.yaml                   中文，项目语言设为 zh-cn
 #   docs/source/en/.readthedocs.yaml    英文，项目语言设为 en
 #
+# 中文的语言码是 zh-cn，不是 zh —— 站点 URL 因此是 /zh-cn/latest/。RTD 的
+# projects/constants.py 里只有 ("zh-cn", "Simplified Chinese") 与
+# ("zh-tw", "Traditional Chinese")，纯 zh 已被移除（注释原话："This is an
+# invalid language code"），只在 URL 正则里保留以便历史项目继续可访问。
+# 写外链时别写成 /zh/latest/，那是 404。
+#
 # **文件名必须正好是 `.readthedocs.yaml`**，只能换目录。RTD 的表单校验
 # （projects/validators.py 的 validate_build_config_file）里
 # valid_filenames = [".readthedocs.yaml"]，路径要么等于它、要么以 /.readthedocs.yaml
