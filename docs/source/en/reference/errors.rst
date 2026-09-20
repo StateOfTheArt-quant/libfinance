@@ -1,23 +1,8 @@
-==========================
-Connecting and exceptions
-==========================
+======================
+Exceptions and caching
+======================
 
 .. currentmodule:: libfinance
-
-Connecting
-==========
-
-.. py:function:: init_client(host='libfinance.tech', port=8080)
-
-    Connect to a data service. Call this once, before your first data call.
-
-    :param host: Server hostname
-    :param port: Server port
-    :returns: ``None``
-
-    Only takes effect when no connection exists yet. If a data call has already
-    triggered an automatic connection, calling this again to switch hosts does
-    nothing and reports no error.
 
 Exceptions
 ==========

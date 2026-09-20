@@ -14,10 +14,7 @@ libfinance
 
 .. code-block:: python
 
-    import libfinance
     from libfinance import get_price
-
-    libfinance.init_client(host="libfinance.tech", port=8080)
 
     df = get_price(["000001.XSHE", "600000.XSHG"], "2024-03-01", "2024-03-06")
 
@@ -153,7 +150,6 @@ libfinance
     :hidden:
 
     getting_started/installation
-    getting_started/connect
     getting_started/quickstart
 
 ..  toctree::

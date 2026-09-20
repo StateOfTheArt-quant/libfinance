@@ -30,8 +30,12 @@ _ROOT = pathlib.Path(__file__).resolve().parent.parent
 _ZH = _ROOT / "docs" / "source" / "zh"
 _EN = _ROOT / "docs" / "source" / "en"
 
-#: ``libfinance.__all__`` 里不是接口的条目。
-_NOT_API = {"__version__"}
+#: ``libfinance.__all__`` 里**不面向使用者**的条目，不要求文档覆盖。
+#:
+#: ``init_client`` 是部署期的入口：服务地址在生产环境里配好，使用者直接调取数函数
+#: 就行，不需要也不应该在自己的代码里指定服务地址。它仍然导出（自建服务、测试、
+#: CI 要用），只是不进用户文档。
+_NOT_API = {"__version__", "init_client"}
 
 #: 中文树用 autodoc 指令引用对象。
 _AUTODOC = re.compile(

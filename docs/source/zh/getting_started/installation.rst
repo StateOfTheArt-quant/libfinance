@@ -2,8 +2,7 @@
 安装
 ====
 
-``libfinance`` 是一个纯 Python 客户端，数据在服务端，所以安装本身很轻——装完还需要
-:doc:`连接一个服务 <connect>` 才能取数。
+``libfinance`` 是一个纯 Python 客户端，数据在服务端，所以安装本身很轻。
 
 要求 Python 3.7 或更高版本。
 
@@ -40,4 +39,4 @@
 ``libfinance`` 依赖 ``pandas``\ 、\ ``numpy``\ 、\ ``lz4``\ 、\ ``msgpack``\ 、\ ``six``\ 、
 ``python-dateutil``\ ，都会由 pip 自动带上。
 
-下一步：\ :doc:`connect`\ 。
+下一步：\ :doc:`quickstart`\ 。

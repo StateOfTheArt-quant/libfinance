@@ -153,7 +153,7 @@ def warn_if_clamped(api_name, start_date):
     if str(start_date) >= boundary:
         return None
     warnings.warn(
-        "{}: 当前账号的可查区间起点是 {}，比它更早的 start_date={} 会被服务端夹到边界"
+        "{}: 可查区间的起点是 {}，比它更早的 start_date={} 会被服务端夹到边界"
         "（end_date 早于边界时也会一起上拉，结果可能是空表）。"
         .format(api_name, boundary, start_date),
         stacklevel=3,

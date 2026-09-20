@@ -18,8 +18,8 @@
         - :class:`~libfinance.subscribe.quote_api.QuoteApi`
         - 持续接收行情。有变化就推给你
 
-两条路径是\ **独立的**\ ：订阅走行情网关，用的是另一个地址和端口，和
-:func:`~libfinance.init_client` 连的那个服务不是一回事。它们只是共用同一个
+两条路径是\ **独立的**\ ：订阅走行情网关，用的是另一个地址和端口，和取历史数据的
+服务不是一回事。它们只是共用同一个
 :class:`~libfinance.subscribe.md_protocol.Quote` 数据类型。
 
 快照查询

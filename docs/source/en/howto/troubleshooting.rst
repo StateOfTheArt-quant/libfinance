@@ -30,8 +30,7 @@ order of likelihood:
         - Use a different range
     *   - The range was clamped by a server-side limit
         - Look for a warning naming the earliest queryable date
-        - Move ``start_date`` inside that boundary, see
-          :doc:`../getting_started/connect`
+        - Move ``start_date`` inside that boundary, see :doc:`../data/freshness`
     *   - That market has no such data
         - Try once with a market known to be supported
         - See the availability table in :doc:`us_market`
@@ -77,9 +76,10 @@ Reading common errors
 
     *   - Error
         - Meaning and fix
-    *   - ``Client auto-connect to ... failed``
-        - Not connected yet. Call :func:`~libfinance.init_client` **before** your
-          first query — see :doc:`../getting_started/connect`
+    *   - ``Client auto-connect to ... failed`` / ``ConnectionError``
+        - The data service is unreachable. Check network connectivity, then
+          contact the service administrator — the address is set at deployment
+          time, not in your code
     *   - ``... is outside coverage ...; a date this release does not reach is
           not a date with no trading``
         - ``end_date`` exceeds price coverage. Ask
@@ -100,6 +100,12 @@ Reading common errors
         - That function has no data for this market, see :doc:`us_market`
     *   - ``AmbiguousMarketError: ... 绑定了多个市场``
         - Pass ``market=`` explicitly
+    *   - ``RpcError(code=1401): 今日流量已用尽``
+        - The daily allowance is counted in **response bytes**, not call count —
+          pulling the whole security master costs hundreds of times more than ten
+          days of one stock. The message states usage, limit and reset time. Wait
+          for the reset, or narrow the query (fewer names, a shorter range,
+          ``fields`` to fetch only the columns you need)
     *   - ``RpcError(code=1201)`` / ``(code=1202)``
         - The server refused this call's permissions; contact the service administrator
     *   - ``Array type doesn't match type of values set``

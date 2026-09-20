@@ -11,8 +11,8 @@ invoked as data arrives.
 .. note::
 
     Subscriptions go through the **market data gateway**, whose address and port
-    differ from the service :func:`~libfinance.init_client` connects to. Get the
-    gateway address and credentials from your administrator.
+    differ from the service that serves historical data. Get the gateway address
+    and credentials from your administrator.
 
 A complete runnable example
 ===========================

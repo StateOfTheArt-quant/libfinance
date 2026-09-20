@@ -12,8 +12,8 @@ API 参考
 
     *   - 页面
         - 内容
-    *   - :doc:`client`
-        - 连接与异常
+    *   - :doc:`errors`
+        - 异常与缓存
     *   - :doc:`calendar`
         - 交易日历
     *   - :doc:`instrument`
@@ -41,7 +41,7 @@ API 参考
     :maxdepth: 1
     :hidden:
 
-    client
+    errors
     calendar
     instrument
     price
