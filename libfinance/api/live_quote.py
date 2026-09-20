@@ -50,5 +50,14 @@ def dict_to_quotes_ultrafast(raw_data) -> dict[str, Quote]:
 
 @export_as_api
 def get_last_quotes(order_book_ids):
+    r"""查询证券的最新行情快照。
+
+    :param order_book_ids: 证券代码列表，单只证券也使用列表
+    :returns: dict，以代码为键，值为 :class:`~libfinance.subscribe.md_protocol.Quote`
+        或 ``None``\ （该证券无可用快照）。
+
+    一次调用只返回一次快照；持续推送请使用
+    :class:`~libfinance.subscribe.quote_api.QuoteApi`。
+    """
     response =  get_client().get_last_quotes(order_book_ids=order_book_ids)
     return dict_to_quotes_ultrafast(response)

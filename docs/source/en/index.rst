@@ -179,7 +179,20 @@ code runs fine and your numbers are wrong.
     :caption: API reference
     :hidden:
 
-    reference/index
+    reference/contracts
+    reference/market_data
+    reference/fundamentals
+    reference/classification
+    5 Corporate actions <reference/corporate_actions>
+    6 Real-time quotes <reference/realtime>
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Lookup and troubleshooting
+    :hidden:
+
+    reference/fields
+    reference/errors
 
 .. toctree::
     :maxdepth: 1

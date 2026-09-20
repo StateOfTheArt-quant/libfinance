@@ -106,8 +106,8 @@
 
 ..  code-block:: python
 
-    >>> all_instruments(type="CS", market="us").shape
-    (5395, 6)
+    >>> us = all_instruments(market="us")
+    >>> us[us["type"] == "EQTY"].head()
 
 ..  note::
 

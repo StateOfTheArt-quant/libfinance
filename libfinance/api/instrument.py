@@ -141,8 +141,8 @@ def all_instruments(
     :param type: ``"CS"``\ （股票）或 ``"INDX"``\ （指数），也接受 ``"STOCK"`` / ``"INDEX"``
                  这两个别名；可以是列表。省略则返回全部。
     :param date: 以该日为准的快照（服务端参数名是 ``as_of``\ ）。省略则取最新。
-    :param market: 市场，省略则用服务端默认。
-    :param cached: 是否使用本地 3 小时缓存。基础信息变动很慢，默认开。
+    :param market: 市场，如 ``"cn"`` / ``"us"``；省略则合并服务端已绑定市场。
+    :param cached: 是否使用按服务端数据版本更新的缓存；显式指定市场时直接查询。
     :returns: 以 ``order_book_id`` 打头的 DataFrame。
     """
     types = _normalize_types(type)
@@ -156,13 +156,11 @@ def all_instruments(
 def instruments(
     order_book_ids: Union[str, List[str]],
     date=None,
-    market: Optional[str] = None,
 ):
     r"""获取指定证券的详细信息。
 
-    :param order_book_ids: 单个代码或代码列表，如 ``"000001.XSHE"``\ 。
+    :param order_book_ids: 单个代码或跨市场代码列表，无需指定市场，如 ``"000001.XSHE"``\ 。
     :param date: 以该日为准的快照（服务端参数名是 ``as_of``\ ）。
-    :param market: 市场，省略则用服务端默认。
     :returns: 传入单个代码时返回一个 :class:`~libfinance.api.instrument.Instrument`\ （查不到则返回 ``None``\ ）；
               传入列表时返回 :class:`~libfinance.api.instrument.Instrument` 列表，查不到的代码会被跳过。
     """
@@ -173,7 +171,7 @@ def instruments(
 
     as_of = to_date_str(date) if date is not None else None
     frame = _rename(
-        get_client().instruments(symbols=ids, as_of=as_of, market=market)
+        get_client().instruments(symbols=ids, as_of=as_of)
     )
     if not isinstance(frame, pd.DataFrame) or frame.empty:
         return None if single else []

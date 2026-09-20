@@ -1,0 +1,4 @@
+    index_code        date order_book_id  weight
+0  000905.XSHG  2024-06-28   000009.XSHE   0.002
+1  000905.XSHG  2024-06-28   000021.XSHE   0.003
+...

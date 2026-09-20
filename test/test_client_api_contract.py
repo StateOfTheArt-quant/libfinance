@@ -176,3 +176,71 @@ def test_an_unrecognised_shape_is_still_returned_as_is():
     out = _panel([{"something_else": 1, "close": 2.0}])
     assert isinstance(out, pd.DataFrame)
     assert "close" in out.columns
+
+
+def test_instruments_mixed_markets_without_market(monkeypatch):
+    from libfinance.api import instrument
+    import pandas as pd
+
+    calls = []
+
+    class Client:
+        def instruments(self, symbols, as_of=None):
+            calls.append((symbols, as_of))
+            return pd.DataFrame([
+                {"order_book_id": "600000.XSHG", "symbol": "浦发银行", "market": "cn"},
+                {"order_book_id": "AAPL.US", "symbol": "Apple", "market": "us"},
+            ])
+
+    monkeypatch.setattr(instrument, "get_client", lambda: Client())
+    assert "market" not in inspect.signature(instrument.instruments).parameters
+    ids = ["AAPL.US", "MISSING.US", "600000.XSHG", "AAPL.US"]
+    result = instrument.instruments(ids, date="2022-04-15")
+    assert [item.order_book_id for item in result] == [ids[0], ids[2], ids[3]]
+    assert [item.market for item in result] == ["us", "cn", "us"]
+    assert calls == [(ids, "2022-04-15")]
+
+
+@pytest.mark.parametrize("name,kwargs,expected", [
+    ("get_dividends", {"order_book_ids": ["600000.XSHG", "AAPL.US"], "as_of": "2024-07-01"},
+     {"order_book_ids": ["600000.XSHG", "AAPL.US"], "as_of": "2024-07-01"}),
+    ("get_splits", {"order_book_ids": "NVDA.US"}, {"order_book_ids": ["NVDA.US"]}),
+    ("get_allotments", {"order_book_ids": "600000.XSHG"}, {"order_book_ids": ["600000.XSHG"]}),
+    ("get_spinoffs", {"order_book_ids": "MMM.US"}, {"order_book_ids": ["MMM.US"]}),
+    ("get_pit_financials_ex", {"order_book_ids": "600000.XSHG", "fields": ["net_profit"],
+      "start_quarter": "2024q1", "end_quarter": "2024q3", "as_of": "2024-11-01"},
+     {"order_book_ids": ["600000.XSHG"], "fields": ["net_profit"], "as_of": "2024-11-01"}),
+    ("get_factor", {"order_book_ids": "600000.XSHG", "factors": ["net_profit_ttm"],
+      "start_quarter": "2024q1", "end_quarter": "2024q3"},
+     {"order_book_ids": ["600000.XSHG"], "factors": ["net_profit_ttm"]}),
+    ("get_instrument_industry", {"order_book_ids": ["600000.XSHG"], "level": 3},
+     {"order_book_ids": ["600000.XSHG"], "level": 3}),
+    ("get_index_weights", {"index_code": "000300.XSHG", "date": "2024-06-28"},
+     {"index_code": "000300.XSHG", "date": "2024-06-28"}),
+])
+def test_code_queries_send_codes_without_market(monkeypatch, name, kwargs, expected):
+    import importlib
+    import libfinance
+    import pandas as pd
+
+    fn = getattr(libfinance, name)
+    calls = []
+
+    class Client:
+        def __getattr__(self, method):
+            def call(**arguments):
+                assert method == name
+                assert "market" not in arguments
+                calls.append(arguments)
+                return pd.DataFrame()
+            return call
+
+    module = importlib.import_module(fn.__module__)
+    monkeypatch.setattr(module, "get_client", lambda: Client())
+    assert "market" not in inspect.signature(fn).parameters
+    fn(**kwargs)
+    assert len(calls) == 1
+    for key, value in expected.items():
+        assert calls[0][key] == value
+    with pytest.raises(TypeError):
+        fn(**kwargs, market="cn")

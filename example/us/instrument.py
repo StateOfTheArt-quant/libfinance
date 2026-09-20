@@ -3,7 +3,8 @@
 from libfinance import instruments, all_instruments
 
 
-stock_instrument_df = all_instruments(type="CS",market="us")
+stock_instrument_df = all_instruments(market="us")
+stock_instrument_df = stock_instrument_df[stock_instrument_df["type"] == "EQTY"]
 print(len(stock_instrument_df))
 print(stock_instrument_df)
 

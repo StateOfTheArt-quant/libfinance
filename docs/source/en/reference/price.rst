@@ -4,6 +4,20 @@ Daily bars
 
 .. currentmodule:: libfinance
 
+Security-code queries infer the market on the server and accept no market argument. Unsupported markets raise an error.
+
+.. list-table::
+    :header-rows: 1
+    :widths: 40 60
+
+    * - Function / class
+      - Purpose
+    * - :func:`~libfinance.get_price`
+      - Read daily bars with field and adjustment choices
+    * - :func:`~libfinance.get_price_coverage`
+      - Find the last covered price date
+
+
 Semantics are covered in :doc:`../data/price`; coverage bounds in
 :doc:`../data/freshness`.
 
@@ -37,16 +51,66 @@ Semantics are covered in :doc:`../data/price`; coverage bounds in
     ``limit_up``, ``limit_down``. Volume is adjusted along with prices; turnover is
     not.
 
-    .. code-block:: python
+    **Examples**
 
-        >>> get_price(["000001.XSHE"], "2024-03-01", "2024-03-06")["close"]
-        8.813035      # forward-adjusted
-        >>> get_price(["000001.XSHE"], "2024-03-01", "2024-03-06",
-        ...           adjust_type="none")["close"]
-        10.49         # as traded
+    Run these blocks in order. Printed results below are **illustrative**, not captured
+    from a live service. Values, identifiers and events are not market facts; ellipses
+    mark omitted content.
 
-    Index codes return an **empty table** with no warning — this function serves
-    stocks only.
+    .. literalinclude:: ../../../../example/1_get_price.py
+        :language: python
+        :start-after: # [get_price.1]
+        :end-before: # [/get_price.1]
+        :prepend: from libfinance import get_price
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/get_price.1.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/1_get_price.py
+        :language: python
+        :start-after: # [get_price.2]
+        :end-before: # [/get_price.2]
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/get_price.2.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/1_get_price.py
+        :language: python
+        :start-after: # [get_price.3]
+        :end-before: # [/get_price.3]
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/get_price.3.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/1_get_price.py
+        :language: python
+        :start-after: # [get_price.4]
+        :end-before: # [/get_price.4]
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/get_price.4.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/1_get_price.py
+        :language: python
+        :start-after: # [get_price.5]
+        :end-before: # [/get_price.5]
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/get_price.5.txt
+        :language: text
+
+    Reading the result: Adjustment changes prices and volume in opposite directions, while turnover stays the same. unstack turns each security into a column.
+
+    :download:`Download the full example <../../../../example/1_get_price.py>`
 
 .. py:function:: get_price_coverage(market='cn')
 
@@ -62,12 +126,36 @@ Semantics are covered in :doc:`../data/price`; coverage bounds in
     minimum of ``raw_end`` and ``adjust_cutoff``, so it is safe to use directly as
     ``end_date``.
 
-    .. code-block:: python
-
-        >>> get_price_coverage()
-        {'XSHE': {'start': '2000-01-04', 'end': '2026-09-18',
-                  'raw_end': '2026-09-18', 'adjust_cutoff': '2026-09-18'},
-         'XSHG': {...}}
-
     ``market`` has a default because the server binds both CN and US: without it
     the call raises ``AmbiguousMarketError`` rather than merging the two.
+
+    **Examples**
+
+    Run these blocks in order. Printed results below are **illustrative**, not captured
+    from a live service. Values, identifiers and events are not market facts; ellipses
+    mark omitted content.
+
+    .. literalinclude:: ../../../../example/1_get_price.py
+        :language: python
+        :start-after: # [get_price_coverage.1]
+        :end-before: # [/get_price_coverage.1]
+        :prepend: from libfinance import get_price_coverage, get_price, get_n_trading_dates_until
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/get_price_coverage.1.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/1_get_price.py
+        :language: python
+        :start-after: # [get_price_coverage.2]
+        :end-before: # [/get_price_coverage.2]
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/get_price_coverage.2.txt
+        :language: text
+
+    Reading the result: The second block reuses coverage from the first. The illustrated end date determines the trailing window; your version can have a different end date.
+
+    :download:`Download the full example <../../../../example/1_get_price.py>`

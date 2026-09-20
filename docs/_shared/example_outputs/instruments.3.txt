@@ -1,0 +1,2 @@
+[Instrument(order_book_id='000001.XSHE', symbol='平安银行', type='CS', market='cn', ...),
+ Instrument(order_book_id='000300.XSHG', symbol='沪深300', type='INDX', market='cn', ...)]

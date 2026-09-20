@@ -4,6 +4,16 @@ Live market data
 
 .. currentmodule:: libfinance
 
+.. list-table::
+    :header-rows: 1
+    :widths: 40 60
+
+    * - Function / class
+      - Purpose
+    * - :func:`~libfinance.get_last_quotes`
+      - Read the latest quote snapshots
+
+
 Semantics are covered in :doc:`../data/realtime`.
 
 Snapshots
@@ -19,13 +29,39 @@ Snapshots
         ``None`` when no snapshot is currently available — outside trading hours,
         or on a deployment with no live feed.
 
-    .. code-block:: python
-
-        >>> get_last_quotes(["600000.XSHG"])
-        {'600000.XSHG': None}
-
 Subscriptions
 =============
+
+    **Examples**
+
+    Run these blocks in order. Printed results below are **illustrative**, not captured
+    from a live service. Values, identifiers and events are not market facts; ellipses
+    mark omitted content.
+
+    .. literalinclude:: ../../../../example/last_quote.py
+        :language: python
+        :start-after: # [get_last_quotes.1]
+        :end-before: # [/get_last_quotes.1]
+        :prepend: from libfinance import get_last_quotes
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/get_last_quotes.1.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/last_quote.py
+        :language: python
+        :start-after: # [get_last_quotes.2]
+        :end-before: # [/get_last_quotes.2]
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/get_last_quotes.2.txt
+        :language: text
+
+    Reading the result: The first block shows the dictionary. The second reads Quote attributes and handles None when no snapshot is available.
+
+    :download:`Download the full example <../../../../example/last_quote.py>`
 
 .. currentmodule:: libfinance.subscribe.quote_api
 

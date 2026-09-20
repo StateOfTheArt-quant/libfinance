@@ -1,0 +1,4 @@
+                         circulation_a  free_circulation
+order_book_id date
+000001.XSHE   2024-06-28   7000000000.0      4000000000.0
+600000.XSHG   2024-06-28   9000000000.0      6000000000.0

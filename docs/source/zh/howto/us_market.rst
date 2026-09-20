@@ -16,7 +16,7 @@
     from libfinance import get_trading_dates, all_instruments, get_price
 
     get_trading_dates("2024-01-01", "2024-01-31", market="us")   # 要 market
-    all_instruments(type="CS", market="us")                      # 要 market
+    all_instruments(market="us")                      # 要 market
     get_price(["AAPL.US"], "2026-03-02", "2026-03-06")           # 不用
 
 哪些数据有美股
@@ -37,7 +37,7 @@
         - 传 ``market="us"``
     *   - :func:`~libfinance.all_instruments` / :func:`~libfinance.instruments`
         - ✅
-        - 股票（\ ``CS``\ ）有；指数返回 0 行
+        - 股票类型使用 ``EQTY``；不要用 ``CS`` 筛选美股
     *   - :func:`~libfinance.get_price`
         - ✅
         - ``turnover`` / ``limit_up`` / ``limit_down`` 为 ``NaN``
