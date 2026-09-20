@@ -166,42 +166,78 @@ def _ensure_fields(fields, fields_dict, stocks, funds, futures, futures888, spot
 
 @export_as_api
 @versioned_cache
-def get_price_coverage(market=None) -> dict:
-    """日频行情各交易所的覆盖区间，形如 ``{"XSHG": {"start": ..., "end": ...}}``。
+def get_price_coverage(market: str = "cn") -> dict:
+    r"""日频行情的覆盖区间，形如 ``{"XSHG": {"start": ..., "end": ...}}``。
 
-    **与交易日历的覆盖不是一回事**：日历是提前发布的（本机实测到 2026-12-31），
-    而行情只到最后一个已收盘交易日（2026-09-15）。"查最近 10 天"之所以会失败，
-    正是因为它把 end_date 取成了今天。
+    :param market: 市场，\ ``"cn"``\ （默认）或 ``"us"``
 
-    ``end`` 是**复权价**能查到的最后一天（默认 adjust_type="pre" 要用 exfactor，而它的
-    cutoff 通常比日频更早）；``raw_end`` 是未复权价能到哪天。
+    **与交易日历的覆盖不是一回事**\ ：日历是提前发布的（实测确认到 2026-12-31），
+    而行情只到最后一个已收盘交易日。"查最近 10 天"之所以会失败，正是因为它把
+    end_date 取成了今天。
 
-    用它先问一句，就不必靠试错：
+    每个市场给四个值：
+
+    ==============  ==========================================================
+    键              含义
+    ==============  ==========================================================
+    start           最早有行情的日期
+    end             **复权价**\ 能查到的最后一天（默认 ``adjust_type="pre"`` 要用
+                    除权因子，而它的 cutoff 通常比行情本身更早，所以这里取两者
+                    的较小值）
+    raw_end         未复权价能查到的最后一天；上游没有给出日级上界时为 ``None``
+    adjust_cutoff   除权因子的 cutoff
+    ==============  ==========================================================
+
+    用它先问一句，就不必靠试错::
 
         cov = get_price_coverage()["XSHG"]
         df = get_price(ids, start_date=..., end_date=cov["end"])
+
+    .. note::
+
+       ``market`` 有默认值是必需的：服务端的 ``daybar`` 命名空间同时绑了 CN 与 US，
+       不传 market 时它无从选路，会直接报 ``AmbiguousMarketError`` 而不是给一个
+       合并结果。
+
+    :raises RuntimeError: 服务端没有给出任何可用的覆盖信息时抛出。\ **不返回空字典**
+        —— 否则"查不到覆盖信息"和"这个市场没有行情"在调用方看来一模一样。
     """
-    args = {} if market is None else {"market": market}
-    info = get_client().call("daybar.dataset_info", args)
-    out = {}
-    for mic, item in (info or {}).items():
-        if isinstance(item, dict) and item.get("coverage_end"):
-            out[mic] = {"start": item.get("coverage_start"), "end": item["coverage_end"],
-                        "raw_end": item["coverage_end"]}
-    # 复权价还要 exfactor，而它的 cutoff 通常**更早**（实测 daybar 到 09-14、exfactor
-    # 到 09-12）。默认 adjust_type="pre" 时真正的上界是两者的较小值，所以这里直接把
-    # end 夹到它 —— 否则调用方按 end 去查会撞上
-    # "2026-09-14 is past this release's cutoff 2026-09-12"。
-    # raw_end 保留未复权价能到哪天。
+    args = {"market": market}
+    info = get_client().call("daybar.dataset_info", args) or {}
+
+    # 两种形状：CN 按 MIC 分组（{"XSHG": {...}, "XSHE": {...}}），US 是单个数据集的
+    # 平铺字典，自己带一个 mic 字段。统一成前者再处理。
+    if "mic" in info and "dataset" in info:
+        info = {str(info.get("mic") or market.upper()): info}
+
     try:
         cutoff = (get_client().call("exfactor.dataset_info", args) or {}).get("cutoff")
     except Exception:
         cutoff = None
-    if cutoff:
-        for item in out.values():
-            item["adjust_cutoff"] = cutoff
-            if item["end"] > cutoff:
-                item["end"] = cutoff
+
+    out = {}
+    for mic, item in info.items():
+        if not isinstance(item, dict):
+            continue
+        raw_end = item.get("coverage_end")
+        # US 的上游产物按月滚动分片，没有日级上界。这里**不从月份编出一个日期** ——
+        # 编出来的精度是数据本身没有的。复权价的上界用除权因子的 cutoff，它是日级且
+        # 权威；未复权价的上界如实留空。
+        end = raw_end
+        if cutoff and (end is None or end > cutoff):
+            end = cutoff
+        if end is None:
+            continue
+        entry = {"start": item.get("coverage_start"), "end": end, "raw_end": raw_end}
+        if cutoff:
+            entry["adjust_cutoff"] = cutoff
+        out[mic] = entry
+
+    if not out:
+        raise RuntimeError(
+            "get_price_coverage: 服务端没有给出 market={!r} 的覆盖信息。"
+            "这不表示该市场没有行情，而是拿不到区间——请检查 market 取值。".format(market)
+        )
     return out
 
 
@@ -242,15 +278,15 @@ def get_price(
     include_now: bool=True,
     adjust_type: str="pre",
     adjust_orig:datetime.datetime = None) -> pd.DataFrame:
-    """获取指定合约的历史 k 线行情，支持任意日频率xd(1d,5d)和任意分钟频率xm(1m,3m,5m,15m)的历史数据。
+    r"""获取指定合约的历史 k 线行情，支持任意日频率xd(1d,5d)和任意分钟频率xm(1m,3m,5m,15m)的历史数据。
 
     .. warning::
 
-       **0.0.2 起 ``adjust_type`` 的默认值从 ``"none"`` 改为 ``"pre"``**（同时
-       ``skip_suspended`` 从 ``True`` 改为 ``False``），与服务端的默认值一致。
+       **0.0.2 起 ``adjust_type`` 的默认值从 ``"none"`` 改为 ``"pre"``**\ （同时
+       ``skip_suspended`` 从 ``True`` 改为 ``False``\ ），与服务端的默认值一致。
 
-       这是一个**静默的数值变化**：不会报错，但不传 ``adjust_type`` 时拿到的价格
-       从不复权变成了前复权。依赖旧行为的代码请显式写 ``adjust_type="none"``。
+       这是一个\ **静默的数值变化**\ ：不会报错，但不传 ``adjust_type`` 时拿到的价格
+       从不复权变成了前复权。依赖旧行为的代码请显式写 ``adjust_type="none"``\ 。
 
        改的理由是此前两边默认值相反 —— 同一个语义调用，走客户端和走服务端内部会得到
        不同的数字，而这种不一致没有任何人能从文档上看出来。
@@ -310,13 +346,14 @@ def get_price(
                       2024-03-11   7.13   7.17   7.06   7.11   26195498.0
     
     """
-    if not frequency.endswith(("d", "w")):
-        return ValueError("current, only suport xd and xw frequency data")
-    
-    # tick数据
-    if frequency == "tick":
-        return ValueError("current, only suport xd and xw data")
-    elif frequency.endswith(("d", "m", "w")):
+    # 这里曾经写的是 return ValueError(...) —— 把异常**返回**给了调用方而不是抛出。
+    # 于是 get_price(..., frequency="1m") 不报错，返回一个 ValueError 对象，调用方
+    # 直到 df.shape 才炸，且错误信息与真正的原因无关。
+    if frequency == "tick" or not frequency.endswith(("d", "w")):
+        raise ValueError(
+            "frequency: 目前只支持日频 '1d'，收到 {!r}".format(frequency)
+        )
+    if frequency.endswith(("d", "m", "w")):
         duration = int(frequency[:-1])
         _frequency = frequency[-1]
         assert 1 <= duration <= 240, "frequency should in range [1, 240]"
@@ -368,15 +405,15 @@ def get_price(
 
 
 def _to_panel(frame):
-    """把 daybar 的扁平列还原成本函数文档里承诺的形状。
+    r"""把 daybar 的扁平列还原成本函数文档里承诺的形状。
 
     本接口对外一直是 ``(order_book_id, datetime)`` 的 MultiIndex。上游给的是符号规范
     §4.1 那个形式 ``<code>.<namespace>`` 的两列 —— ``symbol_namespace`` +
-    ``trading_code``，两个市场逐列同形：``XSHG`` + ``600000``、``US`` + ``AAPL``。
+    ``trading_code``\ ，两个市场逐列同形：\ ``XSHG`` + ``600000``\ 、\ ``US`` + ``AAPL``\ 。
     拼接在这里做，不要求调用方自己拼。
 
-    两条兼容分支，各有各的由来：``exchange_id`` 是 CN 上一版的列名（服务端镜像回滚到
-    旧 libfinanced 时还会出现）；``order_book_id`` 是出参改名的产物，US 统一前给的就
+    两条兼容分支，各有各的由来：\ ``exchange_id`` 是 CN 上一版的列名（服务端镜像回滚到
+    旧 libfinanced 时还会出现）；\ ``order_book_id`` 是出参改名的产物，US 统一前给的就
     是它。真正不认识的形状原样返回 —— 那时候该让调用方看见真实的列，而不是在这里猜。
     """
     if frame is None or not isinstance(frame, pd.DataFrame) or frame.empty:

@@ -43,10 +43,10 @@ def get_concept_meta(source: str = "THS", fields=None, market=None) -> pd.DataFr
 @export_as_api
 def get_concept_weights(concept_ids: list, as_of=None, source: str = "THS",
                         market=None, **kwargs) -> pd.DataFrame:
-    """
-    获取某一个概念的成分股及其权重数据
-    :param concept_ids: 概念id的列表
-    :param as_of: 以该时点**已知**的成分为准；省略则取最新。旧名 ``date`` 仍可用，
+    r"""获取某一个概念的成分股及其权重数据。
+
+    :param concept_ids: 概念 id 的列表
+    :param as_of: 以该时点\ **已知**\ 的成分为准；省略则取最新。旧名 ``date`` 仍可用，
                   但会发 DeprecationWarning。
     :param source: 来源(当前仅支持的同花顺(THS)这一来源的概念分类)
     :param market: 市场，省略则用服务端默认
