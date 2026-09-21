@@ -5,7 +5,7 @@
   <img alt="libfinance" src="https://raw.githubusercontent.com/StateOfTheArt-quant/libfinance/main/docs/_shared/_static/img/libfinance_logo.svg" width="300">
 </picture>
 
-**面向量化研究与回测的 Python 金融数据接口 —— A 股 · 美股**
+**面向量化研究与回测的 Python 金融数据接口 —— A 股与美股，同一套术语**
 
 [![PyPI](https://img.shields.io/pypi/v/libfinance?style=flat-square&logo=pypi&logoColor=white&label=PyPI)](https://pypi.org/project/libfinance/)
 [![docs zh-cn](https://img.shields.io/readthedocs/libfinance?style=flat-square&logo=readthedocs&logoColor=white&label=docs%20zh-cn)](https://libfinance.readthedocs.io/zh-cn/latest/)
@@ -22,7 +22,9 @@
 
 ---
 
-`libfinance` 覆盖 A 股与美股，提供行情、证券信息、交易日历、公司行动、财务数据及行业、指数与概念数据，并支持实时行情订阅。查询结果便于直接用于 pandas 分析。
+`libfinance` 让 A 股与美股使用同一套术语：证券标识的写法相同，查询函数与参数名相同，返回的表结构也相同。两个市场的差别落在数据上，不落在调用方式上。
+
+覆盖行情、证券信息、交易日历、公司行动、财务数据及行业、指数与概念数据，并支持实时行情订阅。查询结果便于直接用于 pandas 分析。
 
 研究需要的不只是历史数字，还包括明确的证券身份、当时有效的信息，以及一致的价格口径。`libfinance` 把这三件事写进了数据设计：
 
@@ -65,6 +67,27 @@ print(get_ex_factor("600000.XSHG", "2023-01-01", "2024-12-31"))
 ```
 
 一分钟看懂这几行取到了什么，见[快速开始](https://libfinance.readthedocs.io/zh-cn/latest/getting_started/quickstart.html)。
+
+## A 股与美股共用一套术语
+
+统一体现在三个层面。
+
+| 层面 | 统一的内容 | 例 |
+| --- | --- | --- |
+| 证券标识 | 写法都是 `<trading_code>.<namespace>`；命名空间的粒度取决于该市场消除歧义所需的范围 | `600000.XSHG`、`AAPL.US` |
+| 函数与参数 | 两个市场调用同一组函数，参数名相同，`as_of` 与 `adjust_type` 的含义一致 | `get_price`、`instruments`、`get_dividends` |
+| 返回结构 | 列名与索引一致；某个市场不适用或未提供的字段取 `NaN`，不另设一张表 | 美股的 `turnover`、`limit_up`、`limit_down` |
+
+需要显式指定市场的，只有不涉及具体证券的查询：交易日历、全市场目录、数据覆盖范围。按证券查询时，命名空间已经给出了市场信息，列表里也可以混合两个市场的代码。
+
+```python
+from libfinance import instruments, get_trading_dates
+
+instruments(["000001.XSHE", "AAPL.US"])                      # 命名空间已给出市场
+get_trading_dates("2024-01-01", "2024-01-31", market="us")   # 不涉及具体证券
+```
+
+统一的是术语和调用约定，数据本身的差异依然存在。下表的「市场」一列标出了每类数据实际覆盖的市场，逐个接口的情况见[查美股](https://libfinance.readthedocs.io/zh-cn/latest/howto/us_market.html)。
 
 ## 数据覆盖
 

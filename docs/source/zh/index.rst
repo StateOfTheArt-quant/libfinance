@@ -6,23 +6,66 @@ libfinance
 
 \[ `English <https://libfinance.readthedocs.io/en/latest/>`_ | 中文 \]
 
-``libfinance`` 是面向量化研究与回测的 Python 金融数据接口，覆盖 A 股与美股，提供行情、证券信息、交易日历、公司行动、财务数据及行业、指数与概念数据，并支持实时行情订阅。查询结果便于直接用于 pandas 分析。
+``libfinance`` 是面向量化研究与回测的 Python 金融数据接口。A 股与美股在这里使用同一套术语：
+证券标识的写法相同，查询函数与参数名相同，返回的表结构也相同。两个市场的差别落在数据上，
+不落在调用方式上。
 
-研究需要的不只是历史数字，还包括明确的证券身份、当时有效的信息，以及一致的价格口径。``libfinance`` 将这些要求融入数据设计：
+覆盖行情、证券信息、交易日历、公司行动、财务数据及行业、指数与概念数据，并支持实时行情订阅。查询结果便于直接用于 pandas 分析。
 
-* **统一的证券标识符**：使用 ``<trading_code>.<namespace>`` 表达证券，例如 ``600000.XSHG``、``000001.XSHE`` 和 ``AAPL.US``，区分不同市场的同名代码；结合历史时点解析代码，减少更名与代码复用带来的歧义。
-* **point-in-time 机制 as_of**：按历史时点还原证券池，并选择当时已披露的财务版本，帮助避免未来信息和幸存者偏差。
-* **高质量的复权因子 exfactor**：结合公司行动处理价格可比性，提供不复权、前复权和后复权行情；通过 ``get_ex_factor`` 查看单次及累计因子，让价格变化有据可查。
+研究需要的不只是历史数字，还包括明确的证券身份、当时有效的信息，以及一致的价格口径。\ ``libfinance`` 将这些要求融入数据设计：
 
-深入了解 :doc:`concepts/security_identifiers`、:doc:`concepts/point_in_time` 与 :doc:`concepts/exfactor`。
+* **统一的证券标识符**\ ：使用 ``<trading_code>.<namespace>`` 表达证券，例如 ``600000.XSHG``\ 、\ ``000001.XSHE`` 和 ``AAPL.US``\ ，区分不同市场的同名代码；结合历史时点解析代码，减少更名与代码复用带来的歧义。
+* **point-in-time 机制 as_of**\ ：按历史时点还原证券池，并选择当时已披露的财务版本，帮助避免未来信息和幸存者偏差。
+* **高质量的复权因子 exfactor**\ ：结合公司行动处理价格可比性，提供不复权、前复权和后复权行情；通过 ``get_ex_factor`` 查看单次及累计因子，让价格变化有据可查。
+
+深入了解 :doc:`concepts/security_identifiers`\ 、\ :doc:`concepts/point_in_time` 与 :doc:`concepts/exfactor`\ 。
 
 .. code-block:: python
 
     from libfinance import get_price
 
-    df = get_price(["000001.XSHE", "600000.XSHG"], "2024-03-01", "2024-03-06")
+    # 两个市场用同一个函数，参数相同。
+    cn = get_price(["000001.XSHE", "600000.XSHG"], "2024-03-01", "2024-03-06")
+    us = get_price(["AAPL.US", "NVDA.US"], "2024-03-01", "2024-03-06")
 
-一分钟看懂这行代码取到了什么，见 :doc:`getting_started/quickstart`\ 。
+一分钟看懂这两行代码取到了什么，见 :doc:`getting_started/quickstart`\ 。
+
+
+A 股与美股共用一套术语
+==========================
+
+统一体现在三个层面。
+
+..  list-table::
+    :header-rows: 1
+    :widths: 22 46 32
+
+    *   - 层面
+        - 统一的内容
+        - 例
+    *   - 证券标识
+        - 写法都是 ``<trading_code>.<namespace>``\ ；命名空间的粒度取决于该市场消除歧义所需的范围
+        - ``600000.XSHG``\ 、\ ``AAPL.US``
+    *   - 函数与参数
+        - 两个市场调用同一组函数，参数名相同，\ ``as_of`` 与 ``adjust_type`` 的含义一致
+        - ``get_price``\ 、\ ``instruments``\ 、\ ``get_dividends``
+    *   - 返回结构
+        - 列名与索引一致；某个市场不适用或未提供的字段取 ``NaN``\ ，不另设一张表
+        - 美股的 ``turnover``\ 、\ ``limit_up``\ 、\ ``limit_down``
+
+需要显式指定市场的，只有不涉及具体证券的查询：交易日历、全市场目录、数据覆盖范围。
+按证券查询时，命名空间已经给出了市场信息，列表里也可以混合两个市场的代码。
+
+..  code-block:: python
+
+    from libfinance import instruments, get_trading_dates
+
+    instruments(["000001.XSHE", "AAPL.US"])            # 命名空间已给出市场
+    get_trading_dates("2024-01-01", "2024-01-31", market="us")   # 不涉及具体证券
+
+统一的是术语和调用约定，数据本身的差异依然存在：股本、财务、行业分类与指数成分目前只覆盖
+A 股，分拆事件只出现在美股；美股没有涨跌停，成交额在部分部署上也没有提供。
+逐个接口的情况见 :doc:`howto/us_market`\ 。
 
 
 这里有什么数据

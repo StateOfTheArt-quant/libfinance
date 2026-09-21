@@ -5,7 +5,7 @@
   <img alt="libfinance" src="https://raw.githubusercontent.com/StateOfTheArt-quant/libfinance/main/docs/_shared/_static/img/libfinance_logo.svg" width="300">
 </picture>
 
-**A Python financial data interface for quantitative research and backtesting — A-shares · US equities**
+**A Python financial data interface for quantitative research and backtesting — A-shares and US equities, one vocabulary**
 
 [![PyPI](https://img.shields.io/pypi/v/libfinance?style=flat-square&logo=pypi&logoColor=white&label=PyPI)](https://pypi.org/project/libfinance/)
 [![docs en](https://img.shields.io/readthedocs/libfinance-en?style=flat-square&logo=readthedocs&logoColor=white&label=docs%20en)](https://libfinance.readthedocs.io/en/latest/)
@@ -22,7 +22,9 @@
 
 ---
 
-`libfinance` covers Chinese A-share and US equity markets. It provides prices, security information, trading calendars, corporate actions, financials, industry classifications, index and concept data, and live market data subscriptions. Query results fit naturally into pandas workflows.
+`libfinance` lets Chinese A-shares and US equities use the same vocabulary: identifiers are written the same way, queries go through the same functions with the same argument names, and results come back in the same table structure. The two markets differ in their data, not in how you ask for it.
+
+It provides prices, security information, trading calendars, corporate actions, financials, industry classifications, index and concept data, and live market data subscriptions. Query results fit naturally into pandas workflows.
 
 Historical research needs clear security identities, information valid at the decision time, and consistent price conventions. These three requirements shape the data design:
 
@@ -65,6 +67,27 @@ print(get_ex_factor("600000.XSHG", "2023-01-01", "2024-12-31"))
 ```
 
 For a line-by-line walkthrough of what these calls return, see the [quickstart](https://libfinance.readthedocs.io/en/latest/getting_started/quickstart.html).
+
+## A-shares and US equities share one vocabulary
+
+The unification holds at three layers.
+
+| Layer | What is shared | Example |
+| --- | --- | --- |
+| Security identifiers | Both are written `<trading_code>.<namespace>`; the granularity of the namespace follows the scope needed to remove ambiguity in that market | `600000.XSHG`, `AAPL.US` |
+| Functions and arguments | Both markets go through the same functions with the same argument names; `as_of` and `adjust_type` carry the same meaning | `get_price`, `instruments`, `get_dividends` |
+| Result shape | The same columns and the same index; a field that does not apply to a market, or that a deployment does not provide, comes back as `NaN` rather than as a separate table | `turnover`, `limit_up`, `limit_down` for US equities |
+
+Only queries that do not name a security need the market stated: trading calendars, the full security master, and coverage ranges. When you query by security, the namespace already carries the market, and one list may mix the two.
+
+```python
+from libfinance import instruments, get_trading_dates
+
+instruments(["000001.XSHE", "AAPL.US"])                      # the namespace carries the market
+get_trading_dates("2024-01-01", "2024-01-31", market="us")   # no security named
+```
+
+What is shared is the vocabulary and the calling convention; the differences in the data remain. The "Markets" column below shows which markets each kind of data covers, and [Querying US equities](https://libfinance.readthedocs.io/en/latest/howto/us_market.html) goes through it function by function.
 
 ## What data is here
 

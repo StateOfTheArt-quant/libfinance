@@ -4,7 +4,7 @@
 .. currentmodule:: libfinance
 
 快照查询返回一次请求的最新报价，订阅接口持续接收推送。
-两者不能替代历史日线或分钟线。行情字段见 :doc:`../data/realtime`。
+两者不能替代历史日线或分钟线。行情字段见 :doc:`../data/realtime`\ 。
 
 .. list-table::
     :header-rows: 1
@@ -35,7 +35,7 @@ get_last_quotes — 一次查询单只或多只证券的最新快照
 
 **示例**
 
-以下按顺序执行，代码后的打印内容为**输出示意**：展示返回结构与参数差异，
+以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
 .. literalinclude:: ../../../../example/last_quote.py
@@ -69,7 +69,7 @@ QuoteApi / QuoteSpi — 持续订阅
 登录成功后发起订阅，在 ``on_depth_market_data`` 中接收报价。
 ``subscribe(["600519"], "XSHG")`` 将代码与交易所分开传递；
 省略 ``source`` 自动选源，指定 ``source`` 则定向订阅。
-完整示例包含登录回调、行情源发现和退出清理，见 :doc:`../howto/subscribe`。
+完整示例包含登录回调、行情源发现和退出清理，见 :doc:`../howto/subscribe`\ 。
 
 .. list-table::
     :header-rows: 1
