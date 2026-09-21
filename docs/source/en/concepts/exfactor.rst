@@ -63,7 +63,7 @@ Events take effect on the ex-date, not the announcement or record date.
 
 Actual ex-date prices can still move with the market. The theoretical price
 removes the corporate-action component; it does not force daily returns to
-zero. 
+zero.
 
 .. note::
 
