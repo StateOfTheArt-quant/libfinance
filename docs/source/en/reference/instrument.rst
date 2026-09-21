@@ -11,21 +11,21 @@ Security codes and master data
     * - Function / class
       - Purpose
     * - :func:`~libfinance.all_instruments`
-      - List securities by market, type and historical date
+      - List securities by market, type and historical snapshot
     * - :func:`~libfinance.instruments`
       - Resolve one or more codes, including mixed markets
 
 
 Semantics are covered in :doc:`../data/instruments`.
 
-.. py:function:: all_instruments(type=None, date=None, market=None, cached=True)
+.. py:function:: all_instruments(type=None, as_of=None, market=None, cached=True)
 
     Master data for every security.
 
     :param type: ``"CS"`` (stocks) or ``"INDX"`` (indices); the aliases
         ``"STOCK"`` and ``"INDEX"`` are accepted, and a list may be passed.
         Omit for everything.
-    :param date: Snapshot as of this day (the server calls this ``as_of``).
+    :param as_of: Snapshot as of this day.
         Omit for the latest.
     :param market: Market; omit to combine all bound markets.
     :param cached: Use the data-version cache when market is omitted; explicit market queries bypass it.
@@ -88,22 +88,22 @@ Semantics are covered in :doc:`../data/instruments`.
     .. literalinclude:: ../../../_shared/example_outputs/all_instruments.5.txt
         :language: text
 
-    Reading the result: The type and market filters change the universe; date selects an identity snapshot. A historical query may still contain the same securities.
+    Reading the result: The type and market filters change the universe; as_of selects an identity snapshot. A historical query may still contain the same securities.
 
     :download:`Download the full example <../../../../example/0a_instrument.py>`
 
-.. py:function:: instruments(order_book_ids, date=None)
+.. py:function:: instruments(order_book_ids, as_of=None)
 
     Master data for specific securities. Codes from multiple markets may be mixed;
     no market parameter is needed.
 
     :param order_book_ids: One code or a list, e.g. ``"000001.XSHE"``
-    :param date: Snapshot as of this day (the server calls this ``as_of``)
+    :param as_of: Snapshot as of this day
     :returns: A single :py:class:`~libfinance.api.instrument.Instrument` for a single code (``None`` if not
         found), or a list of them for a list of codes. Codes that cannot be
         resolved are skipped, so the list may be shorter than the input.
 
-    Pass ``date`` to resolve securities that have since been delisted:
+    Pass ``as_of`` to resolve securities that have since been delisted:
 
     **Examples**
 
@@ -152,7 +152,7 @@ Semantics are covered in :doc:`../data/instruments`.
     .. literalinclude:: ../../../_shared/example_outputs/instruments.4.txt
         :language: text
 
-    Reading the result: A string returns one object; a list returns objects in input order. Historical queries resolve the code valid at that date.
+    Reading the result: A string returns one object; a list returns objects in input order. Historical queries resolve the code valid at the specified observation time.
 
     :download:`Download the full example <../../../../example/0a_instrument.py>`
 

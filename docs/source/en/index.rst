@@ -4,14 +4,15 @@ libfinance
 
 \[ English | `中文 <https://libfinance.readthedocs.io/zh-cn/latest/>`_ \]
 
-``libfinance`` gives quantitative researchers historical data for Chinese A-share
-and US equity markets: prices, security master data, trading calendars, corporate
-actions, financials, share capital, industry classification, index and concept
-constituents, plus live market data subscription.
+``libfinance`` is a Python financial data interface for quantitative research and backtesting across Chinese A-share and US equity markets. It provides prices, security information, trading calendars, corporate actions, financials, industry classifications, index and concept data, and live market data subscriptions. Query results fit naturally into pandas workflows.
 
-These docs are for **people who do research with pandas**. They cover how to get
-the data, and — just as important — how to tell **which version of a number you
-are holding**. That second part decides whether your backtest can be trusted.
+Historical research needs clear security identities, information valid at the decision time, and consistent price conventions. These requirements shape the data design:
+
+* **Unified security identifiers**: ``<trading_code>.<namespace>``, such as ``600000.XSHG``, ``000001.XSHE``, and ``AAPL.US``, distinguishes codes across markets. Historical code resolution helps handle renaming and code reuse.
+* **Point-in-time queries with as_of**: reconstruct historical security universes and select financial statement versions disclosed by the observation date, helping avoid look-ahead and survivorship bias.
+* **High-quality adjustment factors, exfactor**: account for corporate actions when comparing prices, with unadjusted, forward-adjusted, and backward-adjusted series. Inspect event and cumulative factors through ``get_ex_factor`` to understand price adjustments.
+
+Explore :doc:`concepts/security_identifiers`, :doc:`concepts/point_in_time`, and :doc:`concepts/exfactor`.
 
 .. code-block:: python
 
@@ -45,6 +46,10 @@ What data is here
         - CN · US
         - :func:`~libfinance.get_price`
         - OHLC, volume, turnover; adjustable
+    *   - Adjustment factors
+        - CN · US
+        - :func:`~libfinance.get_ex_factor`
+        - Event and cumulative factors by ex-date
     *   - Share capital
         - CN
         - :func:`~libfinance.get_shares`
@@ -102,10 +107,10 @@ Where to start
         "give me the last N sessions".
 
     .. grid-item-card:: I am building a backtest
-        :link: data/point_in_time
+        :link: concepts/point_in_time
         :link-type: doc
 
-        Start with :doc:`data/point_in_time` and :doc:`data/price`.
+        Start with :doc:`concepts/point_in_time` and :doc:`concepts/exfactor`.
         Together they decide whether your backtest sees numbers that did not
         exist at the time.
 
@@ -131,7 +136,7 @@ code runs fine and your numbers are wrong.
     :icon: alert
 
     Same stock, same day: forward-adjusted close 8.81, unadjusted 10.49 — a 16%
-    difference. This default changed in 0.0.2; it used to be unadjusted.
+    difference. Use ``adjust_type`` to select the price convention explicitly.
     See :doc:`data/price`.
 
 .. dropdown:: ``end_date`` cannot be today
@@ -161,18 +166,14 @@ code runs fine and your numbers are wrong.
     getting_started/quickstart
 
 .. toctree::
-    :maxdepth: 2
-    :caption: Understanding the data
+    :maxdepth: 1
+    :caption: Concepts
+    :titlesonly:
     :hidden:
 
-    data/index
-
-.. toctree::
-    :maxdepth: 2
-    :caption: How-to guides
-    :hidden:
-
-    howto/index
+    concepts/security_identifiers
+    concepts/point_in_time
+    concepts/exfactor
 
 .. toctree::
     :maxdepth: 2

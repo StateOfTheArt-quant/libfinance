@@ -4,7 +4,7 @@
 .. currentmodule:: libfinance
 
 先用 ``all_instruments`` 确定研究范围，再用 ``instruments`` 解析具体代码。
-``order_book_id`` 是代码，``symbol`` 是名称；历史代码查询用 ``date`` 指定时点。
+``order_book_id`` 是代码，``symbol`` 是名称；历史代码查询用 ``as_of`` 指定时点。
 
 .. list-table::
     :header-rows: 1
@@ -78,7 +78,7 @@ all_instruments — 筛选某市场、某类型或历史时点的合约范围
 .. literalinclude:: ../../../_shared/example_outputs/all_instruments.5.txt
     :language: text
 
-结果解读：输出只展示部分行列。type 和 market 控制范围；date 改变身份快照，不保证所展示的证券一定发生变化。
+结果解读：输出只展示部分行列。type 和 market 控制范围；as_of 改变身份快照，不保证所展示的证券一定发生变化。
 
 :download:`下载完整示例 <../../../../example/0a_instrument.py>`
 

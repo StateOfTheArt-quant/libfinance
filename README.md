@@ -1,81 +1,67 @@
 # libfinance
 
-\[ English | [中文](README_zh.md) \]
+[中文 | [English](readme_en.md)]
 
-`libfinance` gives quantitative researchers historical data for Chinese A-share
-and US equity markets: prices, security master data, trading calendars, corporate
-actions, financials, share capital, industry classification, index and concept
-constituents, plus live market data subscription.
+`libfinance` 是面向量化研究与回测的 Python 金融数据接口，覆盖 A 股与美股，提供行情、证券信息、交易日历、公司行动、财务数据及行业、指数与概念数据，并支持实时行情订阅。查询结果便于直接用于 pandas 分析。
 
-## Install
+研究需要的不只是历史数字，还包括明确的证券身份、当时有效的信息，以及一致的价格口径。`libfinance` 将这些要求融入数据设计：
 
-```bash
-$ pip install libfinance
-```
+- **统一的证券标识符**：使用 `<trading_code>.<namespace>` 表达证券，例如 `600000.XSHG`、`000001.XSHE` 和 `AAPL.US`，区分不同市场的同名代码；结合历史时点解析代码，减少更名与代码复用带来的歧义。
+- **point-in-time 机制 `as_of`**：按历史时点还原证券池，并选择当时已披露的财务版本，帮助避免未来信息和幸存者偏差。
+- **高质量的复权因子 `exfactor`**：结合公司行动处理价格可比性，提供不复权、前复权和后复权行情；通过 `get_ex_factor` 查看单次及累计因子，让价格变化有据可查。
 
-Or from source:
+## 安装
 
 ```bash
-$ git clone https://github.com/StateOfTheArt-quant/libfinance.git
-$ cd libfinance
-$ pip install -e .
+pip install libfinance
 ```
 
-## Quick start
+从源码安装：
+
+```bash
+git clone https://github.com/StateOfTheArt-quant/libfinance.git
+cd libfinance
+pip install -e .
+```
+
+## 快速开始
+
+按[安装与连接说明](https://libfinance.readthedocs.io/zh-cn/latest/getting_started/installation.html)配置服务后，即可查询：
 
 ```python
-from libfinance import get_trading_dates, get_price
+from libfinance import instruments, get_price, get_ex_factor
 
-trading_dates = get_trading_dates(start_date="2024-05-11", end_date="2024-05-20")
-print(trading_dates)
+# 查询历史时点对应的证券信息。
+print(instruments("600000.XSHG", as_of="2024-03-01"))
 
-data = get_price(["000001.XSHE", "600000.XSHG"], "2024-03-01", "2024-03-06")
-print(data)
+# 显式选择不复权，查看历史原始行情。
+print(get_price(
+    ["000001.XSHE", "600000.XSHG"],
+    "2024-03-01", "2024-03-06", adjust_type="none",
+))
+
+# 查看公司行动对应的单次及累计复权因子。
+print(get_ex_factor("600000.XSHG", "2023-01-01", "2024-12-31"))
 ```
 
-```text
-DatetimeIndex(['2024-05-13', '2024-05-14', '2024-05-15', '2024-05-16',
-               '2024-05-17', '2024-05-20'],
-              dtype='datetime64[ns]', freq=None)
+`get_price` 默认返回前复权行情；通过 `adjust_type="none"`、`"pre"` 或 `"post"` 明确选择口径。可查询日期和数据范围以所连接服务的覆盖为准。
 
-                          open      high       low     close        volume      turnover
-order_book_id datetime
-000001.XSHE   2024-03-01  8.897049  8.905450  8.762627  8.813035  2.175959e+08  1.917689e+09
-              2024-03-04  8.779430  8.821436  8.670212  8.678613  1.971024e+08  1.719563e+09
-              2024-03-05  8.653409  8.796232  8.619804  8.762627  2.163123e+08  1.889144e+09
-              2024-03-06  8.737423  8.779430  8.678613  8.678613  1.601692e+08  1.396940e+09
-600000.XSHG   2024-03-01  6.373316  6.400132  6.346500  6.355438  3.292615e+07  2.094740e+08
-              2024-03-04  6.364377  6.364377  6.301806  6.319683  3.116322e+07  1.971570e+08
-              2024-03-05  6.301806  6.418009  6.292867  6.400132  4.671382e+07  2.976761e+08
-              2024-03-06  6.409071  6.453764  6.364377  6.364377  2.899600e+07  1.858478e+08
-```
+## 概念设计与文档
 
-> **Those are not the prices that traded.** `adjust_type` defaults to `"pre"`
-> (forward-adjusted). On 2024-03-01, `000001.XSHE` actually traded at 10.49, not
-> 8.81. Pass `adjust_type="none"` for traded prices — see
-> [Prices and adjustment](https://libfinance.readthedocs.io/en/latest/data/price.html).
-
-## Documentation
-
-- [English](https://libfinance.readthedocs.io/en/latest/)
-- [中文](https://libfinance.readthedocs.io/zh-cn/latest/)
-
-Worth reading before you rely on the numbers:
-
-| Topic | Why |
+| 主题 | 解决的问题 |
 | --- | --- |
-| [Prices and adjustment](https://libfinance.readthedocs.io/en/latest/data/price.html) | The default is forward-adjusted; volume is adjusted too, turnover is not |
-| [How recent the data is](https://libfinance.readthedocs.io/en/latest/data/freshness.html) | `end_date` cannot be today |
-| [Restatements and `as_of`](https://libfinance.readthedocs.io/en/latest/data/point_in_time.html) | Financial statements get restated; backtests need `as_of` |
+| [统一的证券标识符](https://libfinance.readthedocs.io/zh-cn/latest/concepts/security_identifiers.html) | 区分市场、证券身份及历史代码，准确关联不同数据 |
+| [point-in-time 机制 as_of](https://libfinance.readthedocs.io/zh-cn/latest/concepts/point_in_time.html) | 还原历史证券池与可见财报，避免未来信息和幸存者偏差 |
+| [高质量的复权因子 exfactor](https://libfinance.readthedocs.io/zh-cn/latest/concepts/exfactor.html) | 理解公司行动对价格的影响，以及三种价格口径的计算和用途 |
 
-## Examples
+[中文文档](https://libfinance.readthedocs.io/zh-cn/latest/) · [English documentation](https://libfinance.readthedocs.io/en/latest/) · [示例代码](example/)
 
-Runnable scripts live in [`example/`](example/).
+API 参考按合约信息和交易日历、行情信息、基本面信息、行业和概念信息、公司行动信息、实时行情分组，包含参数说明和带打印结果的场景示例。
 
-## Community
+## 社区
 
-Follow us on WeChat for updates:
+关注公众号获取更新：
 
 <div>
-    <img alt="qr" src="/docs/_shared/_static/img/code.png" width="600" height="220">
+    <img alt="微信公众号二维码" src="docs/_shared/_static/img/code.png" width="600" height="220">
 </div>

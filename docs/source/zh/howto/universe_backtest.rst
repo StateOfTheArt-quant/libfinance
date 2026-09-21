@@ -103,7 +103,7 @@
     *   - 权重加总
         - 约等于 1
     *   - 池子里有没有当时还没上市的票
-        - 用 :func:`~libfinance.instruments` 带 ``date`` 核对 ``listed_date``
+        - 用 :func:`~libfinance.instruments` 带 ``as_of`` 核对 ``listed_date``
 
 ..  warning::
 

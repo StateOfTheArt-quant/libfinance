@@ -104,7 +104,7 @@ Verifying there is no leakage
     *   - Weights summed
         - Approximately 1
     *   - Any name not yet listed at that date
-        - Cross-check ``listed_date`` via :func:`~libfinance.instruments` with ``date=``
+        - Cross-check ``listed_date`` via :func:`~libfinance.instruments` with ``as_of=``
 
 .. warning::
 
