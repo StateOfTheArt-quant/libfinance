@@ -66,14 +66,6 @@ print(get_ex_factor("600000.XSHG", "2023-01-01", "2024-12-31"))
 
 For a line-by-line walkthrough of what these calls return, see the [quickstart](https://libfinance.readthedocs.io/en/latest/getting_started/quickstart.html).
 
-## Three things to know first
-
-These are not advanced topics — they are **defaults**. Miss them and the code still runs, but the numbers are wrong.
-
-- **Without `adjust_type`, you get forward-adjusted prices.** For the same stock on the same day, the forward-adjusted close is 8.81 and the unadjusted close is 10.49 — a 16% difference. Select the convention explicitly with `adjust_type="none"` / `"pre"` / `"post"`; see [prices and adjustment](https://libfinance.readthedocs.io/en/latest/data/price.html).
-- **`end_date` cannot be today.** The trading calendar is published ahead of time, while prices only reach the **last closed session**. Passing today as `end_date` is rejected explicitly rather than returning a shorter table; see [data freshness](https://libfinance.readthedocs.io/en/latest/data/freshness.html).
-- **Financial statements get restated.** The same quarter's net profit is stored in several versions; without `as_of` in a backtest you are using numbers that did not exist yet. See [point-in-time financials](https://libfinance.readthedocs.io/en/latest/data/point_in_time.html).
-
 ## What data is here
 
 | Data | Markets | Main function | Notes |

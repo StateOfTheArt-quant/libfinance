@@ -66,14 +66,6 @@ print(get_ex_factor("600000.XSHG", "2023-01-01", "2024-12-31"))
 
 一分钟看懂这几行取到了什么，见[快速开始](https://libfinance.readthedocs.io/zh-cn/latest/getting_started/quickstart.html)。
 
-## 三件事值得先知道
-
-它们不是高级话题，是**默认行为**。不知道的话，代码能跑，数字是错的。
-
-- **不传 `adjust_type`，你拿到的是前复权价。** 同一只股票、同一天，前复权收盘价 8.81，未复权 10.49 —— 差 16%。用 `adjust_type="none"` / `"pre"` / `"post"` 显式选择口径，见[行情与复权](https://libfinance.readthedocs.io/zh-cn/latest/data/price.html)。
-- **`end_date` 不能写今天。** 交易日历是提前发布的，行情只到**最后一个已收盘交易日**；拿今天当 `end_date` 会被明确拒绝，而不是返回一张短一点的表。见[数据新鲜度](https://libfinance.readthedocs.io/zh-cn/latest/data/freshness.html)。
-- **财报会被追溯修订。** 同一个季度的净利润在库里存着多个版本；回测里不传 `as_of`，你用的就是未来才存在的数字。见[point-in-time 财务数据](https://libfinance.readthedocs.io/zh-cn/latest/data/point_in_time.html)。
-
 ## 数据覆盖
 
 | 数据 | 市场 | 主要函数 | 说明 |
