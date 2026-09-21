@@ -37,7 +37,7 @@
         - 传 ``market="us"``
     *   - :func:`~libfinance.all_instruments` / :func:`~libfinance.instruments`
         - ✅
-        - 股票类型使用 ``EQTY``；不要用 ``CS`` 筛选美股
+        - 股票用 ``CS``\ ；指数返回 0 行
     *   - :func:`~libfinance.get_price`
         - ✅
         - ``turnover`` / ``limit_up`` / ``limit_down`` 为 ``NaN``

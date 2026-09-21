@@ -112,7 +112,7 @@ For US equities pass ``market="us"``:
 .. code-block:: python
 
     >>> us = all_instruments(market="us")
-    >>> us[us["type"] == "EQTY"].head()
+    >>> us[us["type"] == "CS"].head()
 
 .. note::
 
