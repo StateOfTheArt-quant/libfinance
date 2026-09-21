@@ -20,6 +20,8 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.12"
+    # KaTeX prerendering runs during the Sphinx build.
+    nodejs: "22"
 
 sphinx:
   configuration: docs/source/en/conf.py
