@@ -195,7 +195,7 @@ def test_instruments_mixed_markets_without_market(monkeypatch):
     monkeypatch.setattr(instrument, "get_client", lambda: Client())
     assert "market" not in inspect.signature(instrument.instruments).parameters
     ids = ["AAPL.US", "MISSING.US", "600000.XSHG", "AAPL.US"]
-    result = instrument.instruments(ids, date="2022-04-15")
+    result = instrument.instruments(ids, as_of="2022-04-15")
     assert [item.order_book_id for item in result] == [ids[0], ids[2], ids[3]]
     assert [item.market for item in result] == ["us", "cn", "us"]
     assert calls == [(ids, "2022-04-15")]
@@ -244,3 +244,69 @@ def test_code_queries_send_codes_without_market(monkeypatch, name, kwargs, expec
         assert calls[0][key] == value
     with pytest.raises(TypeError):
         fn(**kwargs, market="cn")
+
+
+@pytest.mark.parametrize("cached,market", [(True, None), (False, None), (True, "cn")])
+def test_all_instruments_as_of_reaches_server_and_separates_snapshots(monkeypatch, cached, market):
+    from datetime import date
+    from libfinance.api import instrument
+    from libfinance.utils import cache
+    import pandas as pd
+
+    calls = []
+
+    class Client:
+        def all_instruments(self, **kwargs):
+            calls.append(kwargs)
+            return pd.DataFrame([{"order_book_id": kwargs["as_of"] or "CURRENT"}])
+
+    monkeypatch.setattr(instrument, "get_client", lambda: Client())
+    monkeypatch.setattr(cache, "current_data_version", lambda: "pit-contract-test")
+    instrument._all_instruments_cached.clear()
+    try:
+        for day in (date(2022, 4, 15), date(2024, 6, 28), None):
+            result = instrument.all_instruments(as_of=day, market=market, cached=cached)
+            expected = day.isoformat() if day else None
+            assert calls[-1]["as_of"] == expected
+            assert "date" not in calls[-1]
+            assert result.iloc[0]["order_book_id"] == (expected or "CURRENT")
+        assert len(calls) == 3
+    finally:
+        instrument._all_instruments_cached.clear()
+
+
+def test_instrument_queries_expose_as_of_and_reject_retired_date():
+    from libfinance.api import instrument
+
+    for fn, args in [(instrument.all_instruments, ()), (instrument.instruments, ("AAPL.US",))]:
+        assert "as_of" in inspect.signature(fn).parameters
+        assert "date" not in inspect.signature(fn).parameters
+        with pytest.raises(TypeError, match="date"):
+            fn(*args, date="2022-04-15")
+
+
+def test_exfactor_normalizes_dates_and_preserves_factor_table(monkeypatch):
+    from datetime import date
+    from libfinance.api import exfactor
+    import pandas as pd
+
+    calls = []
+    expected = pd.DataFrame(
+        {"order_book_id": ["AAPL.US"], "ex_factor": [1.01], "ex_cum_factor": [2.02]},
+        index=pd.DatetimeIndex(["2023-08-11"], name="ex_date"))
+
+    class Client:
+        def get_ex_factor(self, **kwargs):
+            calls.append(kwargs)
+            return expected
+
+    monkeypatch.setattr(exfactor, "get_client", lambda: Client())
+    assert exfactor.get_ex_factor("AAPL.US", date(2023, 1, 1), date(2023, 12, 31)) is expected
+    assert calls == [{"order_book_ids": ["AAPL.US"], "start_date": "2023-01-01", "end_date": "2023-12-31"}]
+    with pytest.raises(ValueError):
+        exfactor.get_ex_factor([])
+    with pytest.raises(ValueError):
+        exfactor.get_ex_factor("AAPL.US", "2024-01-01", "2023-01-01")
+    with pytest.raises(TypeError):
+        exfactor.get_ex_factor("AAPL.US", market="us")
+    assert len(calls) == 1

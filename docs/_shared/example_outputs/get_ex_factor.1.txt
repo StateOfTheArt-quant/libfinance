@@ -1,0 +1,5 @@
+           order_book_id  ex_factor  ex_cum_factor
+ex_date
+2023-07-21   600000.XSHG       1.04          5.200
+2024-07-18   600000.XSHG       1.05          5.460
+...

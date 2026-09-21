@@ -1,0 +1,5 @@
+           order_book_id  ex_factor  ex_cum_factor
+ex_date
+2023-07-21   600000.XSHG      1.040          5.200
+2023-08-11       AAPL.US      1.002          8.016
+...

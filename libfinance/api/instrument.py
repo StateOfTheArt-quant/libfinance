@@ -132,7 +132,7 @@ def _get_instrument(type_, order_book_id, as_of=None):
 @export_as_api
 def all_instruments(
     type: Optional[Union[str, List[str]]] = None,
-    date=None,
+    as_of=None,
     market: Optional[str] = None,
     cached: bool = True,
 ) -> pd.DataFrame:
@@ -140,13 +140,13 @@ def all_instruments(
 
     :param type: ``"CS"``\ （股票）或 ``"INDX"``\ （指数），也接受 ``"STOCK"`` / ``"INDEX"``
                  这两个别名；可以是列表。省略则返回全部。
-    :param date: 以该日为准的快照（服务端参数名是 ``as_of``\ ）。省略则取最新。
+    :param as_of: 业务有效时点，按该日的证券身份快照查询；省略则取当前状态。
     :param market: 市场，如 ``"cn"`` / ``"us"``；省略则合并服务端已绑定市场。
     :param cached: 是否使用按服务端数据版本更新的缓存；显式指定市场时直接查询。
     :returns: 以 ``order_book_id`` 打头的 DataFrame。
     """
     types = _normalize_types(type)
-    as_of = to_date_str(date) if date is not None else None
+    as_of = to_date_str(as_of) if as_of is not None else None
     if cached and market is None:
         return _all_instruments_cached(tuple(types) if types else None, as_of)
     return _rename(get_client().all_instruments(type=types, as_of=as_of, market=market))
@@ -155,12 +155,12 @@ def all_instruments(
 @export_as_api
 def instruments(
     order_book_ids: Union[str, List[str]],
-    date=None,
+    as_of=None,
 ):
     r"""获取指定证券的详细信息。
 
     :param order_book_ids: 单个代码或跨市场代码列表，无需指定市场，如 ``"000001.XSHE"``\ 。
-    :param date: 以该日为准的快照（服务端参数名是 ``as_of``\ ）。
+    :param as_of: 业务有效时点，按该日有效的代码解析证券；省略则取当前状态。
     :returns: 传入单个代码时返回一个 :class:`~libfinance.api.instrument.Instrument`\ （查不到则返回 ``None``\ ）；
               传入列表时返回 :class:`~libfinance.api.instrument.Instrument` 列表，查不到的代码会被跳过。
     """
@@ -169,7 +169,7 @@ def instruments(
     if not ids:
         raise ValueError("order_book_ids: at least one order book id expected")
 
-    as_of = to_date_str(date) if date is not None else None
+    as_of = to_date_str(as_of) if as_of is not None else None
     frame = _rename(
         get_client().instruments(symbols=ids, as_of=as_of)
     )

@@ -18,6 +18,8 @@ Corporate actions
       - Read allotment events
     * - :func:`~libfinance.get_spinoffs`
       - Read US spin-offs and valuation information
+    * - :func:`~libfinance.get_ex_factor`
+      - Inspect event and cumulative factors
 
 
 Semantics are covered in :doc:`../data/corporate_actions`. All four functions take
@@ -197,3 +199,100 @@ are split and merged. Unsupported markets raise an error, not a partial result.
     Reading the result: Read the valuation price together with its basis and source. Illustrated values are not actual spin-off terms.
 
     :download:`Download the full example <../../../../example/corporate_actions.py>`
+
+
+get_ex_factor — Inspect event and cumulative factors
+------------------------------------------------------------
+
+.. py:function:: get_ex_factor(order_book_ids, start_date=None, end_date=None)
+
+    Query event factors using complete security codes; mixed CN/US lists are supported.
+
+    :param order_book_ids: One code or a list; the server infers each market
+    :param start_date: Inclusive first ex-date; omit for the earliest record
+    :param end_date: Inclusive last ex-date; omit for the dataset cutoff. Codes are
+        resolved at this business date, or against current identities when omitted
+    :returns: DataFrame indexed by ex_date (DatetimeIndex), with order_book_id,
+        ex_factor and ex_cum_factor. An empty window for a covered security
+        retains the same index and column structure.
+
+    ex_factor is the prior close divided by
+    theoretical ex-price, with same-day actions combined. ex_cum_factor is
+    calculated from 1 before the security's first event in the dataset release;
+    it never restarts at the requested start_date. Unpriced events anywhere in
+    the cumulative history raise an error, including events before start_date.
+    Unknown securities and coverage errors also propagate.
+
+    See :doc:`../concepts/exfactor` for calculations and charts.
+
+    **Result fields**
+
+    .. list-table::
+        :header-rows: 1
+        :widths: 24 18 58
+
+        * - Index / column
+          - Type
+          - Meaning
+        * - ``ex_date`` (index)
+          - DatetimeIndex
+          - Ex-date; multiple securities may have rows on the same date.
+        * - ``order_book_id``
+          - str
+          - Complete security identifier, distinguishing securities and markets.
+        * - ``ex_factor``
+          - float
+          - Event factor for this ex-date, combining same-day actions.
+        * - ``ex_cum_factor``
+          - float
+          - Product of event factors from the security's first event in the
+            current dataset release through this row's ex-date.
+
+    CN and US use the same cumulative rule: start at 1 before the first event
+    and include the event on the row's date. Coverage differs between securities,
+    so cumulative
+    levels cannot be used to compare returns across securities. Adjustment ratios
+    use cumulative values at two dates for the same security and dataset release.
+
+    **Examples**
+
+    These outputs illustrate structure only. Values and events are not actual
+    market data and must not be used for investment calculations.
+
+    .. literalinclude:: ../../../../example/4b_exfactor.py
+        :language: python
+        :start-after: # [get_ex_factor.1]
+        :end-before: # [/get_ex_factor.1]
+        :prepend: from libfinance import get_ex_factor
+
+    Illustrative output:
+
+    .. literalinclude:: ../../../_shared/example_outputs/get_ex_factor.1.txt
+        :language: text
+
+    .. literalinclude:: ../../../../example/4b_exfactor.py
+        :language: python
+        :start-after: # [get_ex_factor.2]
+        :end-before: # [/get_ex_factor.2]
+
+    Illustrative output:
+
+    .. literalinclude:: ../../../_shared/example_outputs/get_ex_factor.2.txt
+        :language: text
+
+    Reading the result: assume the cumulative factor before 2023-07-21 is 5.
+    The event factor of 1.04 gives ``5 × 1.04 = 5.2``. Restricting the query to
+    July 2023 still returns 5.2, not 1.04. The next event yields
+    ``5.2 × 1.05 = 5.46``.
+
+    .. literalinclude:: ../../../../example/4b_exfactor.py
+        :language: python
+        :start-after: # [get_ex_factor.3]
+        :end-before: # [/get_ex_factor.3]
+
+    Illustrative output:
+
+    .. literalinclude:: ../../../_shared/example_outputs/get_ex_factor.3.txt
+        :language: text
+
+    :download:`Download example <../../../../example/4b_exfactor.py>`

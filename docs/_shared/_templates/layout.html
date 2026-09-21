@@ -110,14 +110,12 @@
         <ul>
           {% if doc_language == 'zh' %}
           <li><a href="{{ pathto('getting_started/quickstart') }}">快速开始</a></li>
-          <li><a href="{{ pathto('data/index') }}">数据说明</a></li>
-          <li><a href="{{ pathto('howto/index') }}">使用指南</a></li>
+          <li><a href="{{ pathto('concepts/security_identifiers') }}">概念设计</a></li>
           <li><a href="{{ pathto('reference/index') }}">API 参考</a></li>
           <li><a href="{{ theme_variables.external_urls['docs_en'] }}">English</a></li>
           {% else %}
           <li><a href="{{ pathto('getting_started/quickstart') }}">Get Started</a></li>
-          <li><a href="{{ pathto('data/index') }}">Data</a></li>
-          <li><a href="{{ pathto('howto/index') }}">How-to</a></li>
+          <li><a href="{{ pathto('concepts/security_identifiers') }}">Concepts</a></li>
           <li><a href="{{ pathto('reference/index') }}">API</a></li>
           <li><a href="{{ theme_variables.external_urls['docs_zh'] }}">中文</a></li>
           {% endif %}

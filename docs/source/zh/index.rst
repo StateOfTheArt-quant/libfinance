@@ -6,11 +6,15 @@ libfinance
 
 \[ `English <https://libfinance.readthedocs.io/en/latest/>`_ | 中文 \]
 
-``libfinance`` 给量化研究者提供 A 股与美股的历史数据：行情、证券主数据、交易日历、
-公司行动、财务、股本、行业分类、指数与概念成分，以及实时行情订阅。
+``libfinance`` 是面向量化研究与回测的 Python 金融数据接口，覆盖 A 股与美股，提供行情、证券信息、交易日历、公司行动、财务数据及行业、指数与概念数据，并支持实时行情订阅。查询结果便于直接用于 pandas 分析。
 
-这份文档帮助\ **会用 pandas 做研究的人\ **\ ，取到口径明确的数据，并且能判断**拿到的数字
-是哪一天、哪一种口径下的值**——后面这件事决定了你的回测结果是否可信。
+研究需要的不只是历史数字，还包括明确的证券身份、当时有效的信息，以及一致的价格口径。``libfinance`` 将这些要求融入数据设计：
+
+* **统一的证券标识符**：使用 ``<trading_code>.<namespace>`` 表达证券，例如 ``600000.XSHG``、``000001.XSHE`` 和 ``AAPL.US``，区分不同市场的同名代码；结合历史时点解析代码，减少更名与代码复用带来的歧义。
+* **point-in-time 机制 as_of**：按历史时点还原证券池，并选择当时已披露的财务版本，帮助避免未来信息和幸存者偏差。
+* **高质量的复权因子 exfactor**：结合公司行动处理价格可比性，提供不复权、前复权和后复权行情；通过 ``get_ex_factor`` 查看单次及累计因子，让价格变化有据可查。
+
+深入了解 :doc:`concepts/security_identifiers`、:doc:`concepts/point_in_time` 与 :doc:`concepts/exfactor`。
 
 .. code-block:: python
 
@@ -44,6 +48,10 @@ libfinance
         - CN · US
         - :func:`~libfinance.get_price`
         - 开高低收、成交量额，可复权
+    *   - 复权因子
+        - CN · US
+        - :func:`~libfinance.get_ex_factor`
+        - 逐除权日的单次及累计因子
     *   - 股本结构
         - CN
         - :func:`~libfinance.get_shares`
@@ -100,10 +108,10 @@ libfinance
         坑走了一遍。
 
     ..  grid-item-card:: 我要做回测
-        :link: data/point_in_time
+        :link: concepts/point_in_time
         :link-type: doc
 
-        先读 :doc:`data/point_in_time` 与 :doc:`data/price`\ 。
+        先读 :doc:`concepts/point_in_time` 与 :doc:`concepts/exfactor`\ 。
         这两章决定了你的回测会不会用到当时还看不到的数字。
 
     ..  grid-item-card:: 我要实时行情
@@ -126,8 +134,7 @@ libfinance
     :color: warning
     :icon: alert
 
-    同一只股票、同一天，前复权收盘价 8.81，未复权 10.49——差 16%。这个默认值在 0.0.2
-    改过，改之前是不复权。见 :doc:`data/price`\ 。
+    同一只股票、同一天，前复权收盘价 8.81，未复权 10.49——差 16%。通过 ``adjust_type`` 显式选择价格口径。见 :doc:`data/price`\ 。
 
 ..  dropdown:: ``end_date`` 不能写今天
     :color: warning
@@ -152,19 +159,15 @@ libfinance
     getting_started/installation
     getting_started/quickstart
 
-..  toctree::
-    :maxdepth: 2
-    :caption: 数据说明
+.. toctree::
+    :maxdepth: 1
+    :caption: 概念设计
+    :titlesonly:
     :hidden:
 
-    data/index
-
-..  toctree::
-    :maxdepth: 2
-    :caption: 使用指南
-    :hidden:
-
-    howto/index
+    concepts/security_identifiers
+    concepts/point_in_time
+    concepts/exfactor
 
 ..  toctree::
     :maxdepth: 2

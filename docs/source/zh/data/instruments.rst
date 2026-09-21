@@ -131,7 +131,7 @@
     >>> instruments("600837.XSHG")            # 按今天问
     None
 
-    >>> instruments("600837.XSHG", date="2022-09-20")   # 按 2022 年问
+    >>> instruments("600837.XSHG", as_of="2022-09-20")   # 按 2022 年问
     Instrument(order_book_id='600837.XSHG', symbol='海通证券', type='CS', market='cn',
                listed_date='1994-02-24T00:00:00.000',
                de_listed_date='2025-03-04T00:00:00.000')
