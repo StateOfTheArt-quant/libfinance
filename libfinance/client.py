@@ -1,3 +1,4 @@
+import os
 import socket
 import struct
 import threading
@@ -397,9 +398,24 @@ class RpcClient:
         return response
 
 
-# 默认懒连接参数；可在 import libfinance 之后、第一次调 api 之前显式 init_client(...) 覆盖
-_DEFAULT_HOST = "libfinance.tech"
-_DEFAULT_PORT = 8080
+# 默认懒连接参数。**先读环境变量，读不到才用内置值**：
+#
+#     export LIBFINANCE_HOST=127.0.0.1        # 指向本机服务
+#     export LIBFINANCE_PORT=8080
+#
+# 这样本地调试不必在每个脚本里写一行 init_client(host="127.0.0.1")，也就不会有人
+# 把那一行误提交上去。**不设变量时与从前逐字相同**，对外发布的默认行为不变。
+#
+# 注意内置默认值 libfinance.tech 是**活的生产环境**：不设变量、也不显式 init_client
+# 时，第一次调 api 就会静默连到线上，而不是"连不上"。
+#
+# 取值发生在 import 时，所以 export 必须在 `import libfinance` 之前。
+#
+# 用 `or` 而不是 get(key, default)：`export LIBFINANCE_HOST=` 这种空值该退回默认，
+# 而不是拿一个空 host 去连。端口必须 int()，环境变量永远是字符串，直接交给 socket
+# 会炸在很深的地方、报一个与真正原因毫无关系的错。
+_DEFAULT_HOST = os.environ.get("LIBFINANCE_HOST") or "libfinance.tech"
+_DEFAULT_PORT = int(os.environ.get("LIBFINANCE_PORT") or 8080)
 
 # 初始化函数
 def init_client(host: str = _DEFAULT_HOST, port: int = _DEFAULT_PORT):
