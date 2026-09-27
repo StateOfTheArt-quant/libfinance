@@ -62,13 +62,17 @@ and your methods are called as data arrives.
                 # Subscribe here, not in main — see below
                 api.subscribe(["600519"], "XSHG")
 
-        def on_depth_market_data(self, quote):
+        def on_depth_market_data(self, quote, envelope):
             print(quote.order_book_id, quote.last_price)
 
     api = QuoteApi()
     api.register_spi(MySpi())
-    api.connect("gateway-host", 9001)
-    api.login("user", "password")
+    api.connect()      # no login needed: a ticket and the gateway address come from the service
+
+**No login is required.** The SDK fetches a short-lived ticket from the libfinance service to connect
+to the market data gateway, and renews it before it expires without interrupting subscriptions.
+Without a login you get a basic allowance **per IP** (number of contracts, markets, connections,
+messages per second); logging in gives your account tier's larger allowance.
 
 .. important::
 
@@ -76,7 +80,8 @@ and your methods are called as data arrives.
 
     After a disconnect the client reconnects and logs in again automatically, and
     a successful login fires ``on_rsp_login`` once more — so subscriptions placed
-    there are replayed. Placed anywhere else, they are silently lost on
+    there are replayed, and data missed while disconnected is **re-sent by sequence
+    number**, with no duplicates or gaps. Placed anywhere else, they are silently lost on
     reconnect: the program keeps running, the logs look fine, and no data ever
     arrives again.
 

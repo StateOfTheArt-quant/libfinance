@@ -22,7 +22,7 @@
     * - 函数 / 类
       - 解决的问题
     * - :class:`~libfinance.subscribe.quote_api.QuoteApi`
-      - 连接、登录、发现行情源并订阅或退订
+      - 连接、发现行情源并订阅或退订（无需登录）
     * - :class:`~libfinance.subscribe.quote_api.QuoteSpi`
       - 通过回调处理连接状态、订阅回执与报价
     * - :class:`~libfinance.subscribe.md_protocol.Quote`
@@ -66,7 +66,8 @@ get_last_quotes — 一次查询单只或多只证券的最新快照
 QuoteApi / QuoteSpi — 持续订阅
 ----------------------------------------------------
 
-登录成功后发起订阅，在 ``on_depth_market_data`` 中接收报价。
+``connect()`` 即可：不必登录，SDK 自动向服务取行情票据（不登录按 IP 额度）、到期前自动续期。
+登录成功（``on_rsp_login``）后发起订阅，在 ``on_depth_market_data(quote, envelope)`` 中接收报价。
 ``subscribe(["600519"], "XSHG")`` 将代码与交易所分开传递；
 省略 ``source`` 自动选源，指定 ``source`` 则定向订阅。
 完整示例包含登录回调、行情源发现和退出清理，见 :doc:`../howto/subscribe`\ 。
@@ -76,8 +77,10 @@ QuoteApi / QuoteSpi — 持续订阅
 
     * - 方法
       - 解决的问题
-    * - ``connect`` / ``login`` / ``register_spi``
-      - 建立连接、登录并注册回调处理器
+    * - ``connect`` / ``register_spi``
+      - 建立连接（自动取票据登录）并注册回调处理器
+    * - ``login``
+      - 可选：自己提供票据（字符串或返回票据的函数）
     * - ``query_sources``
       - 查询可用行情源及其状态
     * - ``subscribe`` / ``unsubscribe``

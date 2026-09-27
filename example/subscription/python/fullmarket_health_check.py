@@ -10,7 +10,8 @@ subscribe_all 按「市场 × 品种 × 数据类型」下单，**客户端不�
 网关自己挑一个申报 whole_market 的健康源承接推送，回执里回显是哪个源。
 因此覆盖即真实全市场、不含空号。
 
-前提：账号订阅配额必须无限制（整市场订阅绕开逐合约计数，受限账号会被拒，error_id=6）。
+前提：票据授予整市场订阅（grant.sub_all）。不登录按 IP 拿到的最小额度不含它（会被拒，error_id=8），
+需要用 --ticket 提供一张有整市场授权的票据（例如 libfinance-service 为高等级账号签发的）。
 
 用法:
     python fullmarket_health_check.py --duration 20
@@ -48,7 +49,7 @@ class HealthSpi(QuoteSpi):
         self.login_ok = (rsp.error_id == 0)
         mx = "unlimited" if rsp.max_subscriptions < 0 else rsp.max_subscriptions
         print(f"[health] login {'OK' if self.login_ok else 'FAIL'} "
-              f"level={rsp.user_level} max_subs={mx} "
+              f"whole_market={rsp.sub_all} max_subs={mx} "
               f"{'' if self.login_ok else rsp.error_msg}")
         self.logged_in.set()
 
@@ -58,7 +59,7 @@ class HealthSpi(QuoteSpi):
         self.sub_errno = rsp.error_id
         self.feed_source = rsp.source
 
-    def on_depth_market_data(self, q):
+    def on_depth_market_data(self, q, envelope):
         now = time.time()
         key = f"{q.exchange_id}.{q.instrument_id}"
         with self.lock:
@@ -86,8 +87,8 @@ def pct(xs, p):
 
 def main():
     ap = argparse.ArgumentParser(description="实时行情源全市场体检（subscribe_all）")
-    ap.add_argument("--host", default="127.0.0.1")
-    ap.add_argument("--port", type=int, default=9001)
+    ap.add_argument("--gateways", default=None,
+                    help="网关地址 host:port[,host:port]；不给则用 libfinance-service 返回的")
     ap.add_argument("--market", default="All",
                     choices=[m.name for m in MarketType],
                     help="市场维度，All=不限（默认）")
@@ -97,8 +98,7 @@ def main():
     ap.add_argument("--data-type", default="All",
                     choices=[t.name for t in SubscribeDataType],
                     help="数据类型维度，All=不限（默认）")
-    ap.add_argument("--user", default="", help="登录账户（整市场订阅要求配额无限制）")
-    ap.add_argument("--password", default="")
+    ap.add_argument("--ticket", default="", help="有整市场授权的票据；不给则自动向 libfinance-service 取（按 IP 额度）")
     ap.add_argument("--duration", type=int, default=20, help="采集时长(秒)")
     ap.add_argument("--min-instruments", type=int, default=0,
                     help="出数标的少于此值判不健康，0=不判")
@@ -109,20 +109,17 @@ def main():
     spi = HealthSpi()
     api = QuoteApi()
     api.register_spi(spi)
-    if api.connect(args.host, args.port) != 0:
+    if args.ticket:
+        api.login(args.ticket)
+    if api.connect(args.gateways) != 0:
         print("[health] connect failed", file=sys.stderr)
         return 2
     stop = threading.Event()
     signal.signal(signal.SIGINT, lambda *_: stop.set())
-
-    if args.user:
-        api.login(args.user, args.password)
-        spi.logged_in.wait(timeout=5)
-        if not spi.login_ok:
-            api.disconnect()
-            return 2
-    else:
-        print("[health][warn] 未登录(guest)：整市场订阅需登录且配额无限制，可能被拒")
+    spi.logged_in.wait(timeout=5)
+    if not spi.login_ok:
+        api.disconnect()
+        return 2
 
     # 整市场订阅：一条 subscribe_all，网关挑承接源并让它走全量推送（不枚举代码、无空号）
     market = MarketType[args.market]
@@ -158,7 +155,7 @@ def main():
 
     print("\n" + "=" * 60)
     print(f"实时源体检  承接源={spi.feed_source or '(未知)'}  "
-          f"条件={market.name}/{itype.name}/{dtype.name}  {args.host}:{args.port}")
+          f"条件={market.name}/{itype.name}/{dtype.name}  {args.gateways or '(libfinance-service)'}")
     print("=" * 60)
     print(f"覆盖      出数标的={covered}（整市场订阅，无空号）")
     print(f"吞吐      总行情={total}  采集={elapsed:.1f}s  qps≈{total/elapsed:.0f}")
