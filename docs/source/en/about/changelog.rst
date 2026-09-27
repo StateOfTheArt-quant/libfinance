@@ -4,6 +4,30 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
+Unreleased
+==========
+
+.. danger::
+
+    **Live subscription (``libfinance.subscribe``) now speaks gateway protocol v3 and
+    is incompatible with older gateways.**
+
+    - ``QuoteApi.login(user_id, password)`` is gone: **no login is needed**. ``connect()``
+      fetches a market data ticket from the service (a basic per-IP allowance without
+      login) and renews it before expiry; ``login(token)`` is only for supplying your own ticket.
+    - Without an address, ``connect()`` uses the gateway address returned with the ticket;
+      ``connect("host:port,host:port")`` still works.
+    - Quote callbacks take a second argument: ``on_depth_market_data(quote, envelope)``,
+      where ``envelope`` is the gateway's sequencing envelope (sequence numbers and
+      timestamps). The old one-argument form raises ``TypeError``.
+    - ``LoginRsp`` drops ``user_level`` and echoes the allowance instead
+      (``max_subscriptions``, ``sub_all``, ``expires_at_ms``, …).
+    - Whole-market subscription now depends on the allowance including it, not on an
+      unlimited quota (otherwise ``error_id=8``).
+    - New: re-sending missed records by sequence number after a reconnect,
+      ``on_sequence_gap``, ``on_stream_status``, ``on_rsp_reauth``, ``on_session_closed``,
+      and callbacks for trades, orders, tick and depth data.
+
 0.0.6
 =====
 

@@ -141,7 +141,7 @@ No quotes arriving on a subscription
     *   - Is the subscribe call inside ``on_rsp_login``?
         - Anywhere else and it is lost after a reconnect, **with no error at all**
     *   - ``error_id`` in ``on_rsp_subscribe``
-        - 4 no source, 5 routing conflict, 6 quota exceeded
+        - 4 no source, 5 routing conflict, 6 subscription limit, 7 market not allowed, 8 no whole-market allowance
     *   - Did you include a suffix on the code?
         - ``subscribe()`` wants the bare code, with the exchange passed separately
     *   - Anything blocking in the callback?

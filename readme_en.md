@@ -5,40 +5,49 @@
   <img alt="libfinance" src="https://raw.githubusercontent.com/StateOfTheArt-quant/libfinance/main/docs/_shared/_static/img/libfinance_logo.svg" width="300">
 </picture>
 
-**A Python financial data interface for quantitative research and backtesting — A-shares and US equities, one vocabulary**
+**A Python financial data client for quantitative research and backtesting, with one calling convention for A-shares and US equities**
 
 [![PyPI](https://img.shields.io/pypi/v/libfinance?style=flat-square&logo=pypi&logoColor=white&label=PyPI)](https://pypi.org/project/libfinance/)
 [![docs en](https://img.shields.io/readthedocs/libfinance-en?style=flat-square&logo=readthedocs&logoColor=white&label=docs%20en)](https://libfinance.readthedocs.io/en/latest/)
 [![docs zh-cn](https://img.shields.io/readthedocs/libfinance?style=flat-square&logo=readthedocs&logoColor=white&label=docs%20zh-cn)](https://libfinance.readthedocs.io/zh-cn/latest/)
 
-[📗 English documentation](https://libfinance.readthedocs.io/en/latest/) ·
-[📘 中文文档](https://libfinance.readthedocs.io/zh-cn/latest/) ·
-[💻 Example scripts](https://github.com/StateOfTheArt-quant/libfinance/tree/main/example) ·
-[🚀 Quickstart](https://libfinance.readthedocs.io/en/latest/getting_started/quickstart.html) ·
-[🧭 Concepts](https://libfinance.readthedocs.io/en/latest/concepts/security_identifiers.html) ·
-[📑 API reference](https://libfinance.readthedocs.io/en/latest/reference/contracts.html)
+[Documentation](https://libfinance.readthedocs.io/en/latest/) ·
+[中文](https://github.com/StateOfTheArt-quant/libfinance/blob/main/README.md) ·
+[Examples](https://github.com/StateOfTheArt-quant/libfinance/tree/main/example) ·
+[Citation](#citation)
 
 </div>
 
 ---
 
-`libfinance` lets Chinese A-shares and US equities use the same vocabulary: identifiers are written the same way, queries go through the same functions with the same argument names, and results come back in the same table structure. The two markets differ in their data, not in how you ask for it.
+## Overview
 
-It provides prices, security information, trading calendars, corporate actions, financials, industry classifications, index and concept data, and live market data subscriptions. Query results fit naturally into pandas workflows.
+`libfinance` is a lightweight Python client. The data lives on a server; the client sends queries and returns the results as pandas `DataFrame` or `Series` objects. It covers trading calendars, security master data, daily prices, adjustment factors, corporate actions, financial statements, industry, index and concept constituents, and live quote subscriptions for A-shares.
 
-Historical research needs clear security identities, information valid at the decision time, and consistent price conventions. These three requirements shape the data design:
+A-shares and US equities go through the same functions, with the same argument names and the same result structure. The two markets differ in the data itself (US equities have no daily price limits, for example), not in how you query it.
 
-- **Unified security identifiers** — `<trading_code>.<namespace>`, such as `600000.XSHG`, `000001.XSHE`, and `AAPL.US`, distinguishes codes across markets. Historical code resolution helps handle renaming and code reuse.
-- **Point-in-time queries with `as_of`** — reconstruct historical security universes and select financial statement versions disclosed by the observation date, helping avoid look-ahead and survivorship bias.
-- **High-quality adjustment factors, `exfactor`** — account for corporate actions when comparing prices, with unadjusted, forward-adjusted, and backward-adjusted series. Inspect event and cumulative factors through `get_ex_factor` to understand price adjustments.
+## Design
 
-## Install
+In historical research, the most common errors come less from wrong prices than from misaligned objects, observation dates, or price conventions. The library handles three of these at the data level.
+
+**Security identity.** On its own, `000001` can mean either the SSE Composite Index or Ping An Bank. Securities are written as `<trading_code>.<namespace>` (called `order_book_id` in the API), for example `000001.XSHG`, `000001.XSHE`, and `AAPL.US`. Codes also have validity periods: after a rename or code reuse, the same code can refer to different companies in different years, so `instruments` accepts `as_of` to resolve a code at a historical date.
+→ [Unified security identifiers](https://libfinance.readthedocs.io/en/latest/concepts/security_identifiers.html)
+
+**Observation date, `as_of`.** A report's fiscal period and its disclosure date are different things, and reports can be restated after disclosure. For example, the 2023 annual net profit of `000016.XSHE` has 6 versions in the database; the last one was published in April 2026 and revised the loss from 2.636 to 2.730 billion CNY. A 2024 backtest that uses this figure is using information that did not exist yet. `as_of` makes the observation date explicit: financial queries return only versions disclosed by that date, and security universes are rebuilt from the listing status at that date, putting later-delisted securities back into history to avoid survivorship bias.
+→ [Point-in-time queries with as_of](https://libfinance.readthedocs.io/en/latest/concepts/point_in_time.html)
+
+**Price convention.** Cash dividends, stock dividends, and rights issues cause mechanical price jumps that are not investment gains or losses. Adjustment factors follow the `PRIOR_CLOSE` convention: an event factor is the prior close divided by the theoretical ex-price, and the cumulative factor is the product of all event factors up to the ex-date. Prices can be returned unadjusted, forward-adjusted, or backward-adjusted, and every event and cumulative factor can be inspected with `get_ex_factor`. Note that this convention is the reciprocal of a "multiplier applied to historical prices"; check the direction before comparing with other data sources.
+→ [Adjustment factors, exfactor](https://libfinance.readthedocs.io/en/latest/concepts/exfactor.html)
+
+## Installation and connection
+
+Requires Python 3.7 or later.
 
 ```bash
 pip install libfinance
 ```
 
-From source:
+Or from source:
 
 ```bash
 git clone https://github.com/StateOfTheArt-quant/libfinance.git
@@ -46,39 +55,67 @@ cd libfinance
 pip install -e .
 ```
 
-## Quick start
+`import libfinance` does not open a connection; the client connects on the first query. The default endpoint is `libfinance.tech:8080`. To connect to another service (a local deployment, for example), use either of the following:
 
-Configure your connection using the [installation guide](https://libfinance.readthedocs.io/en/latest/getting_started/installation.html), then query:
+```bash
+# Option 1: environment variables, set before importing libfinance
+export LIBFINANCE_HOST=127.0.0.1
+export LIBFINANCE_PORT=8080
+```
+
+```python
+# Option 2: initialize explicitly before the first query
+from libfinance import init_client
+init_client(host="127.0.0.1", port=8080)
+```
+
+## Minimal example
 
 ```python
 from libfinance import instruments, get_price, get_ex_factor
 
-# Resolve security information at a historical observation date.
+# Resolve security information at a historical date
 print(instruments("600000.XSHG", as_of="2024-03-01"))
 
-# Select unadjusted prices explicitly for historical market prices.
+# Request unadjusted prices explicitly to get actual traded prices
 print(get_price(
     ["000001.XSHE", "600000.XSHG"],
     "2024-03-01", "2024-03-06", adjust_type="none",
 ))
 
-# Inspect event and cumulative adjustment factors.
+# Inspect event and cumulative adjustment factors for each ex-date
 print(get_ex_factor("600000.XSHG", "2023-01-01", "2024-12-31"))
 ```
 
-For a line-by-line walkthrough of what these calls return, see the [quickstart](https://libfinance.readthedocs.io/en/latest/getting_started/quickstart.html).
+`get_price` returns a `DataFrame` indexed by `(order_book_id, datetime)`. Select one security with `df.loc["000001.XSHE"]` and one date with `df.xs("2024-03-04", level="datetime")`. The [quickstart](https://libfinance.readthedocs.io/en/latest/getting_started/quickstart.html) explains the output line by line.
 
-## A-shares and US equities share one vocabulary
+## Defaults to know before you start
 
-The unification holds at three layers.
+These are not advanced topics; they are default behavior. Without knowing them, your code still runs, but the numbers may be wrong.
 
-| Layer | What is shared | Example |
-| --- | --- | --- |
-| Security identifiers | Both are written `<trading_code>.<namespace>`; the granularity of the namespace follows the scope needed to remove ambiguity in that market | `600000.XSHG`, `AAPL.US` |
-| Functions and arguments | Both markets go through the same functions with the same argument names; `as_of` and `adjust_type` carry the same meaning | `get_price`, `instruments`, `get_dividends` |
-| Result shape | The same columns and the same index; a field that does not apply to a market, or that a deployment does not provide, comes back as `NaN` rather than as a separate table | `turnover`, `limit_up`, `limit_down` for US equities |
+1. **Without `adjust_type`, `get_price` returns forward-adjusted prices.** For `000001.XSHE` on 2024-03-01, the forward-adjusted close is 8.81, while the actual traded price was 10.49. Pass `adjust_type="none"` for actual traded prices. The default changed from `"none"` to `"pre"` in 0.0.6; code that relied on the old behavior must set it explicitly. See the [changelog](https://libfinance.readthedocs.io/en/latest/about/changelog.html).
+2. **Prices extend only to the last closed and ingested trading day.** The trading calendar is published through year-end; prices are not. An `end_date` beyond price coverage produces a warning and then an error, rather than a silently shorter table. Check the boundaries with `get_price_coverage()` and `get_calendar_coverage()` instead of copying dates from the documentation.
+3. **Pass `as_of` when querying financials in a backtest.** Without it, you get the latest restated version as of today.
 
-Only queries that do not name a security need the market stated: trading calendars, the full security master, and coverage ranges. When you query by security, the namespace already carries the market, and one list may mix the two.
+## Data coverage
+
+| Data | Markets | Main functions | Notes |
+| --- | --- | --- | --- |
+| Trading calendar | CN · US | `get_trading_dates` | Sessions, ranges, N sessions forward or back |
+| Security master | CN · US | `all_instruments`, `instruments` | Code, name, type, listing and delisting dates |
+| Daily prices | CN · US | `get_price` | OHLC, volume, turnover; adjustable |
+| Adjustment factors | CN · US | `get_ex_factor` | Event and cumulative factors by ex-date |
+| Share capital | CN | `get_shares` | Total and floating shares per session |
+| Dividends / splits / allotments | CN · US | `get_dividends`, `get_splits`, `get_allotments` | Ex-rights events, the source of price gaps |
+| Spinoffs | US | `get_spinoffs` | Not applicable to A-shares |
+| Financial statements (PIT) | CN | `get_pit_financials_ex` | By quarter, with restatement history |
+| Financial factors | CN | `get_factor` | Factors derived from quarterly financials |
+| Industry classification | CN | `get_industry_mapping` | Shenwan three-level taxonomy |
+| Index constituents and weights | CN | `get_index_weights` | Constituents and weights on any session |
+| Concept board constituents | CN | `get_concept_weights` | THS concept taxonomy |
+| Live quotes | CN | `QuoteApi` | Subscription push |
+
+When you query by security, the namespace in the code determines the market, and one list may mix both markets. Only queries that do not name a security (trading calendars, the full security master, coverage ranges) take an explicit `market`. Fields that do not apply to a market, or that a deployment does not provide, come back as `NaN`; the table structure stays the same.
 
 ```python
 from libfinance import instruments, get_trading_dates
@@ -87,52 +124,46 @@ instruments(["000001.XSHE", "AAPL.US"])                      # the namespace car
 get_trading_dates("2024-01-01", "2024-01-31", market="us")   # no security named
 ```
 
-What is shared is the vocabulary and the calling convention; the differences in the data remain. The "Markets" column below shows which markets each kind of data covers, and [Querying US equities](https://libfinance.readthedocs.io/en/latest/howto/us_market.html) goes through it function by function.
+## Scope and limitations
 
-## What data is here
+- Prices are daily only (`frequency="1d"`); minute bars and tick data are not provided.
+- Share capital, financials, industry, index constituents, concept constituents, and live quotes cover A-shares only. US equities have no price-limit fields, and some deployments do not provide US turnover. See [Querying US equities](https://libfinance.readthedocs.io/en/latest/howto/us_market.html) for each function.
+- Date coverage depends on the service you connect to; dates in the documentation are illustrative.
+- The project is at 0.x and the API may still change (for example, `index_id` in `get_index_weights` was renamed to `index_code`). Every change that alters the behavior of existing code is recorded in the [changelog](https://libfinance.readthedocs.io/en/latest/about/changelog.html).
 
-| Data | Markets | Main function | Notes |
-| --- | --- | --- | --- |
-| Trading calendar | CN · US | `get_trading_dates` | Sessions, ranges, N sessions forward or back |
-| Security master | CN · US | `all_instruments` | Code, name, type, listing and delisting dates |
-| Daily bars | CN · US | `get_price` | OHLC, volume, turnover; adjustable |
-| Adjustment factors | CN · US | `get_ex_factor` | Event and cumulative factors by ex-date |
-| Share capital | CN | `get_shares` | Per-session total and floating shares |
-| Dividends / splits / allotments | CN · US | `get_dividends` | Ex-rights events — the source of price gaps |
-| Spinoffs | US | `get_spinoffs` | A-shares do not produce these events |
-| Financial statements (PIT) | CN | `get_pit_financials_ex` | By quarter, with restatement history |
-| Financial factors | CN | `get_factor` | Quarterly derived factors |
-| Industry classification | CN | `get_industry_mapping` | Shenwan three-level taxonomy |
-| Index constituents and weights | CN | `get_index_weights` | Constituent weights on any session |
-| Concept board constituents | CN | `get_concept_weights` | THS concept taxonomy |
-| Live quotes | CN | `QuoteApi` | Subscription push |
+## Documentation
 
-How far back the history goes and how current it is depend on the service you connect to. **Do not copy the dates from the documentation** — check them yourself with the two functions in [data freshness](https://libfinance.readthedocs.io/en/latest/data/freshness.html).
+- [Quickstart](https://libfinance.readthedocs.io/en/latest/getting_started/quickstart.html): trading dates, securities, prices — one complete query path
+- [Concepts](https://libfinance.readthedocs.io/en/latest/concepts/security_identifiers.html): security identifiers, point-in-time, adjustment factors
+- [Data notes](https://libfinance.readthedocs.io/en/latest/data/index.html): conventions and freshness for each kind of data
+- [How-to guides](https://libfinance.readthedocs.io/en/latest/howto/index.html): price panels, PIT backtests, returns, live subscriptions
+- [API reference](https://libfinance.readthedocs.io/en/latest/reference/contracts.html): parameters, with examples and printed output
+- [Troubleshooting](https://libfinance.readthedocs.io/en/latest/howto/troubleshooting.html): organized by the symptom you see
+- [Example scripts](https://github.com/StateOfTheArt-quant/libfinance/tree/main/example): runnable scripts matching the six API reference groups
 
-## Concepts
+Chinese documentation: <https://libfinance.readthedocs.io/zh-cn/latest/>
 
-| Topic | What it solves |
-| --- | --- |
-| [Unified security identifiers](https://libfinance.readthedocs.io/en/latest/concepts/security_identifiers.html) | Distinguish markets, security identities, and historical codes to join data correctly |
-| [Point-in-time queries with as_of](https://libfinance.readthedocs.io/en/latest/concepts/point_in_time.html) | Reconstruct historical universes and visible financial statements to avoid look-ahead and survivorship bias |
-| [High-quality adjustment factors, exfactor](https://libfinance.readthedocs.io/en/latest/concepts/exfactor.html) | Understand corporate actions and the calculation and use of three price conventions |
+## Citation
 
-## Documentation and examples
+If `libfinance` helps your research, you can cite it as:
 
-| | |
-| --- | --- |
-| [📗 English documentation](https://libfinance.readthedocs.io/en/latest/) | Concepts, data notes, how-to guides, and the API reference |
-| [📘 中文文档](https://libfinance.readthedocs.io/zh-cn/latest/) | The same documentation tree in Chinese |
-| [💻 Example scripts](https://github.com/StateOfTheArt-quant/libfinance/tree/main/example) | Runnable scripts for the six API groups, to read alongside the reference |
-| [🧩 How-to guides](https://libfinance.readthedocs.io/en/latest/howto/index.html) | End-to-end recipes: price panels, PIT backtests, live subscriptions |
-| [🩺 Troubleshooting](https://libfinance.readthedocs.io/en/latest/howto/troubleshooting.html) | Organized by **symptom**: start from the line that matches what you see |
+```bibtex
+@misc{libfinance,
+  author       = {Yu Jiang},
+  title        = {libfinance: a python library for accessing high quality finance data},
+  year         = {2024},
+  publisher    = {GitHub},
+  journal      = {GitHub repository},
+  howpublished = {\url{https://github.com/StateOfTheArt-quant/libfinance}},
+}
+```
 
-The API reference groups functions into contracts and calendars, market data, fundamentals, industries and concepts, corporate actions, and live quotes. It includes parameter descriptions and scenario examples with printed output.
+## Maintenance and feedback
 
-## Community
+The project is maintained by StateOfTheArt.Quant; the core contributor is Yu Jiang ([@walkacross](https://github.com/walkacross)). Please open an [Issue](https://github.com/StateOfTheArt-quant/libfinance/issues) for data-convention questions, bugs, or feature requests. Including the calling code and the actual output helps us locate the problem faster.
 
-Questions and requests are welcome in [Issues](https://github.com/StateOfTheArt-quant/libfinance/issues). Follow us on WeChat for updates:
+Project updates are also posted on our WeChat account:
 
 <div align="center">
-    <img alt="WeChat QR code" src="https://raw.githubusercontent.com/StateOfTheArt-quant/libfinance/main/docs/_shared/_static/img/code.png" width="600" height="220">
+    <img alt="WeChat QR code" src="https://raw.githubusercontent.com/StateOfTheArt-quant/libfinance/main/docs/_shared/_static/img/code.png" width="300">
 </div>

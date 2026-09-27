@@ -10,9 +10,12 @@ invoked as data arrives.
 
 .. note::
 
-    Subscriptions go through the **market data gateway**, whose address and port
-    differ from the service that serves historical data. Get the gateway address
-    and credentials from your administrator.
+    Subscriptions go through the **market data gateway**, which is not the service
+    that serves historical data. **You need neither a login nor the gateway
+    address**: ``connect()`` fetches a market data ticket from the libfinance
+    service, which also tells it where the gateway is; the SDK renews the ticket
+    before it expires. Without a login you get a basic allowance per IP; logged-in
+    users get their account tier's allowance.
 
 A complete runnable example
 ===========================
@@ -58,7 +61,7 @@ A complete runnable example
             else:
                 print("[client] subscribed, source=%s" % rsp.source)
 
-        def on_depth_market_data(self, quote):
+        def on_depth_market_data(self, quote, envelope):
             self.count += 1
             print("%s  last=%.2f  volume=%s" % (
                 quote.order_book_id, quote.last_price, quote.volume))
@@ -66,8 +69,7 @@ A complete runnable example
 
     api = QuoteApi()
     api.register_spi(DemoSpi(api))
-    api.connect("gateway-host", 9001)
-    api.login("your-name", "your-password")
+    api.connect()     # no login needed; api.connect("host:port") targets a specific gateway
 
     stop.wait()
     api.disconnect()
@@ -151,7 +153,15 @@ Error codes
     *   - 5
         - Routing conflict, or the requested source is unavailable
     *   - 6
-        - Subscription quota exceeded
+        - Subscription limit reached (per IP without login, per account tier when logged in)
+    *   - 7
+        - The market is not covered by your allowance
+    *   - 8
+        - Whole-market subscription is not allowed
+    *   - 9
+        - The allowance shrank at ticket renewal and this subscription was withdrawn (arrives in ``on_rsp_unsubscribe``)
+    *   - 20 – 24
+        - Ticket invalid / expired / unknown key / revoked / too many connections. The SDK fetches a new ticket and retries 21 and 22 once; the others are not retried
 
 Whole-market subscription
 =========================
@@ -168,8 +178,9 @@ once:
                       instrument_type=SubscribeInstrumentType.Stock,
                       data_type=SubscribeDataType.Snapshot)
 
-Pass ``All`` on any axis to leave it unrestricted. This requires an account with
-an unlimited subscription quota, otherwise it returns ``error_id=6``.
+Pass ``All`` on any axis to leave it unrestricted. This requires an allowance that
+includes whole-market subscription (the basic allowance without login does not),
+otherwise it returns ``error_id=8``.
 
 If you only need the current price
 ==================================

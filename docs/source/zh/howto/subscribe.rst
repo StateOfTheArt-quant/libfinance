@@ -8,8 +8,9 @@
 
 ..  note::
 
-    订阅走的是\ **行情网关**\ ，地址和端口与取历史数据的服务不同。要先向管理员确认
-    网关地址和账号。
+    订阅走的是\ **行情网关**\ ，与取历史数据的服务不是同一个。\ **不需要登录、也不需要自己配网关地址**\ ：
+    ``connect()`` 会向 libfinance 服务取一张行情票据，网关地址随票据一起给出；票据到期前 SDK 自动续期。
+    没登录时按 IP 给基础额度，登录后按账号等级。
 
 完整可运行示例
 ==============
@@ -55,7 +56,7 @@
             else:
                 print("[client] subscribed, source=%s" % rsp.source)
 
-        def on_depth_market_data(self, quote):
+        def on_depth_market_data(self, quote, envelope):
             self.count += 1
             print("%s  last=%.2f  volume=%s" % (
                 quote.order_book_id, quote.last_price, quote.volume))
@@ -63,8 +64,7 @@
 
     api = QuoteApi()
     api.register_spi(DemoSpi(api))
-    api.connect("网关地址", 9001)
-    api.login("your-name", "your-password")
+    api.connect()     # 不必 login；也可 api.connect("host:port") 指定网关
 
     stop.wait()
     api.disconnect()
@@ -145,7 +145,15 @@
     *   - 5
         - 路由冲突，或指定的源不可用
     *   - 6
-        - 订阅配额受限
+        - 订阅数达到上限（不登录按 IP 额度，登录后按账号等级）
+    *   - 7
+        - 该市场不在授权内
+    *   - 8
+        - 没有整市场订阅授权
+    *   - 9
+        - 票据续期后授权收缩，这条订阅被撤销（在 ``on_rsp_unsubscribe`` 里收到）
+    *   - 20 ~ 24
+        - 票据无效 / 过期 / 密钥未知 / 已吊销 / 连接数超限。SDK 会自动换票重试 21、22，其余不再自动重试
 
 整市场订阅
 ==========
@@ -161,7 +169,7 @@
                       instrument_type=SubscribeInstrumentType.Stock,
                       data_type=SubscribeDataType.Snapshot)
 
-任一维度传 ``All`` 表示不限。这要求账号的订阅配额无限制，否则返回 ``error_id=6``\ 。
+任一维度传 ``All`` 表示不限。这需要额度里包含整市场订阅（不登录的基础额度不含），否则返回 ``error_id=8``\ 。
 
 只想问一次当前价
 ================

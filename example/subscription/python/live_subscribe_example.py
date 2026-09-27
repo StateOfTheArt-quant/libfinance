@@ -3,10 +3,13 @@
 """
 live_subscribe_example.py — libfinance 实时行情订阅示例
 
-流程：连网关 → 登录 → 发现可订源（query_sources）→ 订阅 → 收行情回调。
+流程：连网关 → （自动取票据登录）→ 发现可订源（query_sources）→ 订阅 → 收行情回调。
+
+不需要登录：SDK 自动向 libfinance-service 取行情票据（不登录按 IP 额度），网关地址也由它给出。
 
 用法:
-    python live_subscribe_example.py [host] [port] [source]
+    python live_subscribe_example.py [gateways] [source]
+      - gateways：不指定则用 libfinance-service 返回的网关地址；也可写 "host:port,host:port"
       - 不指定 source：无源订阅，网关按健康+优先级自动选源，源掉线自动灾备切换
       - 指定 source  ：定向订阅该源，不自动切源；该源不健康时明确失败
 
@@ -19,6 +22,7 @@ live_subscribe_example.py — libfinance 实时行情订阅示例
 import signal
 import sys
 import threading
+import time
 
 from libfinance.subscribe.quote_api import QuoteApi, QuoteSpi
 
@@ -49,7 +53,8 @@ class DemoSpi(QuoteSpi):
             stop.set()
             return
         mx = "unlimited" if rsp.max_subscriptions < 0 else rsp.max_subscriptions
-        print(f"[client] login OK  level={rsp.user_level}  max_subs={mx}")
+        print(f"[client] login OK  max_subs={mx}  whole_market={rsp.sub_all}  "
+              f"ticket expires in {max(0, rsp.expires_at_ms / 1000 - time.time()):.0f}s (auto-renewed)")
         self.api.query_sources()
 
     def on_rsp_query_sources(self, sources, _):
@@ -73,13 +78,15 @@ class DemoSpi(QuoteSpi):
             print(f"[client] subscribed {rsp.exchange_id}.{rsp.instrument_id} "
                   f"← 供数源 '{rsp.source}'  ({rsp.current_subs}/{rsp.max_subs})")
         elif rsp.error_id == 6:
-            print(f"[client] 订阅配额已满: {rsp.error_msg}")
+            print(f"[client] 订阅数达到上限（不登录按 IP 额度，登录后按账号等级）: {rsp.error_msg}")
+        elif rsp.error_id == 7:
+            print(f"[client] 该市场不在授权内: {rsp.error_msg}")
         elif rsp.error_id == 5:
             print(f"[client] 路由冲突或指定源不可用: {rsp.error_msg}")
         else:
             print(f"[client] subscribe fail({rsp.error_id}): {rsp.error_msg}")
 
-    def on_depth_market_data(self, q):
+    def on_depth_market_data(self, q, envelope):
         self.count += 1
         print(f"[{self.count:5d}] {q.order_book_id:<14s}"
               f"  last={q.last_price:9.3f}  bid1={q.bid_price[0]:9.3f}"
@@ -87,17 +94,15 @@ class DemoSpi(QuoteSpi):
 
 
 def main():
-    host = sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1"
-    port = int(sys.argv[2]) if len(sys.argv) > 2 else 9001
-    source = sys.argv[3] if len(sys.argv) > 3 else ""
+    gateways = sys.argv[1] if len(sys.argv) > 1 else None
+    source = sys.argv[2] if len(sys.argv) > 2 else ""
 
     api = QuoteApi()
     spi = DemoSpi(api, source)
     api.register_spi(spi)
-    if api.connect(host, port) != 0:
-        print("[client] connect failed")
-        return 1
-    api.login("demo", "")     # 凭据被记住，断线重连自动重登录
+    # 不必 login：SDK 自动向 libfinance-service 取票据，到期前自动续期；断线自动重连并续传。
+    if api.connect(gateways) != 0:
+        print("[client] 暂时连不上网关，后台持续重连…")
 
     stop.wait()               # Ctrl+C 退出
     print(f"\n[client] total quotes: {spi.count}")

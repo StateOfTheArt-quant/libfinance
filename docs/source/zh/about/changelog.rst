@@ -4,6 +4,23 @@
 
 只记录会\ **改变已有代码行为**\ 的变更。
 
+未发布
+======
+
+..  danger::
+
+    **实时订阅（``libfinance.subscribe``）改用行情网关协议 v3，与旧网关不兼容。**
+
+    - ``QuoteApi.login(user_id, password)`` 取消：\ **不需要登录**\ ，``connect()`` 自动向服务取行情票据
+      （不登录按 IP 给基础额度），到期前自动续期；``login(token)`` 只在需要自己提供票据时使用。
+    - ``connect()`` 不传地址时，网关地址由服务随票据给出；也可 ``connect("host:port,host:port")``\ 。
+    - 行情回调多一个参数：``on_depth_market_data(quote, envelope)``\ ，``envelope`` 是网关的定序信封
+      （序号与时间戳）；旧的单参数写法会报 ``TypeError``\ 。
+    - ``LoginRsp`` 去掉 ``user_level``\ ，改为回显额度（``max_subscriptions``\ 、``sub_all``\ 、``expires_at_ms`` 等）。
+    - 整市场订阅不再以"配额无限"判定，而看额度里是否含整市场订阅（否则 ``error_id=8``\ ）。
+    - 新增：断线后按序号补发、``on_sequence_gap``\ 、``on_stream_status``\ 、``on_rsp_reauth``\ 、``on_session_closed``\ ，
+      以及逐笔成交 / 委托 / 盘口 / 深度的回调。
+
 0.0.6
 =====
 

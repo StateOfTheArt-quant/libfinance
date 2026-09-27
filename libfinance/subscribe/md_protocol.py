@@ -1,56 +1,99 @@
 """
-md_protocol.py — dynamics 行情分发系统的二进制帧协议（纯 Python 实现）
+md_protocol.py — dynamics 行情分发系统的二进制帧协议（纯 Python 实现，协议 v3）
 
 libfinance 的订阅模块是 dynamics 的独立客户端，只依赖标准库，不依赖 libdynamics。
-本文件严格对齐服务端 `#pragma pack(1)` 的结构体布局。
+本文件严格对齐服务端 `#pragma pack(1)` 的结构体布局（dynamics/framework/core/src/include/dynamics/proto）。
 
 帧 = FrameHeader(16B) + body：
-  - 控制帧：msg_type ∈ MsgType 的 0xF0xx 段，body 为下面定义的结构体；
-  - 数据帧：msg_type = 行情类型 tag（Quote=401 / Entrust=402 / ...），body 为对应 POD。
+  - 控制帧：msg_type ∈ 0xF0xx，body 为下面定义的结构体；
+  - 数据帧：只有 RECORD_BATCH 一种：RecordBatchHeader + N × (RecordEnvelope + 行情 POD + 8 字节对齐填充)。
+    RecordEnvelope 是网关的定序信封（stream / seq / inst_seq / 时间戳），续传与缺口检测都靠它。
 
-每个结构体都带 `assert struct.calcsize(...) == <服务端 sizeof>`，一旦服务端改了线格式
-（历史上 SubAllRsp 就悄悄加过 source 字段），import 时立刻报错，而不是解包出乱码才发现。
+v3（相对 v1）：登录只接受 PDP（libfinance-service）签发的票据；数据只走批量帧；心跳双向强制
+（5 s 一帧，15 s 没收到对端任何帧即判定连接失效）；断线后按 seq 续传。
+
+每个结构体都带 `assert struct.calcsize(...) == <服务端 sizeof>`，一旦服务端改了线格式，
+import 时立刻报错，而不是解包出乱码才发现。
 """
 
 import struct
 from dataclasses import dataclass, field
 from enum import IntEnum
-from typing import List
+from typing import Iterator, List, Tuple
 
 # ── 常量 ──────────────────────────────────────────────────────────
 MAGIC = 0x44594E31   # "DYN1"
-VERSION = 1
+VERSION = 3
 HEADER_SIZE = 16
 MAX_BODY_LEN = 16 * 1024 * 1024   # 与服务端一致：拒绝异常帧诱导的超大分配
+HEARTBEAT_INTERVAL = 5.0          # 秒：至少这么久发一帧
+HEARTBEAT_TIMEOUT = 15.0          # 秒：这么久没收到对端任何帧即判定连接失效
 
 SOURCE_LEN = 16
 EXCHANGE_ID_LEN = 16
 INSTRUMENT_ID_LEN = 32
 TRADING_PHASE_CODE_LEN = 8
+MAX_TOKEN_BYTES = 2048
+
+RECORD_SNAPSHOT = 1   # RecordEnvelope.flags：订阅时补发的最新值（不是新发生的事件）
 
 
 # ── 消息类型 ──────────────────────────────────────────────────────
 class MsgType(IntEnum):
-    # 控制帧（高位段 0xF0xx，与行情 tag 互不冲突）
-    REQ_LOGIN           = 0xF001
-    RSP_LOGIN           = 0xF002
-    REQ_SUBSCRIBE       = 0xF003
-    RSP_SUBSCRIBE       = 0xF004
-    REQ_UNSUBSCRIBE     = 0xF005
-    RSP_UNSUBSCRIBE     = 0xF006
-    REQ_SUBSCRIBE_ALL   = 0xF007
-    RSP_SUBSCRIBE_ALL   = 0xF008
-    QUERY_SOURCES       = 0xF012
-    RSP_QUERY_SOURCES   = 0xF013
-    REQ_UNSUBSCRIBE_ALL = 0xF014
-    RSP_UNSUBSCRIBE_ALL = 0xF015
-    HEARTBEAT           = 0xF0FF
-    # 数据帧（msg_type = 行情类型 tag）
+    REQ_LOGIN               = 0xF001
+    RSP_LOGIN               = 0xF002
+    REQ_SUBSCRIBE           = 0xF003
+    RSP_SUBSCRIBE           = 0xF004
+    REQ_UNSUBSCRIBE         = 0xF005
+    RSP_UNSUBSCRIBE         = 0xF006
+    REQ_SUBSCRIBE_ALL       = 0xF007
+    RSP_SUBSCRIBE_ALL       = 0xF008
+    QUERY_SOURCES           = 0xF012
+    RSP_QUERY_SOURCES       = 0xF013
+    REQ_UNSUBSCRIBE_ALL     = 0xF014
+    RSP_UNSUBSCRIBE_ALL     = 0xF015
+    RECORD_BATCH            = 0xF020
+    STREAM_STATUS           = 0xF021
+    REQ_RESUME              = 0xF022
+    REQ_RESUME_START        = 0xF023
+    REQ_REAUTH              = 0xF030
+    RSP_REAUTH              = 0xF031
+    NOTIFY_SESSION_EXPIRING = 0xF032
+    NOTIFY_SESSION_CLOSED   = 0xF033
+    HEARTBEAT               = 0xF0FF
+
+
+class RecordTag(IntEnum):
     QUOTE       = 401
     ENTRUST     = 402
     TRANSACTION = 403
     DEPTH       = 405
     TICK        = 406
+
+
+class ErrorCode(IntEnum):
+    """应答 error_id（dynamics proto/errors.h）。"""
+    OK = 0
+    MALFORMED = 1
+    NOT_AUTHENTICATED = 3
+    NO_SOURCE = 4                 # 无健康源 / 无可承接整市场的源
+    SOURCE_UNAVAILABLE = 5        # 指定源不可用或路由冲突
+    SUBSCRIPTION_LIMIT = 6        # 订阅数达到票据上限
+    MARKET_NOT_GRANTED = 7        # 市场不在票据授权内
+    WHOLE_MARKET_NOT_GRANTED = 8  # 票据没有整市场订阅授权
+    GRANT_SHRUNK = 9              # 续期后授权收缩，该订阅被网关撤销
+    TOKEN_INVALID = 20
+    TOKEN_EXPIRED = 21
+    TOKEN_UNKNOWN_KEY = 22
+    TOKEN_REVOKED = 23
+    TOO_MANY_CONNECTIONS = 24
+    SUBJECT_MISMATCH = 25
+    ALREADY_AUTHENTICATED = 26
+
+
+class SessionCloseReason(IntEnum):
+    EXPIRED = 1
+    REVOKED = 2
 
 
 # ── 订阅枚举（取值照抄服务端 schema/enums.h）────────────────────────
@@ -117,6 +160,15 @@ EXCHANGE_OF_MARKET = {
 }
 
 
+def instrument_hash(exchange_id: str, instrument_id: str) -> int:
+    """与服务端 instrument_hash 一致（FNV-1a 64，交易所与代码之间以 0x1f 分隔）= RecordEnvelope.instrument_key。"""
+    h = 14695981039346656037
+    for b in exchange_id.encode() + b"\x1f" + instrument_id.encode():
+        h ^= b
+        h = (h * 1099511628211) & 0xFFFFFFFFFFFFFFFF
+    return h
+
+
 # ── FrameHeader (16 bytes) ────────────────────────────────────────
 # uint32 magic, uint16 version, uint16 msg_type, uint32 seq_no, uint32 body_len
 HEADER_FMT = "<IHHII"
@@ -142,32 +194,64 @@ def _fix(text: str, n: int) -> bytes:
     return text.encode()[: n - 1].ljust(n, b"\x00")
 
 
-# ── LoginReq / LoginRsp ───────────────────────────────────────────
-LOGIN_REQ_FMT = "<16s32s32s"
-LOGIN_REQ_SIZE = struct.calcsize(LOGIN_REQ_FMT)
-assert LOGIN_REQ_SIZE == 80
+# ── 登录 / 续期 ────────────────────────────────────────────────────
+# REQ_LOGIN: LoginRequest{char client_id[32]; u32 token_len; u32 _pad} + token
+LOGIN_REQ_FMT = "<32sII"
+assert struct.calcsize(LOGIN_REQ_FMT) == 40
+# REQ_REAUTH: TokenHeader{u32 token_len; u32 _pad} + token
+TOKEN_HEADER_FMT = "<II"
+assert struct.calcsize(TOKEN_HEADER_FMT) == 8
 
-LOGIN_RSP_FMT = "<i64sQb3xi"
+
+def pack_login_req(token: str, client_id: str = "libfinance") -> bytes:
+    raw = token.encode()
+    return struct.pack(LOGIN_REQ_FMT, _fix(client_id, 32), len(raw), 0) + raw
+
+
+def pack_reauth_req(token: str) -> bytes:
+    raw = token.encode()
+    return struct.pack(TOKEN_HEADER_FMT, len(raw), 0) + raw
+
+
+LOGIN_RSP_FMT = "<i64sQqiiiB3xQq"
 LOGIN_RSP_SIZE = struct.calcsize(LOGIN_RSP_FMT)
-assert LOGIN_RSP_SIZE == 84
-
-
-def pack_login_req(user_id: str, password: str, client_id: str = "libfinance") -> bytes:
-    return struct.pack(LOGIN_REQ_FMT, _fix(user_id, 16), _fix(password, 32), _fix(client_id, 32))
+assert LOGIN_RSP_SIZE == 116
 
 
 @dataclass
 class LoginRsp:
+    """RSP_LOGIN / RSP_REAUTH。回显票据里的授权（资源数字），不含任何等级语义。"""
     error_id: int
     error_msg: str
     session_id: int
-    user_level: int
-    max_subscriptions: int   # -1 表示无限制；整市场订阅要求此值为 -1
+    expires_at_ms: int        # 票据到期时刻（SDK 到期前自动续期）
+    max_subscriptions: int    # -1 = 不限
+    max_conns: int
+    max_msgs_per_sec: int
+    sub_all: bool             # 能否整市场订阅
+    market_mask: int          # bit(MarketType)
+    sequence_epoch_ns: int    # 序号纪元：变化说明网关日志重建，续传位置作废
 
 
 def unpack_login_rsp(data: bytes) -> LoginRsp:
-    error_id, msg, session_id, level, max_subs = struct.unpack(LOGIN_RSP_FMT, data[:LOGIN_RSP_SIZE])
-    return LoginRsp(error_id, _s(msg), session_id, level, max_subs)
+    f = struct.unpack(LOGIN_RSP_FMT, data[:LOGIN_RSP_SIZE])
+    return LoginRsp(f[0], _s(f[1]), f[2], f[3], f[4], f[5], f[6], bool(f[7]), f[8], f[9])
+
+
+SESSION_EXPIRING_FMT = "<q"
+SESSION_CLOSED_FMT = "<i64s"
+assert struct.calcsize(SESSION_CLOSED_FMT) == 68
+
+
+@dataclass
+class SessionClosed:
+    reason: int      # SessionCloseReason
+    message: str
+
+
+def unpack_session_closed(data: bytes) -> SessionClosed:
+    reason, msg = struct.unpack(SESSION_CLOSED_FMT, data[:68])
+    return SessionClosed(reason, _s(msg))
 
 
 # ── SubReq / SubRsp ───────────────────────────────────────────────
@@ -196,7 +280,7 @@ class SubRsp:
     source: str          # 回显：无源订阅时是网关实际选中的源
     exchange_id: str
     instrument_id: str
-    error_id: int        # 4=无健康源 5=路由冲突/指定源不可用 6=订阅配额已满
+    error_id: int        # ErrorCode
     error_msg: str
     current_subs: int
     max_subs: int
@@ -208,8 +292,6 @@ def unpack_sub_rsp(data: bytes) -> SubRsp:
 
 
 # ── SubAllReq / SubAllRsp（整市场订阅）─────────────────────────────
-# 一次订下「市场 × 品种 × 数据类型」命中的全部合约，任一维度取 All 表示不限。
-# 网关挑一个申报 whole_market 的健康源承接推送，回执 source 回显它。
 SUB_ALL_REQ_FMT = "<b7xQQ"
 SUB_ALL_REQ_SIZE = struct.calcsize(SUB_ALL_REQ_FMT)
 assert SUB_ALL_REQ_SIZE == 24
@@ -228,7 +310,7 @@ def pack_sub_all_req(market: int = MarketType.All,
 @dataclass
 class SubAllRsp:
     source: str          # 承接整市场推送的源（失败或退订回执为空）
-    error_id: int        # 4=网关无可承接的源 6=账号配额受限（整市场订阅要求无限配额）
+    error_id: int        # 4=无可承接的源 7=市场不在授权内 8=票据没有整市场授权 9=续期后授权收缩被撤销
     error_msg: str
 
 
@@ -272,8 +354,80 @@ def unpack_source_dir_list(body: bytes) -> List[SourceDirEntry]:
     return out
 
 
+# ── 流状态 / 续传 ──────────────────────────────────────────────────
+STREAM_STATUS_FMT = "<IB3x16sq"
+assert struct.calcsize(STREAM_STATUS_FMT) == 32
+
+
+@dataclass
+class StreamStatus:
+    stream_id: int
+    stale: bool              # True = 该源在交易时段内陈旧（没有新数据）
+    source: str
+    last_received_ns: int
+
+
+def unpack_stream_status(data: bytes) -> StreamStatus:
+    sid, fresh, src, last = struct.unpack(STREAM_STATUS_FMT, data[:32])
+    return StreamStatus(sid, fresh == 1, _s(src), last)
+
+
+RESUME_POSITION_FMT = "<IIQ"
+assert struct.calcsize(RESUME_POSITION_FMT) == 16
+
+
+def pack_resume_positions(positions: dict) -> bytes:
+    """REQ_RESUME body = uint32 count + count × ResumePosition{u32 stream_id; u32 _pad; u64 last_seq}。"""
+    body = struct.pack("<I", len(positions))
+    for stream_id, seq in positions.items():
+        body += struct.pack(RESUME_POSITION_FMT, stream_id, 0, seq)
+    return body
+
+
+# ── 批量帧与定序信封 ────────────────────────────────────────────────
+ENVELOPE_FMT = "<IHHIIQQQqq"
+ENVELOPE_SIZE = struct.calcsize(ENVELOPE_FMT)
+assert ENVELOPE_SIZE == 56
+BATCH_HEADER_FMT = "<II"
+
+
+@dataclass
+class RecordEnvelope:
+    """网关定序信封：每条行情都带着它。"""
+    stream_id: int        # 每个源一个 stream
+    tag: int              # RecordTag
+    flags: int
+    seq: int              # stream 内连续序号（续传位置）
+    inst_seq: int         # (stream, 合约, 数据类型) 内连续序号（缺口检测）
+    instrument_key: int   # = instrument_hash(交易所, 代码)
+    received_ns: int      # 网关收到的时刻（CLOCK_REALTIME ns）
+    sequenced_ns: int     # 定序并写入日志的时刻
+
+    @property
+    def snapshot(self) -> bool:
+        """订阅时补发的最新值（或慢消费者合并后的当前值），不是新发生的事件。"""
+        return bool(self.flags & RECORD_SNAPSHOT)
+
+
+def iter_batch(body: bytes) -> Iterator[Tuple[RecordEnvelope, bytes]]:
+    """RECORD_BATCH body → (信封, 行情 POD 字节)。格式错误时停止（不抛异常）。"""
+    if len(body) < 8:
+        return
+    (count, _pad) = struct.unpack_from(BATCH_HEADER_FMT, body, 0)
+    off = 8
+    for _ in range(count):
+        if len(body) - off < ENVELOPE_SIZE:
+            return
+        sid, tag, ln, flags, _r, seq, iseq, key, rns, sns = struct.unpack_from(ENVELOPE_FMT, body, off)
+        entry = (ENVELOPE_SIZE + ln + 7) & ~7
+        if len(body) - off < entry:
+            return
+        pod = body[off + ENVELOPE_SIZE: off + ENVELOPE_SIZE + ln]
+        yield RecordEnvelope(sid, tag, flags, seq, iseq, key, rns, sns), pod
+        off += entry
+
+
 # ── Quote（tag 401，快照 + 10 档盘口）──────────────────────────────
-# 字段顺序严格对齐服务端 struct Quote（#pragma pack(1)，529 字节）。
 QUOTE_FMT = (
     "<"
     "q"      # data_time
@@ -361,10 +515,108 @@ def unpack_quote(data: bytes) -> Quote:
     )
 
 
+# ── 逐笔委托 / 逐笔成交 / 盘口 / 深度 ──────────────────────────────
+ENTRUST_FMT = "<q32s16sbddbbqqqq"
+assert struct.calcsize(ENTRUST_FMT) == 107
+TRANSACTION_FMT = "<q32s16sbddqqbbqqq"
+assert struct.calcsize(TRANSACTION_FMT) == 115
+TICK_FMT = "<q32s16sbdddd"
+assert struct.calcsize(TICK_FMT) == 89
+DEPTH_FMT = "<q32s16sbddb"
+assert struct.calcsize(DEPTH_FMT) == 74
+
+
+@dataclass
+class Entrust:
+    data_time: int
+    instrument_id: str
+    exchange_id: str
+    instrument_type: int
+    price: float
+    volume: float
+    side: int
+    price_type: int
+    main_seq: int
+    seq: int
+    orig_order_no: int
+    biz_index: int
+
+
+@dataclass
+class Transaction:
+    data_time: int
+    instrument_id: str
+    exchange_id: str
+    instrument_type: int
+    price: float
+    volume: float
+    bid_no: int
+    ask_no: int
+    exec_type: int
+    side: int
+    main_seq: int
+    seq: int
+    biz_index: int
+
+
+@dataclass
+class Tick:
+    data_time: int
+    instrument_id: str
+    exchange_id: str
+    instrument_type: int
+    bid_price: float
+    bid_volume: float
+    ask_price: float
+    ask_volume: float
+
+
+@dataclass
+class Depth:
+    data_time: int
+    instrument_id: str
+    exchange_id: str
+    instrument_type: int
+    price: float
+    volume: float
+    side: int
+
+
+def _unpack(cls, fmt, data):
+    f = list(struct.unpack(fmt, data[:struct.calcsize(fmt)]))
+    f[1], f[2] = _s(f[1]), _s(f[2])
+    return cls(*f)
+
+
+def unpack_entrust(data: bytes) -> Entrust:
+    return _unpack(Entrust, ENTRUST_FMT, data)
+
+
+def unpack_transaction(data: bytes) -> Transaction:
+    return _unpack(Transaction, TRANSACTION_FMT, data)
+
+
+def unpack_tick(data: bytes) -> Tick:
+    return _unpack(Tick, TICK_FMT, data)
+
+
+def unpack_depth(data: bytes) -> Depth:
+    return _unpack(Depth, DEPTH_FMT, data)
+
+
+RECORD_UNPACKERS = {
+    RecordTag.QUOTE: (unpack_quote, QUOTE_SIZE),
+    RecordTag.ENTRUST: (unpack_entrust, 107),
+    RecordTag.TRANSACTION: (unpack_transaction, 115),
+    RecordTag.TICK: (unpack_tick, 89),
+    RecordTag.DEPTH: (unpack_depth, 74),
+}
+
+
 # ── 帧构造辅助 ───────────────────────────────────────────────────
 def make_frame(msg_type: int, seq_no: int, body: bytes = b"") -> bytes:
     return pack_header(msg_type, seq_no, len(body)) + body
 
 
-def make_heartbeat(seq_no: int) -> bytes:
+def make_heartbeat(seq_no: int = 0) -> bytes:
     return make_frame(MsgType.HEARTBEAT, seq_no)

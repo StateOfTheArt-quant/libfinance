@@ -60,20 +60,22 @@
                 # 订阅写在这里，不要写在 main 里 —— 见下面的说明
                 api.subscribe(["600519"], "XSHG")
 
-        def on_depth_market_data(self, quote):
+        def on_depth_market_data(self, quote, envelope):
             print(quote.order_book_id, quote.last_price)
 
     api = QuoteApi()
     api.register_spi(MySpi())
-    api.connect("行情网关地址", 9001)
-    api.login("user", "password")
+    api.connect()      # 不必登录：自动向服务取行情票据，网关地址也由服务给出
+
+**不需要登录。** SDK 自动向 libfinance 服务取一张短期票据去连行情网关，到期前自动续期，订阅不中断。
+没登录时按\ **IP**\ 给一份基础额度（可订阅的合约数、市场、连接数、每秒消息数）；登录后按账号等级给更大的额度。
 
 ..  important::
 
     **订阅要写在 ``on_rsp_login`` 里。**
 
     网关断线后客户端会自动重连并重新登录，登录成功会再次触发 ``on_rsp_login``——
-    订阅写在这里，重连后会自动重放。写在主流程里的话，断线重连之后订阅就悄悄没了，
+    订阅写在这里，重连后会自动重放，断线期间的数据按序号\ **补发**\ 、不重不漏。写在主流程里的话，断线重连之后订阅就悄悄没了，
     程序还在跑，只是再也收不到数据。
 
     这是这套订阅接口约定的用法，不是可选的风格问题。

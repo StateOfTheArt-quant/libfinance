@@ -67,20 +67,26 @@ Subscriptions
 
 .. py:class:: QuoteApi(auto_reconnect=True)
 
-    Client for the market data gateway. Reconnects and logs in again automatically
-    after a disconnect.
+    Client for the market data gateway. No login is needed: it fetches a ticket from
+    the libfinance service (a per-IP allowance without login) and renews it before
+    it expires. After a disconnect it reconnects, logs in again and re-sends the
+    records you missed by sequence number.
 
     .. py:method:: register_spi(spi)
 
         Register the callback handler, an instance of :py:class:`~libfinance.subscribe.quote_api.QuoteSpi`.
 
-    .. py:method:: connect(ip, port, timeout=3.0)
+    .. py:method:: connect(addresses=None, port=None, timeout=3.0)
 
-        Connect to the gateway. Returns ``0`` on success, ``-1`` on failure.
+        Connect to the gateway. Without arguments the address comes from the
+        libfinance service together with the ticket; ``"host:port,host:port"`` or
+        ``connect(host, port)`` targets specific gateways. Returns ``0`` once
+        connected, ``-1`` if not yet (it keeps retrying in the background).
 
-    .. py:method:: login(user_id, password)
+    .. py:method:: login(token=None)
 
-        Log in. Credentials are remembered and replayed after a reconnect.
+        Optional. Supply your own ticket: a string, or a function returning one
+        (called on first login, on every reconnect and before expiry).
 
     .. py:method:: subscribe(instruments, exchange_id, source="")
 
@@ -97,7 +103,8 @@ Subscriptions
     .. py:method:: subscribe_all(market=0, instrument_type=0, data_type=0)
 
         Subscribe to everything matching market × instrument type × data type.
-        ``0`` means unrestricted on that axis. Requires an unlimited quota.
+        ``0`` means unrestricted on that axis. Requires an allowance that
+        includes whole-market subscription.
 
     .. py:method:: unsubscribe_all()
 
@@ -119,12 +126,15 @@ Subscriptions
     the background receive thread, so do no slow work inside them.
 
     Methods: ``on_connected``, ``on_disconnected(reason)``,
-    ``on_rsp_login(rsp, request_id)``, ``on_rsp_subscribe(rsp, request_id)``,
+    ``on_rsp_login(rsp, request_id)``, ``on_rsp_reauth(rsp)``,
+    ``on_session_closed(notice)``, ``on_rsp_subscribe(rsp, request_id)``,
     ``on_rsp_unsubscribe(rsp, request_id)``,
     ``on_rsp_subscribe_all(rsp, request_id)``,
     ``on_rsp_unsubscribe_all(rsp, request_id)``,
     ``on_rsp_query_sources(sources, request_id)``,
-    ``on_depth_market_data(quote)``, ``on_heartbeat``.
+    ``on_depth_market_data(quote, envelope)``, ``on_transaction``, ``on_entrust``,
+    ``on_tick``, ``on_depth`` (each ``(record, envelope)``), ``on_sequence_gap(gap)``,
+    ``on_stream_status(status)``, ``on_heartbeat``.
 
 .. currentmodule:: libfinance.subscribe.md_protocol
 
