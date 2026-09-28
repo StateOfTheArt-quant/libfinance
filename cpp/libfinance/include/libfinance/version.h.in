@@ -1,0 +1,3 @@
+#pragma once
+
+#define LIBFINANCE_VERSION "@PROJECT_VERSION@"

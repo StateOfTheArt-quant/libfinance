@@ -1,0 +1,5 @@
+# build trees and fetched third-party sources (see cmake/mod_*.cmake)
+build/
+build-*/
+third_party/*
+!third_party/.gitkeep
