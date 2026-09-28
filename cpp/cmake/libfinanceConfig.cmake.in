@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Dependencies the public headers expose: arrow::Table and nlohmann::json.
+find_dependency(nlohmann_json REQUIRED)
+find_dependency(Arrow REQUIRED)
+
+include("${CMAKE_CURRENT_LIST_DIR}/libfinanceTargets.cmake")
+
+check_required_components(libfinance)

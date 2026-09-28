@@ -27,8 +27,9 @@ import pytest
 import libfinance
 
 _ROOT = pathlib.Path(__file__).resolve().parent.parent
-_ZH = _ROOT / "docs" / "source" / "zh"
-_EN = _ROOT / "docs" / "source" / "en"
+_REPO = _ROOT.parent  # the monorepo: docs/ sits next to python/
+_ZH = _REPO / "docs" / "source" / "zh"
+_EN = _REPO / "docs" / "source" / "en"
 
 #: ``libfinance.__all__`` 里**不面向使用者**的条目，不要求文档覆盖。
 #:
@@ -62,7 +63,7 @@ def _documented(root, pattern):
         for match in pattern.finditer(text):
             dotted = match.group(1)
             found.setdefault(dotted.rsplit(".", 1)[-1], []).append(
-                (path.relative_to(_ROOT), match)
+                (path.relative_to(_REPO), match)
             )
     return found
 

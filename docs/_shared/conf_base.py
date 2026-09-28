@@ -12,8 +12,8 @@ from datetime import datetime
 _SHARED = pathlib.Path(__file__).resolve().parent
 _REPO = _SHARED.parent.parent
 
-# 让 autodoc 能 import 到未安装的源码树
-sys.path.insert(0, str(_REPO))
+# 让 autodoc 能 import 到未安装的源码树（Python 客户端在 python/ 下）
+sys.path.insert(0, str(_REPO / "python"))
 
 import libfinance  # noqa: E402
 

@@ -42,8 +42,16 @@ pip install libfinance
 
 ```bash
 git clone https://github.com/StateOfTheArt-quant/libfinance.git
-cd libfinance
+cd libfinance/python
 pip install -e .
+```
+
+C++ 客户端（函数名、参数与 Python 版逐一相同，见 [cpp/README.md](cpp/README.md)）：
+
+```cpp
+#include <libfinance/libfinance.hpp>
+
+auto bars = libfinance::get_price({"000001.XSHE", "600000.XSHG"}, "2024-03-01", "2024-03-06");
 ```
 
 ## 快速开始
@@ -123,7 +131,7 @@ get_trading_dates("2024-01-01", "2024-01-31", market="us")   # 不涉及具体�
 | --- | --- |
 | [📘 中文文档](https://libfinance.readthedocs.io/zh-cn/latest/) | 概念设计、数据说明、操作指南与 API 参考 |
 | [📗 English documentation](https://libfinance.readthedocs.io/en/latest/) | The same documentation tree in English |
-| [💻 示例代码](https://github.com/StateOfTheArt-quant/libfinance/tree/main/example) | 六类 API 的可运行脚本，与 API 参考对照阅读 |
+| [💻 示例代码](https://github.com/StateOfTheArt-quant/libfinance/tree/main/python/example) | 六类 API 的可运行脚本，与 API 参考对照阅读 |
 | [🧩 操作指南](https://libfinance.readthedocs.io/zh-cn/latest/howto/index.html) | 取行情面板、PIT 回测、订阅实时行情等成套做法 |
 | [🩺 故障排查](https://libfinance.readthedocs.io/zh-cn/latest/howto/troubleshooting.html) | 按**症状**编排：看到什么现象，就从哪一行开始 |
 
@@ -136,3 +144,13 @@ API 参考按合约信息和交易日历、行情信息、基本面信息、行�
 <div align="center">
     <img alt="微信公众号二维码" src="https://raw.githubusercontent.com/StateOfTheArt-quant/libfinance/main/docs/_shared/_static/img/code.png" width="600" height="220">
 </div>
+
+## 仓库结构
+
+| 目录 | 内容 |
+| --- | --- |
+| `contract/` | 各语言客户端共同遵守的契约：公开函数（名称、参数顺序与默认值、返回）与它们调用的服务端函数 |
+| `python/` | Python 客户端（PyPI 上的 `libfinance`） |
+| `cpp/` | C++ 客户端 |
+| `conformance/` | 同一组调用分别经 Python 与 C++ 客户端发给同一个服务端，逐项比对答案 |
+| `docs/` | 文档（中英双语） |

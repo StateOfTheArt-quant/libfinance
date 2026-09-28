@@ -121,32 +121,21 @@ def _ensure_fields(fields, fields_dict, stocks, funds, futures, futures888, spot
                    repos):
     has_dominant_id = False
     future_only = futures and not any([stocks, funds, spots, options, convertibles, indexes, repos])
-    all_fields = set(fields_dict["common"])
-    if futures:
-        all_fields.update(fields_dict["future"])
-    if stocks:
-        all_fields.update(fields_dict["stock"])
-    if funds:
-        all_fields.update(fields_dict["fund"])
-    if spots:
-        all_fields.update(fields_dict["spot"])
-    if options:
-        all_fields.update(fields_dict["option"])
-    if convertibles:
-        all_fields.update(fields_dict["convertible"])
-    if indexes:
-        all_fields.update(fields_dict["index"])
-    if repos:
-        all_fields.update(fields_dict["repo"])
+    # An ordered list, not a set: the default field order and the "choose any in" message must be
+    # the same on every run (and in every client language).
+    all_fields = list(fields_dict["common"])
+    for present, kind in ((futures, "future"), (stocks, "stock"), (funds, "fund"), (spots, "spot"),
+                          (options, "option"), (convertibles, "convertible"), (indexes, "index"), (repos, "repo")):
+        if present:
+            all_fields += [name for name in fields_dict[kind] if name not in all_fields]
     if future_only and futures888 and len(futures) == len(futures888) and not fields:
         has_dominant_id = True
 
     if fields:
         fields = ensure_list_of_string(fields, "fields")
-        fields_set = set(fields)
-        if len(fields_set) < len(fields):
+        if len(set(fields)) < len(fields):
             warnings.warn("duplicated fields: %s" % [f for f in fields if fields.count(f) > 1])
-            fields = list(fields_set)
+            fields = list(dict.fromkeys(fields))  # first occurrences, in order
         # 只有期货类型
         if 'dominant_id' in fields:
             fields.remove("dominant_id")
@@ -160,7 +149,7 @@ def _ensure_fields(fields, fields_dict, stocks, funds, futures, futures888, spot
         check_items_in_container(fields, all_fields, "fields")
         return fields, has_dominant_id
     else:
-        return list(all_fields), has_dominant_id
+        return all_fields, has_dominant_id
 
 
 
