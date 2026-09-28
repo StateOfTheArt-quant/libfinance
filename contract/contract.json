@@ -19,7 +19,7 @@
     "instruments": {"target": "stockinstrument.securities", "params": ["symbols", "as_of"], "returns": "dataframe"},
 
     "get_price": {"target": "stockdaybar.get_price", "params": ["order_book_ids", "start_date", "end_date", "frequency", "fields", "skip_suspended", "include_now", "adjust_type", "adjust_orig"], "returns": "dataframe", "note": "columns symbol_namespace, trading_code, session_date, fields..."},
-    "daybar.dataset_info": {"target": "stockdaybar.dataset_info", "params": ["market"], "returns": "raw"},
+    "daybar.dataset_info": {"target": "stockdaybar.coverage", "params": ["market"], "returns": "raw", "note": "{mic: {coverage_start, coverage_end, ...}}: what get_price_coverage reads"},
     "exfactor.dataset_info": {"target": "exfactor.dataset_info", "params": ["market"], "returns": "raw"},
     "get_ex_factor": {"target": "exfactor.get_ex_factor_by_code", "params": ["order_book_ids", "start_date", "end_date"], "returns": "dataframe"},
 
