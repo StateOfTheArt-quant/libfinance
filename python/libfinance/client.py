@@ -19,6 +19,13 @@ def deserialize_dataframe(json_str):
     return pd.read_json(StringIO(json_str), orient='table', convert_dates=True)
 
 
+def deserialize_arrow(data):
+    """A table answer of the C++ server: Arrow IPC stream bytes -> DataFrame."""
+    import pyarrow as pa
+
+    return pa.ipc.open_stream(data).read_all().to_pandas()
+
+
 # ==========================================
 # RPC 错误码 & 异常
 # ==========================================
@@ -43,10 +50,15 @@ class RpcErrorCode:
 
 
 class RpcError(Exception):
-    """RPC 调用错误，包含错误码和消息"""
-    def __init__(self, code: int, message: str):
+    """RPC 调用错误，包含错误码和消息。
+
+    ``kind`` 是服务端给出的错误类别（CoverageError、UnknownInstrumentError……），
+    旧服务端不给时为 None。
+    """
+    def __init__(self, code: int, message: str, kind: str = None):
         self.code = code
         self.message = message
+        self.kind = kind
         super().__init__(f"RpcError(code={code}): {message}")
 
 
@@ -59,6 +71,7 @@ class RpcError(Exception):
 FRAME_LEN_SIZE = 4
 FRAME_META_SIZE = 6   # type(1) + request_id(4) + flags(1)
 FRAME_HEADER_SIZE = FRAME_LEN_SIZE + FRAME_META_SIZE  # 10
+MAX_FRAME_BODY = 2 * 1024 * 1024 * 1024 - 1
 
 
 class FrameType:
@@ -259,11 +272,13 @@ class RpcClient:
         if status == "error":
             code = resp.get("code", -1)
             message = resp.get("message", "Unknown error")
-            raise RpcError(code, message)
+            raise RpcError(code, message, resp.get("kind"))
         if "result" in resp:
             raw_output = resp["result"]
             if isinstance(raw_output, dict) and raw_output.get("type") == "pandas":
-                return deserialize_dataframe(raw_output.get("data")) 
+                return deserialize_dataframe(raw_output.get("data"))
+            elif isinstance(raw_output, dict) and raw_output.get("type") == "arrow":
+                return deserialize_arrow(raw_output.get("data"))
             else:
                 return raw_output
         return resp
@@ -304,7 +319,9 @@ class RpcClient:
 
         body_len = struct.unpack('!I', len_data)[0]
 
-        if body_len < FRAME_META_SIZE or body_len > 15 * 1024 * 1024:
+        # Arrow answers of a large query run to hundreds of MB; the cap only guards against a
+        # corrupt length.
+        if body_len < FRAME_META_SIZE or body_len > MAX_FRAME_BODY:
             print(f"Invalid frame body_len: {body_len}", file=sys.stderr)
             self.running = False
             return None
