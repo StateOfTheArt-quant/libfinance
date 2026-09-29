@@ -9,6 +9,18 @@
 
 ..  danger::
 
+    **行业接口按新的行业数据族重写：**\ ``get_industry`` 与 ``get_industry_mapping`` 删除。
+
+    - 行业以 ``order_book_id``\ （\ ``801780.SW``\ 、``10.GICS``\ ）命名；``source`` 是分类体系（\ ``SW``\ 、``GICS``\ ……）。
+    - ``get_industry(industry, source, date, market)`` → ``get_industry_constituents(order_book_id, as_of=None)``\ 。
+    - ``get_instrument_industry(order_book_ids, date, source="sw", level=1)`` →
+      ``get_instrument_industry(order_book_ids, source=None, level=None, as_of=None)``\ ：省略 ``source`` / ``level`` 即全部；
+      返回长表 ``order_book_id, related_order_book_id, source, market, level``\ ，不再是 ``first_industry_code`` 宽表。
+    - 新增 ``get_industry_weights(order_book_id, as_of=None)``\ ，每行带 ``methodology``\ 。
+    - 行业节点列表（原 ``get_industry_mapping``\ ）随跨类型的 ``all_instruments(type=...)`` 提供。
+
+..  danger::
+
     **实时订阅（``libfinance.subscribe``）改用行情网关协议 v3，与旧网关不兼容。**
 
     - ``QuoteApi.login(user_id, password)`` 取消：\ **不需要登录**\ ，``connect()`` 自动向服务取行情票据

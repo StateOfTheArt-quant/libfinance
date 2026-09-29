@@ -21,11 +21,11 @@ Full example
     # 1. Constituents and weights on that day
     w = get_index_weights(index_code="000300.XSHG", date=AS_OF)
 
-    # 2. Industry membership on that day (note date=AS_OF, not today)
-    ind = get_instrument_industry(list(w["order_book_id"]), date=AS_OF)
+    # 2. Shenwan level-1 industry on that day (note as_of=AS_OF, not today)
+    ind = get_instrument_industry(list(w["order_book_id"]), source="SW", level=1, as_of=AS_OF)
 
-    # 3. Keep the banks
-    banks = ind[ind["first_industry_name"] == "银行"].index.tolist()
+    # 3. Keep the banks (Shenwan banks are 801780.SW)
+    banks = ind.loc[ind["related_order_book_id"] == "801780.SW", "order_book_id"].tolist()
 
     # 4. Attach the weights
     sub = w[w["order_book_id"].isin(banks)].sort_values("weight", ascending=False)
@@ -37,12 +37,12 @@ A real run:
     >>> len(w), w["weight"].sum()
     (300, 1.0)
 
-    >>> ind["first_industry_name"].value_counts().head(5)
-    电子      30
-    电力设备    29
-    非银金融    27
-    医药生物    24
-    银行      22
+    >>> ind["related_order_book_id"].value_counts().head(5)     # electronics / power equipment / non-bank financials / pharma / banks
+    801080.SW    30
+    801730.SW    29
+    801790.SW    27
+    801150.SW    24
+    801780.SW    22
 
     >>> len(banks)
     22
@@ -73,8 +73,8 @@ Three lenses
         - :func:`~libfinance.get_index_weights`
         - Works on any trading day, not just rebalancing dates. Weights normalised
     *   - Industry
-        - :func:`~libfinance.get_industry`
-        - Pass ``date``; ``level`` selects the depth
+        - :func:`~libfinance.get_industry_constituents`
+        - Pass ``as_of``; name the industry by a code such as ``801780.SW``
     *   - Concept sectors
         - :func:`~libfinance.get_concept_weights`
         - Look ``concept_id`` up via :func:`~libfinance.get_concept_meta`;
@@ -84,8 +84,8 @@ To take an industry across the whole market rather than within an index:
 
 .. code-block:: python
 
-    >>> from libfinance import get_industry
-    >>> get_industry("480000", date="2024-03-08")[:4]
+    >>> from libfinance import get_industry_constituents
+    >>> get_industry_constituents("801780.SW", as_of="2024-03-08")[:4]
     ['000001.XSHE', '001227.XSHE', '002142.XSHE', '002807.XSHE']
 
 Verifying there is no leakage

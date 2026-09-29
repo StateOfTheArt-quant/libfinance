@@ -89,10 +89,11 @@ CASES = [
     ("get_factor", {"order_book_ids": CN[:1], "factors": ["roe"], "start_quarter": "2024q1", "end_quarter": "2024q4"}),
     # industry, index, concepts
     ("get_instrument_industry", {"order_book_ids": CN}),
-    ("get_instrument_industry", {"order_book_ids": CN, "date": "2024-06-28", "level": 2}),
+    ("get_instrument_industry", {"order_book_ids": CN, "source": "SW", "level": 2, "as_of": "2024-06-28"}),
     ("get_index_weights", {"index_code": "000300.XSHG", "date": "2025-06-30"}),
-    ("get_industry", {"industry": "801780"}),
-    ("get_industry_mapping", {}),
+    ("get_industry_constituents", {"order_book_id": "801780.SW"}),
+    ("get_industry_constituents", {"order_book_id": "801780.SW", "as_of": "2024-06-28"}),
+    ("get_industry_weights", {"order_book_id": "801780.SW", "as_of": "2024-06-28"}),
     ("get_concept_meta", {}),
     ("get_concept_weights", {"concept_ids": ["885311", "886074"], "as_of": "2025-06-30"}),
     # shares, quotes

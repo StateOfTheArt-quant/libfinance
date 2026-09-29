@@ -61,9 +61,9 @@ that a namespace has no US provider, rather than returning an empty table.
     *   - :func:`~libfinance.get_index_weights`
         - ❌
         - No US indices
-    *   - :func:`~libfinance.get_instrument_industry` / :func:`~libfinance.get_industry`
-        - ❌
-        - "unsupported A-share symbol"
+    *   - :func:`~libfinance.get_instrument_industry` / :func:`~libfinance.get_industry_constituents`
+        - ✅
+        - Classifications are GICS, ICB, NAICS and SIC (``source="GICS"``)
 
 .. warning::
 

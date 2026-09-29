@@ -5,19 +5,14 @@
 
 namespace libfinance {
 
-Json get_industry(const std::string& industry, const std::string& source, const std::optional<DateLike>& date,
-                  const std::optional<std::string>& market) {
-  return detail::call("get_industry", {{"industry", industry},
-                                       {"source", source},
-                                       {"date", detail::iso_or_null(date)},
-                                       {"market", detail::text_or_null(market)}});
+Json get_industry_constituents(const std::string& order_book_id, const std::optional<DateLike>& as_of) {
+  return detail::call("get_industry_constituents",
+                      {{"order_book_id", order_book_id}, {"as_of", detail::iso_or_null(as_of)}});
 }
 
-Table get_industry_mapping(const std::string& source, const std::optional<DateLike>& date,
-                           const std::optional<std::string>& market) {
-  return detail::call_table("get_industry_mapping", {{"source", source},
-                                                     {"date", detail::iso_or_null(date)},
-                                                     {"market", detail::text_or_null(market)}});
+Table get_industry_weights(const std::string& order_book_id, const std::optional<DateLike>& as_of) {
+  return detail::call_table("get_industry_weights",
+                            {{"order_book_id", order_book_id}, {"as_of", detail::iso_or_null(as_of)}});
 }
 
 }  // namespace libfinance

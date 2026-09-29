@@ -34,17 +34,19 @@ def test_get_price_defaults_match_the_server():
     assert d["frequency"] == "1d"
 
 
-def test_industry_source_default_is_one_the_server_accepts():
-    """默认 source 必须是服务端认的。
+def test_industry_defaults_mean_every_classification():
+    """source / level 省略即全部分类体系、全部层级，不替用户选一个。
 
-    曾经是 '010303'（旧数据源的申万编码），服务端只支持 'sw'，于是这个接口用默认参数
-    调**一直是报错的**：unsupported source: 010303; available: sw。
+    曾经默认 source='010303'（旧数据源的申万编码），服务端不认，于是用默认参数调**一直是报错的**。
+    现在分类体系由服务端的 industryconstituents 给出（SW、GICS……），不存在一个对所有市场都对的默认值。
     """
     from libfinance.api.index_components import get_instrument_industry
-    from libfinance.api.industry import get_industry, get_industry_mapping
+    from libfinance.api.industry import get_industry_constituents, get_industry_weights
 
-    for func in (get_instrument_industry, get_industry, get_industry_mapping):
-        assert _defaults(func)["source"] == "sw", func.__name__
+    defaults = _defaults(get_instrument_industry)
+    assert defaults["source"] is None and defaults["level"] is None and defaults["as_of"] is None
+    for func in (get_industry_constituents, get_industry_weights):
+        assert _defaults(func)["order_book_id"] is inspect.Parameter.empty, func.__name__
 
 
 def test_index_code_is_required_not_silently_defaulted():
@@ -213,8 +215,8 @@ def test_instruments_mixed_markets_without_market(monkeypatch):
     ("get_factor", {"order_book_ids": "600000.XSHG", "factors": ["net_profit_ttm"],
       "start_quarter": "2024q1", "end_quarter": "2024q3"},
      {"order_book_ids": ["600000.XSHG"], "factors": ["net_profit_ttm"]}),
-    ("get_instrument_industry", {"order_book_ids": ["600000.XSHG"], "level": 3},
-     {"order_book_ids": ["600000.XSHG"], "level": 3}),
+    ("get_instrument_industry", {"order_book_ids": ["600000.XSHG"], "level": 3, "as_of": "2024-06-28"},
+     {"order_book_ids": ["600000.XSHG"], "level": 3, "as_of": "2024-06-28"}),
     ("get_index_weights", {"index_code": "000300.XSHG", "date": "2024-06-28"},
      {"index_code": "000300.XSHG", "date": "2024-06-28"}),
 ])

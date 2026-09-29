@@ -15,8 +15,8 @@
         - :func:`~libfinance.get_index_weights`
         - 有权重，规则透明，定期调样
     *   - 行业分类
-        - :func:`~libfinance.get_industry` / :func:`~libfinance.get_industry_mapping`
-        - 全市场覆盖，三级层次
+        - :func:`~libfinance.get_industry_constituents` / :func:`~libfinance.get_instrument_industry`
+        - 全市场覆盖，多级层次，多种分类体系
     *   - 概念板块
         - :func:`~libfinance.get_concept_weights`
         - 主题驱动，数量多，边界模糊
@@ -60,51 +60,34 @@
 行业分类
 ========
 
-目前只有\ **申万**\ 分类（\ ``source="sw"``\ ），三级结构：
+行业以 ``order_book_id``\ （\ ``<分类代码>.<分类体系>``\ ）命名：申万银行是 ``801780.SW``\ ，GICS 能源是 ``10.GICS``\ 。
+``source`` 是分类体系（\ ``SW``\ 、``GICS``\ ……），``level`` 是层级。
 
-..  code-block:: python
-
-    >>> from libfinance import get_industry_mapping
-    >>> get_industry_mapping().shape
-    (346, 6)
-    >>> get_industry_mapping().head(3)
-      first_industry_code first_industry_name second_industry_code second_industry_name  \
-    0              110000                农林牧渔               110100                  种植业
-    1              110000                农林牧渔               110100                  种植业
-    2              110000                农林牧渔               110100                  种植业
-
-      third_industry_code third_industry_name
-    0              110101                  种子
-    1              110102                粮食种植
-    2              110103               其他种植业
-
-这是一张\ **分类表**\ （行业之间的层次关系），每行是一个三级行业。
-
-反查某只股票属于哪个行业：
+查某只股票属于哪些行业：
 
 ..  code-block:: python
 
     >>> from libfinance import get_instrument_industry
-    >>> get_instrument_industry(["000001.XSHE", "600000.XSHG"], date="2024-03-08")
-                  first_industry_code first_industry_name
-    order_book_id
-    000001.XSHE                480000                  银行
-    600000.XSHG                480000                  银行
+    >>> get_instrument_industry(["000001.XSHE", "600000.XSHG"], source="SW", level=1, as_of="2024-03-08")
+      order_book_id related_order_book_id source market  level
+    0   000001.XSHE             801780.SW     SW     CN      1
+    1   600000.XSHG             801780.SW     SW     CN      1
 
-``level`` 控制返回到第几级（1/2/3，默认 1）。
+省略 ``source`` / ``level`` 则返回全部分类体系、全部层级。``related_order_book_id`` 就是行业代码。
 
-正查某个行业下有哪些股票：
+反过来，查某个行业下有哪些股票，以及它们的权重：
 
 ..  code-block:: python
 
-    >>> from libfinance import get_industry
-    >>> get_industry("480000")[:6]
+    >>> from libfinance import get_industry_constituents, get_industry_weights
+    >>> get_industry_constituents("801780.SW", as_of="2024-03-08")[:6]
     ['000001.XSHE', '001227.XSHE', '002142.XSHE', '002807.XSHE',
      '002839.XSHE', '002936.XSHE']
+    >>> get_industry_weights("801780.SW", as_of="2024-03-08")   # 每行带 methodology
 
 ..  important::
 
-    行业归属会变。做历史回测时要传 ``date``\ ，否则用的是\ **今天**\ 的分类去划分历史上的
+    行业归属会变。做历史回测时要传 ``as_of``\ ，否则用的是\ **今天**\ 的分类去划分历史上的
     股票——这同样是一种前视偏差。
 
 概念板块

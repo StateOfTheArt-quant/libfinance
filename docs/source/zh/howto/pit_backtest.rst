@@ -102,8 +102,8 @@
         - 不需要
         - 日历是事实
 
-对 :func:`~libfinance.get_index_weights` 与 :func:`~libfinance.get_instrument_industry`
-用的是 ``date``\ ，含义是"那一天的成分/分类"，效果相同。
+:func:`~libfinance.get_index_weights` 用的是 ``date``\ ，含义是"那一天的成分"，效果相同；行业的三个函数
+（\ :func:`~libfinance.get_instrument_industry` 等）直接收 ``as_of``\ 。
 
 怎么确认自己做对了
 ==================

@@ -4,7 +4,10 @@ Industry classification
 
 .. currentmodule:: libfinance
 
-get_instrument_industry infers markets from security codes. Industry identifiers and catalogs still accept market.
+An industry is named by an ``order_book_id`` (``<classification code>.<classification>``, e.g. ``801780.SW``,
+``10.GICS``), with the same rules as a security; ``source`` is the classification (``SW``, ``GICS``, ...) and
+``level`` its depth. All three functions answer with the facts of ``as_of``; a historical universe should
+use one ``as_of`` for industry membership, constituents and weights.
 
 .. list-table::
     :header-rows: 1
@@ -12,73 +15,27 @@ get_instrument_industry infers markets from security codes. Industry identifiers
 
     * - Function / class
       - Purpose
-    * - :func:`~libfinance.get_industry_mapping`
-      - Discover industry codes and hierarchy
     * - :func:`~libfinance.get_instrument_industry`
-      - Map securities to industries at a date
-    * - :func:`~libfinance.get_industry`
-      - Find securities belonging to an industry
+      - Map securities to their industries at a date
+    * - :func:`~libfinance.get_industry_constituents`
+      - Find the securities in an industry at a date
+    * - :func:`~libfinance.get_industry_weights`
+      - Read an industry's constituent weights, with their methodology
 
 
-Semantics are covered in :doc:`../data/universe`. Only Shenwan (``source="sw"``) is
-currently supported.
+Semantics are covered in :doc:`../data/universe`.
 
-.. py:function:: get_industry_mapping(source='sw', date=None, market=None)
+.. py:function:: get_instrument_industry(order_book_ids, source=None, level=None, as_of=None)
 
-    The whole classification tree — codes, names, levels.
+    Which industries each security belongs to.
 
-    :param source: Classification source; defaults to ``"sw"`` (Shenwan)
-    :param date: Use the classification as of this day; omit for the latest
-    :param market: Market; omit for the server default
-    :returns: ``DataFrame`` with one row per third-level industry
-
-    Columns: ``first_industry_code`` / ``first_industry_name`` and the same for
-    ``second_`` and ``third_``.
-
-    **Examples**
-
-    Run these blocks in order. Printed results below are **illustrative**, not captured
-    from a live service. Values, identifiers and events are not market facts; ellipses
-    mark omitted content.
-
-    .. literalinclude:: ../../../../example/3a_industry.py
-        :language: python
-        :start-after: # [get_industry_mapping.1]
-        :end-before: # [/get_industry_mapping.1]
-        :prepend: from libfinance import get_industry_mapping
-
-    Illustrative printed result:
-
-    .. literalinclude:: ../../../_shared/example_outputs/get_industry_mapping.1.txt
-        :language: text
-
-    .. literalinclude:: ../../../../example/3a_industry.py
-        :language: python
-        :start-after: # [get_industry_mapping.2]
-        :end-before: # [/get_industry_mapping.2]
-
-    Illustrative printed result:
-
-    .. literalinclude:: ../../../_shared/example_outputs/get_industry_mapping.2.txt
-        :language: text
-
-    Reading the result: Historical and current classifications can be identical or differ following classification changes.
-
-    :download:`Download the full example <../../../../example/3a_industry.py>`
-
-.. py:function:: get_instrument_industry(order_book_ids, date=None, source='sw', level=1)
-
-    Which industry each security belongs to.
-
-    :param order_book_ids: List of stock codes
-    :param date: Use the classification as of this day; omit for the latest.
+    :param order_book_ids: Security codes (one code is fine); each code names its market
+    :param source: Classification, e.g. ``"SW"`` (Shenwan) or ``"GICS"``; omit for every classification
+    :param level: Depth (Shenwan 1/2/3); omit for every level
+    :param as_of: The facts of that day; omit for the latest confirmed date.
         **Pass this for historical work** — memberships change.
-    :param source: Classification source; only ``"sw"`` is supported
-    :param level: Depth, 1/2/3; default 1
-    :returns: ``DataFrame`` indexed by ``order_book_id``
-
-    The default ``source`` was ``"010303"`` before 0.0.6, which the server never
-    accepted — calls with default arguments always failed.
+    :returns: ``DataFrame`` with ``order_book_id``, ``related_order_book_id`` (the industry code, e.g.
+        ``801780.SW``), ``source``, ``market`` and ``level``
 
     **Examples**
 
@@ -97,19 +54,18 @@ currently supported.
     .. literalinclude:: ../../../_shared/example_outputs/get_instrument_industry.1.txt
         :language: text
 
-    Reading the result: The loop prints level 1 and then level 3. Code and name fields change with the chosen level; other columns are omitted.
+    Reading the result: The loop prints level 1 and then level 3. ``related_order_book_id`` is the industry
+    code and can be passed straight to :func:`~libfinance.get_industry_constituents`.
 
     :download:`Download the full example <../../../../example/3a_industry.py>`
 
-.. py:function:: get_industry(industry, source='sw', date=None, market=None)
+.. py:function:: get_industry_constituents(order_book_id, as_of=None)
 
-    Every security in an industry.
+    Every security in an industry on a day.
 
-    :param industry: Industry code or name
-    :param source: Classification source; defaults to ``"sw"``
-    :param date: Use the classification as of this day; omit for the latest
-    :param market: Market; omit for the server default
-    :returns: List of codes
+    :param order_book_id: Industry code, e.g. ``"801780.SW"`` (Shenwan banks) or ``"10.GICS"``
+    :param as_of: The facts of that day; omit for the latest confirmed date
+    :returns: List of member ``order_book_id``; ``None`` when the industry did not exist that day
 
     **Examples**
 
@@ -119,15 +75,46 @@ currently supported.
 
     .. literalinclude:: ../../../../example/3a_industry.py
         :language: python
-        :start-after: # [get_industry.1]
-        :end-before: # [/get_industry.1]
-        :prepend: from libfinance import get_industry, get_industry_mapping
+        :start-after: # [get_industry_constituents.1]
+        :end-before: # [/get_industry_constituents.1]
+        :prepend: from libfinance import get_industry_constituents, get_instrument_industry
 
     Illustrative printed result:
 
-    .. literalinclude:: ../../../_shared/example_outputs/get_industry.1.txt
+    .. literalinclude:: ../../../_shared/example_outputs/get_industry_constituents.1.txt
         :language: text
 
     Reading the result: The two lists illustrate historical and current membership. Placeholder codes show the structure only.
+
+    :download:`Download the full example <../../../../example/3a_industry.py>`
+
+.. py:function:: get_industry_weights(order_book_id, as_of=None)
+
+    The weights of an industry's constituents on a day.
+
+    :param order_book_id: Industry code, e.g. ``"801780.SW"``
+    :param as_of: The facts of that day; omit for the latest confirmed date
+    :returns: ``DataFrame`` with ``order_book_id`` (the member), ``weight``, ``methodology``, ``source``,
+        ``effective_from`` and ``effective_to``. No weights are made up: without a vendor weight and an
+        explicit methodology there is no row.
+
+    **Examples**
+
+    Run these blocks in order. Printed results below are **illustrative**, not captured
+    from a live service. Values, identifiers and events are not market facts; ellipses
+    mark omitted content.
+
+    .. literalinclude:: ../../../../example/3a_industry.py
+        :language: python
+        :start-after: # [get_industry_weights.1]
+        :end-before: # [/get_industry_weights.1]
+        :prepend: from libfinance import get_industry_weights
+
+    Illustrative printed result:
+
+    .. literalinclude:: ../../../_shared/example_outputs/get_industry_weights.1.txt
+        :language: text
+
+    Reading the result: One row per member; ``methodology`` says where the weight comes from.
 
     :download:`Download the full example <../../../../example/3a_industry.py>`

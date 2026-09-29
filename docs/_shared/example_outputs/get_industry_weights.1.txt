@@ -1,0 +1,4 @@
+  order_book_id  weight          methodology source effective_from effective_to
+0   000001.XSHE  0.0xxx  official allocation     SW     2024-06-xx         None
+1   600000.XSHG  0.0xxx  official allocation     SW     2024-06-xx         None
+...

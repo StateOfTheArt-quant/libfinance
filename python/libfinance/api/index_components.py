@@ -4,20 +4,23 @@ from typing import Any, Union, Optional, Iterable, Dict, List, Sequence, Iterabl
 import pandas as pd
 from libfinance.client import get_client
 from libfinance.utils.decorators import export_as_api, ttl_cache, compatible_with_parm
+from libfinance.utils.utils import to_date_str
 
 @export_as_api
-def get_instrument_industry(order_book_ids: list, date=None, source: str = "sw",
-                            level: int = 1) -> pd.DataFrame:
-    r"""查询股票在指定日期的行业归属。
+def get_instrument_industry(order_book_ids: list, source: Optional[str] = None, level: Optional[int] = None,
+                            as_of=None) -> pd.DataFrame:
+    r"""查询证券在指定日期所属的行业。
 
-    :param order_book_ids: 股票代码列表
-    :param date: 分类日期；省略取最新
-    :param source: 行业分类来源，当前支持 ``"sw"``\ （申万）
-    :param level: 分类层级，1、2 或 3；默认 1
-    :returns: 股票与行业归属的 DataFrame。
+    :param order_book_ids: 证券代码列表（单个代码也可以），代码自己确定市场
+    :param source: 分类体系，如 ``"SW"``\ （申万）、``"GICS"``\ ；省略则返回全部分类体系
+    :param level: 分类层级（申万 1、2、3）；省略则返回全部层级
+    :param as_of: 那一天的事实；省略则取数据已确认的最新日期
+    :returns: pandas.DataFrame，包含 order_book_id、related_order_book_id（行业代码，如 ``801780.SW``\ ）、
+              source、market 和 level。
     """
     return get_client().get_instrument_industry(
-        order_book_ids=order_book_ids, source=source, level=level, date=date)
+        order_book_ids=order_book_ids, source=source, level=level,
+        as_of=to_date_str(as_of) if as_of is not None else None)
 
 @export_as_api
 def get_index_weights(

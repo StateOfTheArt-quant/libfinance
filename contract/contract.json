@@ -31,10 +31,10 @@
     "get_pit_financials_ex": {"target": "financialstatement.get_pit_financials_ex", "params": ["order_book_ids", "fields", "start_quarter", "end_quarter", "as_of", "statements"], "returns": "dataframe"},
     "get_factor": {"target": null, "params": ["order_book_ids", "factors", "start_quarter", "end_quarter", "as_of"], "returns": "dataframe", "note": "no server serves it yet"},
 
-    "get_instrument_industry": {"target": "industry.get_instrument_industry", "params": ["order_book_ids", "source", "level", "date"], "returns": "dataframe"},
+    "get_instrument_industry": {"target": "industryconstituents.get_instrument_industry", "params": ["order_book_ids", "source", "level", "as_of"], "returns": "dataframe"},
+    "get_industry_constituents": {"target": "industryconstituents.get_industry_constituents", "params": ["order_book_id", "as_of"], "returns": "raw"},
+    "get_industry_weights": {"target": "industryweight.get_industry_weights", "params": ["order_book_id", "as_of"], "returns": "dataframe"},
     "get_index_weights": {"target": "indexweight.get_index_weights_on", "params": ["index_code", "date"], "returns": "dataframe"},
-    "get_industry": {"target": "industry.get_industry", "params": ["industry", "source", "date", "market"], "returns": "raw"},
-    "get_industry_mapping": {"target": "industry.get_industry_mapping", "params": ["source", "date", "market"], "returns": "dataframe"},
     "get_concept_meta": {"target": "conceptinstrument.all_instruments", "params": ["source", "fields", "market"], "returns": "dataframe"},
     "get_concept_weights": {"target": "conceptweight.get_concept_weights", "params": ["concept_ids", "source", "market", "as_of"], "returns": "dataframe"},
 
@@ -67,10 +67,10 @@
     {"name": "get_pit_financials_ex", "module": "financials", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "fields", "type": "str_or_list"}, {"name": "start_quarter", "type": "str"}, {"name": "end_quarter", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}, {"name": "statements", "type": "str", "default": "latest"}], "returns": "dataframe", "wire": ["get_pit_financials_ex"], "client": "quarters like 2026q1 (dashes dropped, lower-cased); statements in latest/all"},
     {"name": "get_factor", "module": "financials", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "factors", "type": "str_or_list"}, {"name": "start_quarter", "type": "str"}, {"name": "end_quarter", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe", "wire": ["get_factor"]},
 
-    {"name": "get_instrument_industry", "module": "index_components", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "date", "type": "date?", "default": null}, {"name": "source", "type": "str", "default": "sw"}, {"name": "level", "type": "int", "default": 1}], "returns": "dataframe", "wire": ["get_instrument_industry"]},
+    {"name": "get_instrument_industry", "module": "index_components", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "source", "type": "str?", "default": null}, {"name": "level", "type": "int?", "default": null}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe", "wire": ["get_instrument_industry"]},
+    {"name": "get_industry_constituents", "module": "industry", "params": [{"name": "order_book_id", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}], "returns": "raw", "wire": ["get_industry_constituents"]},
+    {"name": "get_industry_weights", "module": "industry", "params": [{"name": "order_book_id", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe", "wire": ["get_industry_weights"]},
     {"name": "get_index_weights", "module": "index_components", "params": [{"name": "index_code", "type": "str"}, {"name": "date", "type": "date?", "default": null}], "returns": "dataframe", "wire": ["get_index_weights"]},
-    {"name": "get_industry", "module": "industry", "params": [{"name": "industry", "type": "str"}, {"name": "source", "type": "str", "default": "sw"}, {"name": "date", "type": "date?", "default": null}, {"name": "market", "type": "str?", "default": null}], "returns": "raw", "wire": ["get_industry"]},
-    {"name": "get_industry_mapping", "module": "industry", "params": [{"name": "source", "type": "str", "default": "sw"}, {"name": "date", "type": "date?", "default": null}, {"name": "market", "type": "str?", "default": null}], "returns": "dataframe", "wire": ["get_industry_mapping"]},
     {"name": "get_concept_meta", "module": "concept_components", "params": [{"name": "source", "type": "str", "default": "THS"}, {"name": "fields", "type": "str_or_list?", "default": null}, {"name": "market", "type": "str?", "default": null}], "returns": "dataframe", "wire": ["get_concept_meta"], "client": "cached by data_version"},
     {"name": "get_concept_weights", "module": "concept_components", "params": [{"name": "concept_ids", "type": "list[str]"}, {"name": "as_of", "type": "date?", "default": null}, {"name": "source", "type": "str", "default": "THS"}, {"name": "market", "type": "str?", "default": null}], "returns": "dataframe", "wire": ["get_concept_meta", "get_concept_weights"], "client": "warns on concept ids missing from get_concept_meta"},
 

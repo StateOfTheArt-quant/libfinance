@@ -59,9 +59,9 @@
     *   - :func:`~libfinance.get_index_weights`
         - ❌
         - 没有美股指数
-    *   - :func:`~libfinance.get_instrument_industry` / :func:`~libfinance.get_industry`
-        - ❌
-        - 报 "unsupported A-share symbol"
+    *   - :func:`~libfinance.get_instrument_industry` / :func:`~libfinance.get_industry_constituents`
+        - ✅
+        - 分类体系是 GICS、ICB、NAICS、SIC（\ ``source="GICS"``\ ）
 
 ..  warning::
 
