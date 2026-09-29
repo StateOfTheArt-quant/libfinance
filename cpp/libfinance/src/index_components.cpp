@@ -5,12 +5,12 @@
 
 namespace libfinance {
 
-Table get_instrument_industry(const Codes& order_book_ids, const std::optional<DateLike>& date,
-                              const std::string& source, int level) {
+Table get_instrument_industry(const Codes& order_book_ids, const std::optional<std::string>& source,
+                              const std::optional<int>& level, const std::optional<DateLike>& as_of) {
   return detail::call_table("get_instrument_industry", {{"order_book_ids", detail::as_given(order_book_ids)},
-                                                        {"source", source},
-                                                        {"level", level},
-                                                        {"date", detail::iso_or_null(date)}});
+                                                        {"source", detail::text_or_null(source)},
+                                                        {"level", level ? Json(*level) : Json(nullptr)},
+                                                        {"as_of", detail::iso_or_null(as_of)}});
 }
 
 //: Monthly anchor snapshots upstream; for another day the server re-weights the latest anchor

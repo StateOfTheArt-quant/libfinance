@@ -20,11 +20,11 @@
     # 1. 那一天的指数成分与权重
     w = get_index_weights(index_code="000300.XSHG", date=AS_OF)
 
-    # 2. 那一天的行业归属（注意 date=AS_OF，不是今天）
-    ind = get_instrument_industry(list(w["order_book_id"]), date=AS_OF)
+    # 2. 那一天的申万一级行业（注意 as_of=AS_OF，不是今天）
+    ind = get_instrument_industry(list(w["order_book_id"]), source="SW", level=1, as_of=AS_OF)
 
-    # 3. 取出银行股
-    banks = ind[ind["first_industry_name"] == "银行"].index.tolist()
+    # 3. 取出银行股（申万银行 801780.SW）
+    banks = ind.loc[ind["related_order_book_id"] == "801780.SW", "order_book_id"].tolist()
 
     # 4. 带上权重
     sub = w[w["order_book_id"].isin(banks)].sort_values("weight", ascending=False)
@@ -36,12 +36,12 @@
     >>> len(w), w["weight"].sum()
     (300, 1.0)
 
-    >>> ind["first_industry_name"].value_counts().head(5)
-    电子      30
-    电力设备    29
-    非银金融    27
-    医药生物    24
-    银行      22
+    >>> ind["related_order_book_id"].value_counts().head(5)     # 电子 / 电力设备 / 非银金融 / 医药生物 / 银行
+    801080.SW    30
+    801730.SW    29
+    801790.SW    27
+    801150.SW    24
+    801780.SW    22
 
     >>> len(banks)
     22
@@ -72,8 +72,8 @@
         - :func:`~libfinance.get_index_weights`
         - 任意交易日都能问，不只调样日。权重已归一
     *   - 行业
-        - :func:`~libfinance.get_industry`
-        - 传 ``date``\ ；\ ``level`` 控制到第几级
+        - :func:`~libfinance.get_industry_constituents`
+        - 传 ``as_of``\ ；行业以 ``801780.SW`` 这样的代码指定
     *   - 概念板块
         - :func:`~libfinance.get_concept_weights`
         - ``concept_id`` 要从 :func:`~libfinance.get_concept_meta` 查，
@@ -83,8 +83,8 @@
 
 ..  code-block:: python
 
-    >>> from libfinance import get_industry
-    >>> get_industry("480000", date="2024-03-08")[:4]
+    >>> from libfinance import get_industry_constituents
+    >>> get_industry_constituents("801780.SW", as_of="2024-03-08")[:4]
     ['000001.XSHE', '001227.XSHE', '002142.XSHE', '002807.XSHE']
 
 怎么确认没带未来信息

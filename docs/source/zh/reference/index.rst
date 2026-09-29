@@ -85,12 +85,12 @@ API 参考
 
         * - 函数 / 类
           - 解决的问题
-        * - :func:`~libfinance.get_industry_mapping`
-          - 发现行业代码、名称与分类层级
         * - :func:`~libfinance.get_instrument_industry`
-          - 查询股票在指定日期属于哪个行业
-        * - :func:`~libfinance.get_industry`
-          - 反向查询某行业包含哪些股票
+          - 查询证券在指定日期属于哪些行业
+        * - :func:`~libfinance.get_industry_constituents`
+          - 反向查询某行业在指定日期包含哪些证券
+        * - :func:`~libfinance.get_industry_weights`
+          - 查询某行业成分的权重（带 methodology）
         * - :func:`~libfinance.get_index_weights`
           - 查询指数在指定交易日的成分股及权重
         * - :func:`~libfinance.get_concept_meta`

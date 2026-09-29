@@ -110,7 +110,7 @@ get_trading_dates("2024-01-01", "2024-01-31", market="us")   # 不涉及具体�
 | 分拆 | US | `get_spinoffs` | A 股不产生这类事件 |
 | 财务报表（PIT） | CN | `get_pit_financials_ex` | 按季度取，带修订历史 |
 | 财务因子 | CN | `get_factor` | 季度财务衍生因子 |
-| 行业分类 | CN | `get_industry_mapping` | 申万三级分类 |
+| 行业分类 | CN / US | `get_instrument_industry`、`get_industry_constituents`、`get_industry_weights` | 申万、GICS 等分类体系 |
 | 指数成分与权重 | CN | `get_index_weights` | 任意交易日的成分权重 |
 | 概念板块成分 | CN | `get_concept_weights` | 同花顺概念分类 |
 | 实时行情 | CN | `QuoteApi` | 订阅推送 |

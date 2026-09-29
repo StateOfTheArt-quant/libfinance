@@ -117,8 +117,8 @@ A 股，分拆事件只出现在美股；美股没有涨跌停，成交额在部
         - 季度财务衍生因子
     *   - 行业分类
         - CN
-        - :func:`~libfinance.get_industry_mapping`
-        - 申万三级分类
+        - :func:`~libfinance.get_instrument_industry`
+        - 申万、GICS 等分类体系；成员与权重见 :func:`~libfinance.get_industry_constituents`
     *   - 指数成分与权重
         - CN
         - :func:`~libfinance.get_index_weights`

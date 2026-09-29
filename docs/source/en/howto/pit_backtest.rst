@@ -104,9 +104,9 @@ Which data needs ``as_of``
         - No
         - The calendar is a fact
 
-:func:`~libfinance.get_index_weights` and
-:func:`~libfinance.get_instrument_industry` take ``date`` instead, meaning
-"membership/classification on that day" — same effect.
+:func:`~libfinance.get_index_weights` takes ``date`` instead, meaning
+"membership on that day" — same effect; the industry functions
+(:func:`~libfinance.get_instrument_industry` and the rest) take ``as_of``.
 
 How to confirm you got it right
 ===============================

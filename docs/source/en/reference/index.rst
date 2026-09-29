@@ -85,12 +85,12 @@ Example dates must fall within the coverage of your service.
 
         * - Function / class
           - Purpose
-        * - :func:`~libfinance.get_industry_mapping`
-          - Discover industry codes and hierarchy
         * - :func:`~libfinance.get_instrument_industry`
-          - Map securities to industries at a date
-        * - :func:`~libfinance.get_industry`
-          - Find securities belonging to an industry
+          - Map securities to their industries at a date
+        * - :func:`~libfinance.get_industry_constituents`
+          - Find the securities in an industry at a date
+        * - :func:`~libfinance.get_industry_weights`
+          - Read an industry's constituent weights, with their methodology
         * - :func:`~libfinance.get_index_weights`
           - Read index constituents and weights at a trading date
         * - :func:`~libfinance.get_concept_meta`

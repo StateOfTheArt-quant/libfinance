@@ -119,8 +119,8 @@ What data is here
         - Quarterly derived metrics
     *   - Industry classification
         - CN
-        - :func:`~libfinance.get_industry_mapping`
-        - Shenwan, three levels
+        - :func:`~libfinance.get_instrument_industry`
+        - Shenwan, GICS and more; members and weights via :func:`~libfinance.get_industry_constituents`
     *   - Index constituents
         - CN
         - :func:`~libfinance.get_index_weights`

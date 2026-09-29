@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-r"""行业分类。
+r"""行业的成员与权重。
 
-``get_instrument_industry``\ （按证券查行业）在 index_components 里，这里是反向的两个：
-按行业查成分、以及取整张分类表。
+行业以 ``order_book_id``\ （``<分类代码>.<分类体系>``，如 ``801780.SW``、``10.GICS``\ ）命名，
+规则与证券相同。按证券查所属行业的 ``get_instrument_industry`` 在 index_components 里；
+这里是按行业查的两个：成分证券与权重。
 """
-from typing import Optional
+from typing import List, Optional
 
 import pandas as pd
 
@@ -14,49 +15,30 @@ from libfinance.utils.decorators import export_as_api
 from libfinance.utils.utils import to_date_str
 from libfinance.utils.validators import ensure_string
 
-DEFAULT_SOURCE = "sw"
+
+@export_as_api
+def get_industry_constituents(order_book_id: str, as_of=None) -> Optional[List[str]]:
+    r"""获取某个行业在指定日期的成分证券。
+
+    :param order_book_id: 行业代码，``<分类代码>.<分类体系>``\ ，如 ``"801780.SW"``\ （申万银行）、``"10.GICS"``
+    :param as_of: 那一天的事实；省略则取数据已确认的最新日期
+    :returns: list[str]，成分证券的 ``order_book_id``\ ；该日没有这个行业时为 ``None``\ 。
+    """
+    order_book_id = ensure_string(order_book_id, "order_book_id")
+    return get_client().get_industry_constituents(
+        order_book_id=order_book_id, as_of=to_date_str(as_of) if as_of is not None else None)
 
 
 @export_as_api
-def get_industry(
-    industry: str,
-    source: str = DEFAULT_SOURCE,
-    date=None,
-    market: Optional[str] = None,
-):
-    r"""获取某个行业下的全部证券。
+def get_industry_weights(order_book_id: str, as_of=None) -> pd.DataFrame:
+    r"""获取某个行业在指定日期的成分权重。
 
-    :param industry: 行业代码或名称
-    :param source: 分类来源，默认 ``"sw"``\ （申万）
-    :param date: 以该日的分类为准，省略则取最新
-    :param market: 市场，省略则用服务端默认
+    每一行都带 ``methodology``\ ：没有供应商权重和明确方法时不生成权重。
 
-    :returns: list[str]，属于指定行业的证券代码列表。
+    :param order_book_id: 行业代码，如 ``"801780.SW"``
+    :param as_of: 那一天的事实；省略则取数据已确认的最新日期
+    :returns: pandas.DataFrame，包含 order_book_id（成分证券）、weight、methodology、source、effective_from、effective_to。
     """
-    industry = ensure_string(industry, "industry")
-    return get_client().get_industry(
-        industry=industry, source=source,
-        date=to_date_str(date) if date is not None else None,
-        market=market,
-    )
-
-
-@export_as_api
-def get_industry_mapping(
-    source: str = DEFAULT_SOURCE,
-    date=None,
-    market: Optional[str] = None,
-) -> pd.DataFrame:
-    r"""获取整张行业分类表（行业代码、名称、层级）。
-
-    :param source: 分类来源，默认 ``"sw"``\ （申万）
-    :param date: 以该日的分类为准，省略则取最新
-    :param market: 市场，省略则用服务端默认
-
-    :returns: pandas.DataFrame，包含行业代码、名称和层级。
-    """
-    return get_client().get_industry_mapping(
-        source=source,
-        date=to_date_str(date) if date is not None else None,
-        market=market,
-    )
+    order_book_id = ensure_string(order_book_id, "order_book_id")
+    return get_client().get_industry_weights(
+        order_book_id=order_book_id, as_of=to_date_str(as_of) if as_of is not None else None)

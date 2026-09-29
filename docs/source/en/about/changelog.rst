@@ -9,6 +9,22 @@ Unreleased
 
 .. danger::
 
+    **The industry functions follow the new industry data families:** ``get_industry`` and
+    ``get_industry_mapping`` are removed.
+
+    - An industry is named by an ``order_book_id`` (``801780.SW``, ``10.GICS``); ``source`` is the
+      classification (``SW``, ``GICS``, ...).
+    - ``get_industry(industry, source, date, market)`` → ``get_industry_constituents(order_book_id, as_of=None)``.
+    - ``get_instrument_industry(order_book_ids, date, source="sw", level=1)`` →
+      ``get_instrument_industry(order_book_ids, source=None, level=None, as_of=None)``: omitting ``source`` /
+      ``level`` means all of them; the result is a long table ``order_book_id, related_order_book_id, source,
+      market, level`` instead of the ``first_industry_code`` wide table.
+    - New ``get_industry_weights(order_book_id, as_of=None)``, each row with its ``methodology``.
+    - Listing industry nodes (formerly ``get_industry_mapping``) comes with the cross-type
+      ``all_instruments(type=...)``.
+
+.. danger::
+
     **Live subscription (``libfinance.subscribe``) now speaks gateway protocol v3 and
     is incompatible with older gateways.**
 

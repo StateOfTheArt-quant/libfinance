@@ -16,8 +16,8 @@ and update cadence:
         - :func:`~libfinance.get_index_weights`
         - Weighted, transparent rules, periodic rebalancing
     *   - Industry
-        - :func:`~libfinance.get_industry` / :func:`~libfinance.get_industry_mapping`
-        - Full market coverage, three levels
+        - :func:`~libfinance.get_industry_constituents` / :func:`~libfinance.get_instrument_industry`
+        - Full market coverage, several levels and classifications
     *   - Concept sectors
         - :func:`~libfinance.get_concept_weights`
         - Theme-driven, numerous, fuzzy boundaries
@@ -64,51 +64,34 @@ security master data; fetch them with :func:`~libfinance.instruments` if needed.
 Industry classification
 =======================
 
-Currently Shenwan only (``source="sw"``), in three levels:
+An industry is named by an ``order_book_id`` (``<classification code>.<classification>``): Shenwan banks are
+``801780.SW``, GICS energy is ``10.GICS``. ``source`` is the classification (``SW``, ``GICS``, ...), ``level`` its depth.
 
-.. code-block:: python
-
-    >>> from libfinance import get_industry_mapping
-    >>> get_industry_mapping().shape
-    (346, 6)
-    >>> get_industry_mapping().head(3)
-      first_industry_code first_industry_name second_industry_code second_industry_name  \
-    0              110000                农林牧渔               110100                  种植业
-    1              110000                农林牧渔               110100                  种植业
-    2              110000                农林牧渔               110100                  种植业
-
-      third_industry_code third_industry_name
-    0              110101                  种子
-    1              110102                粮食种植
-    2              110103               其他种植业
-
-This is the **classification tree** — one row per third-level industry.
-
-To look up which industry a stock belongs to:
+To look up which industries a stock belongs to:
 
 .. code-block:: python
 
     >>> from libfinance import get_instrument_industry
-    >>> get_instrument_industry(["000001.XSHE", "600000.XSHG"], date="2024-03-08")
-                  first_industry_code first_industry_name
-    order_book_id
-    000001.XSHE                480000                  银行
-    600000.XSHG                480000                  银行
+    >>> get_instrument_industry(["000001.XSHE", "600000.XSHG"], source="SW", level=1, as_of="2024-03-08")
+      order_book_id related_order_book_id source market  level
+    0   000001.XSHE             801780.SW     SW     CN      1
+    1   600000.XSHG             801780.SW     SW     CN      1
 
-``level`` selects the depth (1/2/3, default 1).
+Omit ``source`` / ``level`` for every classification and level. ``related_order_book_id`` is the industry code.
 
-To go the other way and list an industry's members:
+To go the other way and list an industry's members, and their weights:
 
 .. code-block:: python
 
-    >>> from libfinance import get_industry
-    >>> get_industry("480000")[:6]
+    >>> from libfinance import get_industry_constituents, get_industry_weights
+    >>> get_industry_constituents("801780.SW", as_of="2024-03-08")[:6]
     ['000001.XSHE', '001227.XSHE', '002142.XSHE', '002807.XSHE',
      '002839.XSHE', '002936.XSHE']
+    >>> get_industry_weights("801780.SW", as_of="2024-03-08")   # each row carries its methodology
 
 .. important::
 
-    Industry membership changes. Historical backtests must pass ``date``, or you
+    Industry membership changes. Historical backtests must pass ``as_of``, or you
     are slicing the past with **today's** classification — another form of
     look-ahead bias.
 

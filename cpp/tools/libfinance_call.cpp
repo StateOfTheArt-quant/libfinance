@@ -60,6 +60,10 @@ std::optional<std::string> optional_text(const Json& args, const char* name) {
 
 int integer(const Json& args, const char* name, int fallback) { return has(args, name) ? args[name].get<int>() : fallback; }
 
+std::optional<int> optional_integer(const Json& args, const char* name) {
+  return has(args, name) ? std::optional<int>(args[name].get<int>()) : std::nullopt;
+}
+
 bool flag(const Json& args, const char* name, bool fallback) { return has(args, name) ? args[name].get<bool>() : fallback; }
 
 std::vector<std::string> strings(const Json& args, const char* name) {
@@ -185,19 +189,16 @@ const std::map<std::string, Function>& functions() {
       // industry, index, concepts
       {"get_instrument_industry",
        [](const Json& a) {
-         return table(lf::get_instrument_industry(codes(a, "order_book_ids"), optional_date(a, "date"),
-                                                  text(a, "source", "sw"), integer(a, "level", 1)));
+         return table(lf::get_instrument_industry(codes(a, "order_book_ids"), optional_text(a, "source"),
+                                                  optional_integer(a, "level"), optional_date(a, "as_of")));
        }},
       {"get_index_weights",
        [](const Json& a) { return table(lf::get_index_weights(required_text(a, "index_code"), optional_date(a, "date"))); }},
-      {"get_industry",
+      {"get_industry_constituents",
+       [](const Json& a) { return lf::get_industry_constituents(required_text(a, "order_book_id"), optional_date(a, "as_of")); }},
+      {"get_industry_weights",
        [](const Json& a) {
-         return lf::get_industry(required_text(a, "industry"), text(a, "source", "sw"), optional_date(a, "date"),
-                                 optional_text(a, "market"));
-       }},
-      {"get_industry_mapping",
-       [](const Json& a) {
-         return table(lf::get_industry_mapping(text(a, "source", "sw"), optional_date(a, "date"), optional_text(a, "market")));
+         return table(lf::get_industry_weights(required_text(a, "order_book_id"), optional_date(a, "as_of")));
        }},
       {"get_concept_meta",
        [](const Json& a) {
