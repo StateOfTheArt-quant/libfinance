@@ -42,6 +42,12 @@ for adjustment in ("none", "pre", "post"):
 print(get_price("000001.XSHE", "2024-03-01", "2024-03-11",
                 fields=["close"], skip_suspended=True))
 # [/get_price.5]
+
+# [get_price.6]
+# 5. 美股：代码自带市场，不需要 market 参数；与 A 股、指数混在一批也可以。
+print(get_price(["AAPL.US", "NVDA.US"], "2026-03-02", "2026-03-11",
+                fields=["open", "high", "low", "close", "volume"]))
+# [/get_price.6]
 # [/get_price]
 
 # [get_price_coverage]

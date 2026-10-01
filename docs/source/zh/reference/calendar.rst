@@ -39,7 +39,7 @@ get_trading_dates — 查询日期区间内的交易日
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [get_trading_dates.1]
     :end-before: # [/get_trading_dates.1]
@@ -50,7 +50,7 @@ get_trading_dates — 查询日期区间内的交易日
 .. literalinclude:: ../../../_shared/example_outputs/get_trading_dates.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [get_trading_dates.2]
     :end-before: # [/get_trading_dates.2]
@@ -62,7 +62,7 @@ get_trading_dates — 查询日期区间内的交易日
 
 结果解读：相同日期区间也可能包含不同交易日：示例突出中美日历在 1 月 15 日的区别。
 
-:download:`下载完整示例 <../../../../example/0b_trading_calendar.py>`
+:download:`下载完整示例 <../../../../example/python/01_calendar.py>`
 
 is_trading_date — 判断某一天是否开市
 ------------------------------------------------------
@@ -74,7 +74,7 @@ is_trading_date — 判断某一天是否开市
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [is_trading_date.1]
     :end-before: # [/is_trading_date.1]
@@ -85,7 +85,7 @@ is_trading_date — 判断某一天是否开市
 .. literalinclude:: ../../../_shared/example_outputs/is_trading_date.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [is_trading_date.2]
     :end-before: # [/is_trading_date.2]
@@ -97,7 +97,7 @@ is_trading_date — 判断某一天是否开市
 
 结果解读：结果为布尔值，可直接用于条件判断。
 
-:download:`下载完整示例 <../../../../example/0b_trading_calendar.py>`
+:download:`下载完整示例 <../../../../example/python/01_calendar.py>`
 
 get_previous_trading_date — 向前偏移 n 个交易日
 ------------------------------------------------------------------------------
@@ -109,7 +109,7 @@ get_previous_trading_date — 向前偏移 n 个交易日
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [get_previous_trading_date.1]
     :end-before: # [/get_previous_trading_date.1]
@@ -120,7 +120,7 @@ get_previous_trading_date — 向前偏移 n 个交易日
 .. literalinclude:: ../../../_shared/example_outputs/get_previous_trading_date.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [get_previous_trading_date.2]
     :end-before: # [/get_previous_trading_date.2]
@@ -132,7 +132,7 @@ get_previous_trading_date — 向前偏移 n 个交易日
 
 结果解读：n=1 与 n=3 分别回到上一个和第三个交易日，均不包含输入日。
 
-:download:`下载完整示例 <../../../../example/0b_trading_calendar.py>`
+:download:`下载完整示例 <../../../../example/python/01_calendar.py>`
 
 get_next_trading_date — 向后偏移 n 个交易日
 ----------------------------------------------------------------------
@@ -144,7 +144,7 @@ get_next_trading_date — 向后偏移 n 个交易日
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [get_next_trading_date.1]
     :end-before: # [/get_next_trading_date.1]
@@ -155,7 +155,7 @@ get_next_trading_date — 向后偏移 n 个交易日
 .. literalinclude:: ../../../_shared/example_outputs/get_next_trading_date.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [get_next_trading_date.2]
     :end-before: # [/get_next_trading_date.2]
@@ -167,7 +167,7 @@ get_next_trading_date — 向后偏移 n 个交易日
 
 结果解读：周五之后的第一个交易日是周一；n=3 是第三个交易日，不是三个自然日。
 
-:download:`下载完整示例 <../../../../example/0b_trading_calendar.py>`
+:download:`下载完整示例 <../../../../example/python/01_calendar.py>`
 
 get_n_trading_dates_until — 取截至某日的最近 n 个交易日
 --------------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ get_n_trading_dates_until — 取截至某日的最近 n 个交易日
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [get_n_trading_dates_until.1]
     :end-before: # [/get_n_trading_dates_until.1]
@@ -190,7 +190,7 @@ get_n_trading_dates_until — 取截至某日的最近 n 个交易日
 .. literalinclude:: ../../../_shared/example_outputs/get_n_trading_dates_until.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [get_n_trading_dates_until.2]
     :end-before: # [/get_n_trading_dates_until.2]
@@ -202,7 +202,7 @@ get_n_trading_dates_until — 取截至某日的最近 n 个交易日
 
 结果解读：输入交易日时包含当天；输入周日时窗口截至此前的周五。
 
-:download:`下载完整示例 <../../../../example/0b_trading_calendar.py>`
+:download:`下载完整示例 <../../../../example/python/01_calendar.py>`
 
 count_trading_dates — 统计区间内的交易日数量
 ------------------------------------------------------------------
@@ -214,7 +214,7 @@ count_trading_dates — 统计区间内的交易日数量
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [count_trading_dates.1]
     :end-before: # [/count_trading_dates.1]
@@ -227,7 +227,7 @@ count_trading_dates — 统计区间内的交易日数量
 
 结果解读：返回整数，不返回日期列表；这里统计的是交易日而非自然日。
 
-:download:`下载完整示例 <../../../../example/0b_trading_calendar.py>`
+:download:`下载完整示例 <../../../../example/python/01_calendar.py>`
 
 get_all_trading_dates — 取得当前日历包含的全部交易日
 ----------------------------------------------------------------------------
@@ -239,7 +239,7 @@ get_all_trading_dates — 取得当前日历包含的全部交易日
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [get_all_trading_dates.1]
     :end-before: # [/get_all_trading_dates.1]
@@ -252,7 +252,7 @@ get_all_trading_dates — 取得当前日历包含的全部交易日
 
 结果解读：结果是日期索引，不是带证券列的 DataFrame；省略号代表中间日期。
 
-:download:`下载完整示例 <../../../../example/0b_trading_calendar.py>`
+:download:`下载完整示例 <../../../../example/python/01_calendar.py>`
 
 get_calendar_coverage — 确认日历有效区间，避免越界查询
 ------------------------------------------------------------------------------
@@ -264,7 +264,7 @@ get_calendar_coverage — 确认日历有效区间，避免越界查询
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [get_calendar_coverage.1]
     :end-before: # [/get_calendar_coverage.1]
@@ -275,7 +275,7 @@ get_calendar_coverage — 确认日历有效区间，避免越界查询
 .. literalinclude:: ../../../_shared/example_outputs/get_calendar_coverage.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/0b_trading_calendar.py
+.. literalinclude:: ../../../../example/python/01_calendar.py
     :language: python
     :start-after: # [get_calendar_coverage.2]
     :end-before: # [/get_calendar_coverage.2]
@@ -287,4 +287,4 @@ get_calendar_coverage — 确认日历有效区间，避免越界查询
 
 结果解读：边界随数据版本变化；confirmed_through 是日历确认上界，不能当作行情上界。
 
-:download:`下载完整示例 <../../../../example/0b_trading_calendar.py>`
+:download:`下载完整示例 <../../../../example/python/01_calendar.py>`

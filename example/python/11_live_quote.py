@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""实时快照：一次调用取当前最新报价；持续推送见 subscription/python/。
+"""实时快照：一次调用取当前最新报价；持续推送见 12_live_subscription.py。
 
 get_last_quotes(order_book_ids)：代码列表，可传一只或多只。
 返回 dict[代码, Quote 或 None]，快照不是历史分钟线。

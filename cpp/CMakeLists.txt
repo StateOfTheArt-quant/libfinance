@@ -43,7 +43,8 @@ if(BUILD_TOOLS)
     add_subdirectory(tools)
 endif()
 if(BUILD_EXAMPLES)
-    add_subdirectory(example)
+    # the examples live with the Python ones under example/, one per data family
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../example/cpp example)
 endif()
 
 # ================================================================

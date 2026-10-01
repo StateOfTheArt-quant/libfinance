@@ -43,7 +43,7 @@ Semantics are covered in :doc:`../data/fundamentals`; ``as_of`` in
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/2_financials.py
+    .. literalinclude:: ../../../../example/python/07_financials.py
         :language: python
         :start-after: # [get_pit_financials_ex.1]
         :end-before: # [/get_pit_financials_ex.1]
@@ -54,7 +54,7 @@ Semantics are covered in :doc:`../data/fundamentals`; ``as_of`` in
     .. literalinclude:: ../../../_shared/example_outputs/get_pit_financials_ex.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/2_financials.py
+    .. literalinclude:: ../../../../example/python/07_financials.py
         :language: python
         :start-after: # [get_pit_financials_ex.2]
         :end-before: # [/get_pit_financials_ex.2]
@@ -64,7 +64,7 @@ Semantics are covered in :doc:`../data/fundamentals`; ``as_of`` in
     .. literalinclude:: ../../../_shared/example_outputs/get_pit_financials_ex.2.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/2_financials.py
+    .. literalinclude:: ../../../../example/python/07_financials.py
         :language: python
         :start-after: # [get_pit_financials_ex.3]
         :end-before: # [/get_pit_financials_ex.3]
@@ -76,7 +76,7 @@ Semantics are covered in :doc:`../data/fundamentals`; ``as_of`` in
 
     Reading the result: In this illustration, as_of excludes the 2025 revision. all keeps both earlier versions, whereas latest keeps only the newer visible version.
 
-    :download:`Download the full example <../../../../example/2_financials.py>`
+    :download:`Download the full example <../../../../example/python/07_financials.py>`
 
 .. py:function:: get_factor(order_book_ids, factors, start_quarter, end_quarter, as_of=None)
 
@@ -98,7 +98,7 @@ Semantics are covered in :doc:`../data/fundamentals`; ``as_of`` in
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/2_financials.py
+    .. literalinclude:: ../../../../example/python/07_financials.py
         :language: python
         :start-after: # [get_factor.1]
         :end-before: # [/get_factor.1]
@@ -109,7 +109,7 @@ Semantics are covered in :doc:`../data/fundamentals`; ``as_of`` in
     .. literalinclude:: ../../../_shared/example_outputs/get_factor.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/2_financials.py
+    .. literalinclude:: ../../../../example/python/07_financials.py
         :language: python
         :start-after: # [get_factor.2]
         :end-before: # [/get_factor.2]
@@ -121,4 +121,4 @@ Semantics are covered in :doc:`../data/fundamentals`; ``as_of`` in
 
     Reading the result: Historical factor comparisons need the same as_of cutoff because later restatements can change calculated factors.
 
-    :download:`Download the full example <../../../../example/2_financials.py>`
+    :download:`Download the full example <../../../../example/python/07_financials.py>`

@@ -14,8 +14,8 @@ subscribe_all 按「市场 × 品种 × 数据类型」下单，**客户端不�
 需要用 --ticket 提供一张有整市场授权的票据（例如 libfinance-service 为高等级账号签发的）。
 
 用法:
-    python fullmarket_health_check.py --duration 20
-    python fullmarket_health_check.py --market SSE --instrument-type Stock
+    python tools/fullmarket_health_check.py --duration 20
+    python tools/fullmarket_health_check.py --market SSE --instrument-type Stock
 
 退出码: 0=健康, 1=不健康(0行情 / 出数标的<--min-instruments / p95滞后超阈值), 2=连接或登录失败
 """

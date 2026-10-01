@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-live_subscribe_example.py — libfinance 实时行情订阅示例
+12_live_subscription.py — libfinance 实时行情订阅示例
 
 流程：连网关 → （自动取票据登录）→ 发现可订源（query_sources）→ 订阅 → 收行情回调。
 
 不需要登录：SDK 自动向 libfinance-service 取行情票据（不登录按 IP 额度），网关地址也由它给出。
 
 用法:
-    python live_subscribe_example.py [gateways] [source]
+    python 12_live_subscription.py [gateways] [source]
       - gateways：不指定则用 libfinance-service 返回的网关地址；也可写 "host:port,host:port"
       - 不指定 source：无源订阅，网关按健康+优先级自动选源，源掉线自动灾备切换
       - 指定 source  ：定向订阅该源，不自动切源；该源不健康时明确失败
@@ -17,7 +17,7 @@ live_subscribe_example.py — libfinance 实时行情订阅示例
     订阅写在 on_rsp_login 里 —— 断线自动重连+重登录后会再次触发，订阅随之重放。
     交易所用 rqdata 风格后缀：XSHG(上交所) / XSHE(深交所)。
     行情帧不带来源，要知道数据来自哪个源看订阅回执的 rsp.source。
-    整市场订阅另见 fullmarket_health_check.py。
+    整市场订阅另见 tools/fullmarket_health_check.py。
 """
 import signal
 import sys

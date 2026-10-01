@@ -51,7 +51,7 @@ Concept sectors
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/index_component.py
+    .. literalinclude:: ../../../../example/python/09_index_weights.py
         :language: python
         :start-after: # [get_index_weights.1]
         :end-before: # [/get_index_weights.1]
@@ -62,7 +62,7 @@ Concept sectors
     .. literalinclude:: ../../../_shared/example_outputs/get_index_weights.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/index_component.py
+    .. literalinclude:: ../../../../example/python/09_index_weights.py
         :language: python
         :start-after: # [get_index_weights.2]
         :end-before: # [/get_index_weights.2]
@@ -72,7 +72,7 @@ Concept sectors
     .. literalinclude:: ../../../_shared/example_outputs/get_index_weights.2.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/index_component.py
+    .. literalinclude:: ../../../../example/python/09_index_weights.py
         :language: python
         :start-after: # [get_index_weights.3]
         :end-before: # [/get_index_weights.3]
@@ -82,7 +82,7 @@ Concept sectors
     .. literalinclude:: ../../../_shared/example_outputs/get_index_weights.3.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/index_component.py
+    .. literalinclude:: ../../../../example/python/09_index_weights.py
         :language: python
         :start-after: # [get_index_weights.4]
         :end-before: # [/get_index_weights.4]
@@ -94,7 +94,7 @@ Concept sectors
 
     Reading the result: Omitting date selects the latest anchor. The sum uses the complete result, not only the displayed rows.
 
-    :download:`Download the full example <../../../../example/index_component.py>`
+    :download:`Download the full example <../../../../example/python/09_index_weights.py>`
 
 .. py:function:: get_concept_meta(source='THS', fields=None, market=None)
 
@@ -111,7 +111,7 @@ Concept sectors
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/3b_concept_components.py
+    .. literalinclude:: ../../../../example/python/10_concept.py
         :language: python
         :start-after: # [get_concept_meta.1]
         :end-before: # [/get_concept_meta.1]
@@ -122,7 +122,7 @@ Concept sectors
     .. literalinclude:: ../../../_shared/example_outputs/get_concept_meta.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/3b_concept_components.py
+    .. literalinclude:: ../../../../example/python/10_concept.py
         :language: python
         :start-after: # [get_concept_meta.2]
         :end-before: # [/get_concept_meta.2]
@@ -134,7 +134,7 @@ Concept sectors
 
     Reading the result: DEMO01 and DEMO02 are illustrative identifiers, not queryable IDs. The script obtains real IDs from the catalog; fields limits the columns.
 
-    :download:`Download the full example <../../../../example/3b_concept_components.py>`
+    :download:`Download the full example <../../../../example/python/10_concept.py>`
 
 .. py:function:: get_concept_weights(concept_ids, as_of=None, source='THS', market=None)
 
@@ -159,7 +159,7 @@ Concept sectors
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/3b_concept_components.py
+    .. literalinclude:: ../../../../example/python/10_concept.py
         :language: python
         :start-after: # [get_concept_weights.1]
         :end-before: # [/get_concept_weights.1]
@@ -172,4 +172,4 @@ Concept sectors
 
     Reading the result: The three tables show one concept, two concepts, and historical visible membership. The second concept has no visible historical record in this illustration.
 
-    :download:`Download the full example <../../../../example/3b_concept_components.py>`
+    :download:`Download the full example <../../../../example/python/10_concept.py>`

@@ -47,7 +47,7 @@ are split and merged. Unsupported markets raise an error, not a partial result.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/corporate_actions.py
+    .. literalinclude:: ../../../../example/python/05_corporate_actions.py
         :language: python
         :start-after: # [get_dividends.1]
         :end-before: # [/get_dividends.1]
@@ -58,7 +58,7 @@ are split and merged. Unsupported markets raise an error, not a partial result.
     .. literalinclude:: ../../../_shared/example_outputs/get_dividends.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/corporate_actions.py
+    .. literalinclude:: ../../../../example/python/05_corporate_actions.py
         :language: python
         :start-after: # [get_dividends.2]
         :end-before: # [/get_dividends.2]
@@ -68,7 +68,7 @@ are split and merged. Unsupported markets raise an error, not a partial result.
     .. literalinclude:: ../../../_shared/example_outputs/get_dividends.2.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/corporate_actions.py
+    .. literalinclude:: ../../../../example/python/05_corporate_actions.py
         :language: python
         :start-after: # [get_dividends.3]
         :end-before: # [/get_dividends.3]
@@ -78,7 +78,7 @@ are split and merged. Unsupported markets raise an error, not a partial result.
     .. literalinclude:: ../../../_shared/example_outputs/get_dividends.3.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/corporate_actions.py
+    .. literalinclude:: ../../../../example/python/05_corporate_actions.py
         :language: python
         :start-after: # [get_dividends.4]
         :end-before: # [/get_dividends.4]
@@ -91,7 +91,7 @@ are split and merged. Unsupported markets raise an error, not a partial result.
 
     Reading the result: The blocks illustrate full history, field selection, a knowledge cutoff, and mixed-market results identified by order_book_id. The numbers are not actual dividends for these securities.
 
-    :download:`Download the full example <../../../../example/corporate_actions.py>`
+    :download:`Download the full example <../../../../example/python/05_corporate_actions.py>`
 
 .. py:function:: get_splits(order_book_ids, start_date=None, end_date=None, fields=None, as_of=None)
 
@@ -106,7 +106,7 @@ are split and merged. Unsupported markets raise an error, not a partial result.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/corporate_actions.py
+    .. literalinclude:: ../../../../example/python/05_corporate_actions.py
         :language: python
         :start-after: # [get_splits.1]
         :end-before: # [/get_splits.1]
@@ -117,7 +117,7 @@ are split and merged. Unsupported markets raise an error, not a partial result.
     .. literalinclude:: ../../../_shared/example_outputs/get_splits.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/corporate_actions.py
+    .. literalinclude:: ../../../../example/python/05_corporate_actions.py
         :language: python
         :start-after: # [get_splits.2]
         :end-before: # [/get_splits.2]
@@ -129,7 +129,7 @@ are split and merged. Unsupported markets raise an error, not a partial result.
 
     Reading the result: ratio_from shares become ratio_to shares. Illustrated events explain the structure only.
 
-    :download:`Download the full example <../../../../example/corporate_actions.py>`
+    :download:`Download the full example <../../../../example/python/05_corporate_actions.py>`
 
 .. py:function:: get_allotments(order_book_ids, start_date=None, end_date=None, fields=None, as_of=None)
 
@@ -141,7 +141,7 @@ are split and merged. Unsupported markets raise an error, not a partial result.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/corporate_actions.py
+    .. literalinclude:: ../../../../example/python/05_corporate_actions.py
         :language: python
         :start-after: # [get_allotments.1]
         :end-before: # [/get_allotments.1]
@@ -152,7 +152,7 @@ are split and merged. Unsupported markets raise an error, not a partial result.
     .. literalinclude:: ../../../_shared/example_outputs/get_allotments.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/corporate_actions.py
+    .. literalinclude:: ../../../../example/python/05_corporate_actions.py
         :language: python
         :start-after: # [get_allotments.2]
         :end-before: # [/get_allotments.2]
@@ -164,7 +164,7 @@ are split and merged. Unsupported markets raise an error, not a partial result.
 
     Reading the result: A narrower window can return an empty DataFrame. This is different from a failed query.
 
-    :download:`Download the full example <../../../../example/corporate_actions.py>`
+    :download:`Download the full example <../../../../example/python/05_corporate_actions.py>`
 
 .. py:function:: get_spinoffs(order_book_ids, start_date=None, end_date=None, fields=None, as_of=None)
 
@@ -185,7 +185,7 @@ are split and merged. Unsupported markets raise an error, not a partial result.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/corporate_actions.py
+    .. literalinclude:: ../../../../example/python/05_corporate_actions.py
         :language: python
         :start-after: # [get_spinoffs.1]
         :end-before: # [/get_spinoffs.1]
@@ -198,7 +198,7 @@ are split and merged. Unsupported markets raise an error, not a partial result.
 
     Reading the result: Read the valuation price together with its basis and source. Illustrated values are not actual spin-off terms.
 
-    :download:`Download the full example <../../../../example/corporate_actions.py>`
+    :download:`Download the full example <../../../../example/python/05_corporate_actions.py>`
 
 
 get_ex_factor — Inspect event and cumulative factors
@@ -259,7 +259,7 @@ get_ex_factor — Inspect event and cumulative factors
     These outputs illustrate structure only. Values and events are not actual
     market data and must not be used for investment calculations.
 
-    .. literalinclude:: ../../../../example/4b_exfactor.py
+    .. literalinclude:: ../../../../example/python/04_exfactor.py
         :language: python
         :start-after: # [get_ex_factor.1]
         :end-before: # [/get_ex_factor.1]
@@ -270,7 +270,7 @@ get_ex_factor — Inspect event and cumulative factors
     .. literalinclude:: ../../../_shared/example_outputs/get_ex_factor.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/4b_exfactor.py
+    .. literalinclude:: ../../../../example/python/04_exfactor.py
         :language: python
         :start-after: # [get_ex_factor.2]
         :end-before: # [/get_ex_factor.2]
@@ -285,7 +285,7 @@ get_ex_factor — Inspect event and cumulative factors
     July 2023 still returns 5.2, not 1.04. The next event yields
     ``5.2 × 1.05 = 5.46``.
 
-    .. literalinclude:: ../../../../example/4b_exfactor.py
+    .. literalinclude:: ../../../../example/python/04_exfactor.py
         :language: python
         :start-after: # [get_ex_factor.3]
         :end-before: # [/get_ex_factor.3]
@@ -295,4 +295,4 @@ get_ex_factor — Inspect event and cumulative factors
     .. literalinclude:: ../../../_shared/example_outputs/get_ex_factor.3.txt
         :language: text
 
-    :download:`Download example <../../../../example/4b_exfactor.py>`
+    :download:`Download example <../../../../example/python/04_exfactor.py>`

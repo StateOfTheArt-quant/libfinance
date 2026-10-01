@@ -27,7 +27,7 @@ all_instruments — 筛选某市场、某类型或历史时点的合约范围
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/0a_instrument.py
+.. literalinclude:: ../../../../example/python/02_instrument.py
     :language: python
     :start-after: # [all_instruments.1]
     :end-before: # [/all_instruments.1]
@@ -38,7 +38,7 @@ all_instruments — 筛选某市场、某类型或历史时点的合约范围
 .. literalinclude:: ../../../_shared/example_outputs/all_instruments.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/0a_instrument.py
+.. literalinclude:: ../../../../example/python/02_instrument.py
     :language: python
     :start-after: # [all_instruments.2]
     :end-before: # [/all_instruments.2]
@@ -48,7 +48,7 @@ all_instruments — 筛选某市场、某类型或历史时点的合约范围
 .. literalinclude:: ../../../_shared/example_outputs/all_instruments.2.txt
     :language: text
 
-.. literalinclude:: ../../../../example/0a_instrument.py
+.. literalinclude:: ../../../../example/python/02_instrument.py
     :language: python
     :start-after: # [all_instruments.3]
     :end-before: # [/all_instruments.3]
@@ -58,7 +58,7 @@ all_instruments — 筛选某市场、某类型或历史时点的合约范围
 .. literalinclude:: ../../../_shared/example_outputs/all_instruments.3.txt
     :language: text
 
-.. literalinclude:: ../../../../example/0a_instrument.py
+.. literalinclude:: ../../../../example/python/02_instrument.py
     :language: python
     :start-after: # [all_instruments.4]
     :end-before: # [/all_instruments.4]
@@ -68,7 +68,7 @@ all_instruments — 筛选某市场、某类型或历史时点的合约范围
 .. literalinclude:: ../../../_shared/example_outputs/all_instruments.4.txt
     :language: text
 
-.. literalinclude:: ../../../../example/0a_instrument.py
+.. literalinclude:: ../../../../example/python/02_instrument.py
     :language: python
     :start-after: # [all_instruments.5]
     :end-before: # [/all_instruments.5]
@@ -80,7 +80,7 @@ all_instruments — 筛选某市场、某类型或历史时点的合约范围
 
 结果解读：输出只展示部分行列。type 和 market 控制范围；as_of 改变身份快照，不保证所展示的证券一定发生变化。
 
-:download:`下载完整示例 <../../../../example/0a_instrument.py>`
+:download:`下载完整示例 <../../../../example/python/02_instrument.py>`
 
 instruments — 按一个或多个代码查询详细身份，支持跨市场列表
 ------------------------------------------------------------------------
@@ -92,7 +92,7 @@ instruments — 按一个或多个代码查询详细身份，支持跨市场列�
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/0a_instrument.py
+.. literalinclude:: ../../../../example/python/02_instrument.py
     :language: python
     :start-after: # [instruments.1]
     :end-before: # [/instruments.1]
@@ -103,7 +103,7 @@ instruments — 按一个或多个代码查询详细身份，支持跨市场列�
 .. literalinclude:: ../../../_shared/example_outputs/instruments.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/0a_instrument.py
+.. literalinclude:: ../../../../example/python/02_instrument.py
     :language: python
     :start-after: # [instruments.2]
     :end-before: # [/instruments.2]
@@ -113,7 +113,7 @@ instruments — 按一个或多个代码查询详细身份，支持跨市场列�
 .. literalinclude:: ../../../_shared/example_outputs/instruments.2.txt
     :language: text
 
-.. literalinclude:: ../../../../example/0a_instrument.py
+.. literalinclude:: ../../../../example/python/02_instrument.py
     :language: python
     :start-after: # [instruments.3]
     :end-before: # [/instruments.3]
@@ -123,7 +123,7 @@ instruments — 按一个或多个代码查询详细身份，支持跨市场列�
 .. literalinclude:: ../../../_shared/example_outputs/instruments.3.txt
     :language: text
 
-.. literalinclude:: ../../../../example/0a_instrument.py
+.. literalinclude:: ../../../../example/python/02_instrument.py
     :language: python
     :start-after: # [instruments.4]
     :end-before: # [/instruments.4]
@@ -135,7 +135,7 @@ instruments — 按一个或多个代码查询详细身份，支持跨市场列�
 
 结果解读：字符串输入得到单个对象；列表输入按输入顺序返回对象列表。历史查询展示当时的代码和身份。
 
-:download:`下载完整示例 <../../../../example/0a_instrument.py>`
+:download:`下载完整示例 <../../../../example/python/02_instrument.py>`
 
 Instrument — 合约对象
 ----------------------------------------

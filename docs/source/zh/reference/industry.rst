@@ -30,7 +30,7 @@ get_instrument_industry — 查询证券在指定日期属于哪些行业
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/3a_industry.py
+.. literalinclude:: ../../../../example/python/08_industry.py
     :language: python
     :start-after: # [get_instrument_industry.1]
     :end-before: # [/get_instrument_industry.1]
@@ -44,7 +44,7 @@ get_instrument_industry — 查询证券在指定日期属于哪些行业
 结果解读：循环依次打印一级和三级行业；``related_order_book_id`` 是行业代码，可以直接传给
 :func:`~libfinance.get_industry_constituents`\ 。
 
-:download:`下载完整示例 <../../../../example/3a_industry.py>`
+:download:`下载完整示例 <../../../../example/python/08_industry.py>`
 
 get_industry_constituents — 反向查询某行业包含哪些证券
 --------------------------------------------------------------------------
@@ -56,7 +56,7 @@ get_industry_constituents — 反向查询某行业包含哪些证券
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/3a_industry.py
+.. literalinclude:: ../../../../example/python/08_industry.py
     :language: python
     :start-after: # [get_industry_constituents.1]
     :end-before: # [/get_industry_constituents.1]
@@ -69,7 +69,7 @@ get_industry_constituents — 反向查询某行业包含哪些证券
 
 结果解读：两行分别对应历史与最新成分列表；成员可能变化。证券代码占位仅用于展示形状。
 
-:download:`下载完整示例 <../../../../example/3a_industry.py>`
+:download:`下载完整示例 <../../../../example/python/08_industry.py>`
 
 get_industry_weights — 查询某行业成分的权重
 --------------------------------------------------------
@@ -81,7 +81,7 @@ get_industry_weights — 查询某行业成分的权重
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/3a_industry.py
+.. literalinclude:: ../../../../example/python/08_industry.py
     :language: python
     :start-after: # [get_industry_weights.1]
     :end-before: # [/get_industry_weights.1]
@@ -94,4 +94,4 @@ get_industry_weights — 查询某行业成分的权重
 
 结果解读：每行一个成分证券；``methodology`` 说明权重的来源，没有供应商权重和明确方法时不生成。
 
-:download:`下载完整示例 <../../../../example/3a_industry.py>`
+:download:`下载完整示例 <../../../../example/python/08_industry.py>`

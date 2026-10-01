@@ -57,4 +57,4 @@ libstdc++ 缺 `GLIBCXX_3.4.30`）。
 | `libfinance/src/` | 实现；`client.cpp` 连接与解码，`internal.hpp` 参数校验与缓存（Python 的 `utils/`） |
 | `tools/libfinance_call.cpp` | `libfinance-call <函数> '<JSON 参数>'`：按名调用任一函数，`conformance/` 用它 |
 | `test/` | 离线单测：日期解析、`Codes`、两种表格编码的解码 |
-| `example/` | 快速开始的 C++ 版 |
+| `../example/cpp/` | 示例，与 `../example/python/` 一一对应（`-DBUILD_EXAMPLES=ON`） |
