@@ -34,19 +34,18 @@ auto days = lf::get_trading_dates("2024-03-01", "2024-03-31");
 
 ## 构建
 
-依赖：Arrow C++（conda 的 pyarrow 自带）、msgpack-c 头文件、lz4、contextrpc 的客户端（`client.h`，
-header-only，不需要 libevent）。nlohmann/json、googletest 按模板的 `load_or_download_library` 取到
-`third_party/`。
+依赖：Arrow C++（conda 的 pyarrow 自带）与 lz4（`lz4frame.h`）。nlohmann/json、googletest 按模板的
+`load_or_download_library` 取到 `third_party/`。客户端自己实现线上协议（`libfinance/src/wire.cpp`：帧、msgpack、
+LZ4 帧，与 Python 的 `libfinance/client.py` 相同），不依赖服务端的任何库。
 
 ```bash
-cmake -S cpp -B cpp/build -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
-      -DCONTEXTRPC_SOURCE_DIR=<contextrpc 仓库>  -DENABLE_UNITTEST=ON -DBUILD_EXAMPLES=ON
+cmake -S cpp -B cpp/build -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DENABLE_UNITTEST=ON -DBUILD_EXAMPLES=ON
 cmake --build cpp/build -j && (cd cpp/build && ctest)
 cmake --install cpp/build --prefix <prefix>        # find_package(libfinance 0.1)
 ```
 
-不给 `CONTEXTRPC_SOURCE_DIR` 时按 `CONTEXTRPC_REF` 把 contextrpc 取到 `third_party/`。用 conda 的
-Arrow 在本机构建时，运行前加 `LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6`（conda 的
+只要示例时，单独构建 `example/cpp` 即可，它用 FetchContent 取 libfinance（见那里的 CMakeLists.txt）。
+用 conda 的 Arrow 在本机构建时，运行前加 `LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6`（conda 的
 libstdc++ 缺 `GLIBCXX_3.4.30`）。
 
 ## 布局

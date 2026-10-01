@@ -128,7 +128,7 @@ def decode_payload(flags, payload):
 
 class RpcClient:
     """
-    Thread-safe RPC client for ContextRPC servers.
+    Thread-safe RPC client for libfinance servers.
 
     Supports synchronous (call) and asynchronous (call_async) invocation,
     automatic PING/PONG heartbeat handling, and concurrent requests over
