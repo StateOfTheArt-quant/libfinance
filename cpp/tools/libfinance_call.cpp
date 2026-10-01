@@ -128,13 +128,14 @@ const std::map<std::string, Function>& functions() {
       // instrument
       {"all_instruments",
        [](const Json& a) {
-         return table(lf::all_instruments(codes(a, "type"), optional_date(a, "as_of"), optional_text(a, "market"),
-                                          flag(a, "cached", true)));
+         return table(lf::all_instruments(codes(a, "type"), optional_text(a, "market"), codes(a, "source"),
+                                          optional_date(a, "as_of"), flag(a, "cached", true)));
        }},
       {"instruments",
        [](const Json& a) {
          Json out = Json::array();
-         for (const auto& found : lf::instruments(codes(a, "order_book_ids"), optional_date(a, "as_of")))
+         for (const auto& found : lf::instruments(codes(a, "order_book_ids"), optional_date(a, "as_of"),
+                                                     flag(a, "last_known", false)))
            out.push_back(found.fields());
          return out;
        }},

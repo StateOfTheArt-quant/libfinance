@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <ctime>
-#include <set>
 
 #include <arrow/api.h>
 #include <arrow/compute/api.h>
@@ -14,13 +13,10 @@ namespace libfinance {
 
 namespace {
 
-//: The daily bar fields per kind of security. The stock ones are the upstream daybar's value
-//: columns word for word; the server refuses any other name.
-const std::vector<std::string> kCommonFields = {"open", "close", "high", "low", "turnover", "volume"};
-const std::vector<std::string> kStockFields = {"limit_up", "limit_down"};
-const std::vector<std::string> kFundFields = {"limit_up", "limit_down", "num_trades", "iopv"};
-const std::vector<std::string> kFundTypes = {"ETF", "LOF", "SF", "FUND"};
-const std::string kEarliestStart = "2000-01-04";
+//: What daybar publishes.
+const std::vector<std::string> kFrequencies = {"1d"};
+const std::vector<std::string> kAdjustTypes = {"pre", "post", "none"};
+const std::vector<std::string> kTypes = {"stock", "index"};
 
 bool contains(const std::vector<std::string>& values, const std::string& value) {
   return std::find(values.begin(), values.end(), value) != values.end();
@@ -30,75 +26,16 @@ void check(const arrow::Status& status) {
   if (!status.ok()) throw std::invalid_argument("libfinance: " + status.ToString());
 }
 
-// ---------------------------------------------------------------- arguments
-
-//: "1d" only: the frequency checks of the Python client, in its order and words.
-void check_frequency(const std::string& frequency) {
-  const char unit = frequency.empty() ? '\0' : frequency.back();
-  if (frequency == "tick" || (unit != 'd' && unit != 'w'))
-    throw std::invalid_argument("frequency: 目前只支持日频 '1d'，收到 '" + frequency + "'");
-  int duration = 0;
-  try {
-    duration = std::stoi(frequency.substr(0, frequency.size() - 1));
-  } catch (const std::exception&) {
-    throw std::invalid_argument("invalid literal for int() with base 10: '" +
-                                frequency.substr(0, frequency.size() - 1) + "'");
+//: The fields asked for, each once (a repeat warns); null for all of them. daybar checks the names.
+Json fields_argument(const Codes& fields) {
+  if (!fields.given()) return Json();
+  std::vector<std::string> asked = detail::list_of(fields, "fields"), once, repeated;
+  for (const auto& name : asked) {
+    if (!contains(once, name)) once.push_back(name);
+    else if (!contains(repeated, name)) repeated.push_back(name);
   }
-  if (duration < 1 || duration > 240) throw std::invalid_argument("frequency should in range [1, 240]");
-  if (unit == 'w' && duration != 1) throw std::invalid_argument("Weekly frequency should be str '1w'");
-}
-
-//: `ensure_instruments` as of end_date: the known codes (unknown ones dropped with a warning,
-//: duplicates once), and which kinds of security they are.
-struct Classified {
-  std::vector<std::string> order_book_ids;
-  bool stocks = false;
-  bool funds = false;
-};
-
-Classified classify(const std::vector<std::string>& codes, const DateLike& as_of) {
-  const auto type_of = detail::type_by_order_book_id(as_of);
-  Classified out;
-  for (const auto& code : codes) {
-    auto found = type_of.find(code);
-    if (found == type_of.end()) {
-      detail::warn("invalid order_book_id: " + code);
-      continue;
-    }
-    if (contains(out.order_book_ids, code)) continue;
-    out.order_book_ids.push_back(code);
-    out.stocks = out.stocks || found->second == "CS";
-    out.funds = out.funds || contains(kFundTypes, found->second);
-  }
-  if (out.order_book_ids.empty())
-    throw std::invalid_argument("order_book_ids: at least one valid instrument expected, got none");
-  return out;
-}
-
-//: `_ensure_fields`: the fields asked for, checked against what these kinds of security have;
-//: all of them when none were asked for.
-std::vector<std::string> ensure_fields(const Codes& fields, const Classified& kinds) {
-  std::vector<std::string> allowed = kCommonFields;
-  const std::vector<std::string>* extra[] = {kinds.stocks ? &kStockFields : nullptr, kinds.funds ? &kFundFields : nullptr};
-  for (const auto* more : extra)
-    if (more != nullptr)
-      for (const auto& name : *more)
-        if (!contains(allowed, name)) allowed.push_back(name);
-
-  if (!fields.given() || fields.values().empty()) return allowed;
-  std::vector<std::string> asked = fields.values();
-  std::vector<std::string> repeated;
-  for (const auto& name : asked)
-    if (std::count(asked.begin(), asked.end(), name) > 1) repeated.push_back(name);
-  if (!repeated.empty()) {
-    detail::warn("duplicated fields: " + detail::py_list(repeated));
-    std::vector<std::string> once;
-    for (const auto& name : asked)
-      if (!contains(once, name)) once.push_back(name);
-    asked = once;
-  }
-  detail::check_items_in(asked, allowed, "fields");
-  return asked;
+  if (!repeated.empty()) detail::warn("duplicated fields: " + detail::py_list(repeated));
+  return once;
 }
 
 // ---------------------------------------------------------------- warnings before the call
@@ -144,10 +81,12 @@ void warn_if_clamped(const std::string& api_name, const std::string& start_date)
 void warn_beyond_coverage(const std::string& end_date) {
   std::string latest;
   try {
-    for (const auto& [mic, entry] : get_price_coverage().items()) {
-      const Json end = entry.value("end", Json());
-      if (end.is_string() && end.get<std::string>() > latest) latest = end.get<std::string>();
-    }
+    for (const char* market : {"cn", "us"})
+      for (const auto& [type, venues] : get_price_coverage(market).items())
+        for (const auto& [venue, entry] : venues.items()) {
+          const Json end = entry.value("end", Json());
+          if (end.is_string() && end.get<std::string>() > latest) latest = end.get<std::string>();
+        }
   } catch (const std::exception&) {
     return;
   }
@@ -158,34 +97,12 @@ void warn_beyond_coverage(const std::string& end_date) {
 
 // ---------------------------------------------------------------- the answer
 
-//: `_to_panel`: order_book_id (trading_code + "." + symbol_namespace) and datetime (session_date)
-//: first, sorted by both. A shape it does not know is returned as it came.
+//: `_to_panel`: daybar's flat table (order_book_id, permanent_id, session_date, fields...) with
+//: order_book_id and datetime (session_date) first, sorted by both. A shape it does not know is
+//: returned as it came.
 Table to_panel(const Table& bars) {
-  if (!bars || bars->num_rows() == 0 || !bars->GetColumnByName("session_date")) return bars;
-  const char* namespace_column = bars->GetColumnByName("symbol_namespace") ? "symbol_namespace"
-                                 : bars->GetColumnByName("exchange_id")    ? "exchange_id"
-                                                                           : nullptr;
-  Table table = bars;
-  if (namespace_column != nullptr && bars->GetColumnByName("trading_code")) {
-    const auto codes = detail::strings_of(bars, "trading_code");
-    const auto namespaces = detail::strings_of(bars, namespace_column);
-    arrow::StringBuilder ids;
-    for (size_t i = 0; i < codes.size(); ++i) check(ids.Append(codes[i] + "." + namespaces[i]));
-    std::shared_ptr<arrow::Array> id_array;
-    check(ids.Finish(&id_array));
-    for (const char* dropped : {namespace_column, "trading_code"}) {
-      auto without = table->RemoveColumn(table->schema()->GetFieldIndex(dropped));
-      check(without.status());
-      table = *without;
-    }
-    auto added = table->AddColumn(0, arrow::field("order_book_id", arrow::utf8()),
-                                  std::make_shared<arrow::ChunkedArray>(id_array));
-    check(added.status());
-    table = *added;
-  } else if (!bars->GetColumnByName("order_book_id")) {
-    return bars;
-  }
-  table = detail::column_first(table, "order_book_id");
+  if (!bars || !bars->GetColumnByName("order_book_id") || !bars->GetColumnByName("session_date")) return bars;
+  Table table = detail::column_first(bars, "order_book_id");
 
   // datetime: session_date as a timestamp (pandas' datetime64), right after order_book_id
   const int date_index = table->schema()->GetFieldIndex("session_date");
@@ -212,26 +129,22 @@ Table to_panel(const Table& bars) {
 Table get_price(const Codes& order_book_ids, const DateLike& start_date, const DateLike& end_date,
                 const std::string& frequency, const Codes& fields, bool skip_suspended, bool include_now,
                 const std::string& adjust_type, const std::optional<DateLike>& adjust_orig) {
-  check_frequency(frequency);
-  detail::check_items_in({adjust_type}, {"pre", "post", "none"}, "adjust_type");
-
-  // codes are resolved as of the window's end, not today: a security delisted since is still known
-  const Classified kinds = classify(detail::list_of(order_book_ids, "order_book_ids"), end_date);
-
-  std::string start = start_date.iso();
-  const std::string end = end_date.iso();
-  if (start < kEarliestStart) {
-    detail::warn("start_date is earlier than 2000-01-04, adjusted to 2000-01-04");
-    start = kEarliestStart;
-  }
+  std::vector<std::string> ids;
+  for (const auto& code : detail::order_book_ids(order_book_ids))
+    if (!contains(ids, code)) ids.push_back(code);
+  detail::check_items_in({frequency}, kFrequencies, "frequency");
+  detail::check_items_in({adjust_type}, kAdjustTypes, "adjust_type");
+  const std::string start = start_date.iso(), end = end_date.iso();
+  if (start > end) throw std::invalid_argument("start_date must not be after end_date");
   warn_if_clamped("get_price", start);
   warn_beyond_coverage(end);
 
-  const Table bars = detail::call_table("get_price", {{"order_book_ids", kinds.order_book_ids},
+  // daybar routes the codes (stocks and indexes alike) by instrument as of end_date
+  const Table bars = detail::call_table("get_price", {{"order_book_ids", ids},
                                                      {"start_date", start},
                                                      {"end_date", end},
                                                      {"frequency", frequency},
-                                                     {"fields", ensure_fields(fields, kinds)},
+                                                     {"fields", fields_argument(fields)},
                                                      {"skip_suspended", skip_suspended},
                                                      {"include_now", include_now},
                                                      {"adjust_type", adjust_type},
@@ -241,35 +154,33 @@ Table get_price(const Codes& order_book_ids, const DateLike& start_date, const D
 
 Json get_price_coverage(const std::string& market) {
   static detail::VersionedCache<Json> cache;
-  return cache.get(market, [&] {
-    const Json args = {{"market", market}};
-    Json info = detail::call("daybar.dataset_info", args);
-    if (!info.is_object()) info = Json::object();
-    // CN comes by MIC ({"XSHG": {...}, "XSHE": {...}}); US is one dataset's flat dict with its mic
-    if (info.contains("mic") && info.contains("dataset")) {
-      std::string mic = market;
-      std::transform(mic.begin(), mic.end(), mic.begin(), [](unsigned char c) { return std::toupper(c); });
-      if (info["mic"].is_string() && !info["mic"].get<std::string>().empty()) mic = info["mic"].get<std::string>();
-      info = Json{{mic, info}};
-    }
+  std::string wanted = market;
+  std::transform(wanted.begin(), wanted.end(), wanted.begin(), [](unsigned char c) { return std::toupper(c); });
+  return cache.get(wanted, [&] {
+    const Json coverage = detail::call("daybar.coverage", {{"type", Json()}});
     Json cutoff;
     try {
-      const Json factors = detail::call("exfactor.dataset_info", args);
+      const Json factors = detail::call("exfactor.coverage", {{"market", wanted}});
       if (factors.is_object()) cutoff = factors.value("cutoff", Json());
     } catch (const std::exception&) {
     }
 
     Json out = Json::object();
-    for (const auto& [mic, item] : info.items()) {
-      if (!item.is_object()) continue;
-      const Json raw_end = item.value("coverage_end", Json());
-      // the adjusted prices end at the exfactor cutoff when it is earlier; US has no day-level end
-      Json end = raw_end;
-      if (cutoff.is_string() && (end.is_null() || end.get<std::string>() > cutoff.get<std::string>())) end = cutoff;
-      if (end.is_null()) continue;
-      Json entry = {{"start", item.value("coverage_start", Json())}, {"end", end}, {"raw_end", raw_end}};
-      if (cutoff.is_string()) entry["adjust_cutoff"] = cutoff;
-      out[mic] = entry;
+    for (const auto& type : kTypes) {
+      if (!coverage.is_object() || !coverage.contains(type) || !coverage[type].is_object() ||
+          !coverage[type].contains(wanted) || !coverage[type][wanted].is_object())
+        continue;
+      for (const auto& [venue, item] : coverage[type][wanted].items()) {
+        const Json raw_end = item.is_object() ? item.value("coverage_end", Json()) : Json();
+        if (!raw_end.is_string()) continue;
+        Json entry = {{"start", item.value("coverage_start", Json())}, {"end", raw_end}, {"raw_end", raw_end}};
+        // a stock's adjusted prices end at the exfactor cutoff when it is earlier; an index is not adjusted
+        if (type == "stock" && cutoff.is_string()) {
+          entry["end"] = std::min(raw_end.get<std::string>(), cutoff.get<std::string>());
+          entry["adjust_cutoff"] = cutoff;
+        }
+        out[type][venue] = entry;
+      }
     }
     if (out.empty())
       throw std::runtime_error("get_price_coverage: 服务端没有给出 market='" + market +

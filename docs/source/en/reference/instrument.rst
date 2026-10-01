@@ -18,7 +18,7 @@ Security codes and master data
 
 Semantics are covered in :doc:`../data/instruments`.
 
-.. py:function:: all_instruments(type=None, as_of=None, market=None, cached=True)
+.. py:function:: all_instruments(type=None, market=None, source=None, as_of=None, cached=True)
 
     Master data for every security.
 
@@ -92,7 +92,7 @@ Semantics are covered in :doc:`../data/instruments`.
 
     :download:`Download the full example <../../../../example/0a_instrument.py>`
 
-.. py:function:: instruments(order_book_ids, as_of=None)
+.. py:function:: instruments(order_book_ids, as_of=None, last_known=False)
 
     Master data for specific securities. Codes from multiple markets may be mixed;
     no market parameter is needed.

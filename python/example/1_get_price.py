@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""日频行情：标的数量、字段、复权方式与查询窗口。
+"""日频行情：股票与指数、字段、复权方式与查询窗口。
 
 get_price(order_book_ids, start_date, end_date, frequency='1d', fields=None,
           skip_suspended=False, include_now=True, adjust_type='pre', adjust_orig=None)
-返回以 (order_book_id, datetime) 为索引的 DataFrame。
+返回以 (order_book_id, datetime) 为索引的 DataFrame，列为 permanent_id 与所选字段。
+股票与指数可以混在一批里：股票按 adjust_type 复权，指数原样返回。
 """
 from libfinance import get_price, get_price_coverage, get_n_trading_dates_until
 
@@ -17,8 +18,8 @@ print(one)
 # [/get_price.1]
 
 # [get_price.2]
-# 2. 改为多只股票和 OHLC 字段，结果仍是同样的双层索引。
-many = get_price(["000001.XSHE", "600000.XSHG"], "2024-03-01", "2024-03-11",
+# 2. 股票与指数混在一批，取 OHLC 字段，结果仍是同样的双层索引。
+many = get_price(["000001.XSHE", "600000.XSHG", "000300.XSHG"], "2024-03-01", "2024-03-11",
                  fields=["open", "high", "low", "close"])
 print(many)
 # [/get_price.2]
@@ -46,12 +47,13 @@ print(get_price("000001.XSHE", "2024-03-01", "2024-03-11",
 # [get_price_coverage]
 # [get_price_coverage.1]
 # 最近 5 个已覆盖的交易日：先问行情上界，再从日历回溯，不能直接把今天当上界。
+# 覆盖按证券类型与场所给出：{"stock": {"XSHE": {...}, ...}, "index": {...}}。
 coverage = get_price_coverage(market="cn")
 print(coverage)
 # [/get_price_coverage.1]
 
 # [get_price_coverage.2]
-end = coverage["XSHE"]["end"]
+end = coverage["stock"]["XSHE"]["end"]
 dates = get_n_trading_dates_until(end, n=5, market="cn")
 print(get_price("000001.XSHE", dates[0], dates[-1], fields=["close"]))
 # [/get_price_coverage.2]

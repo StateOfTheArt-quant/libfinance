@@ -1,224 +1,75 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from typing import List, Union
+r"""日线行情：股票与指数在同一个 daybar 聚合包后面。
+
+签名取自后端 daybar 数据族（\ ``daybar.get_price``\ ）：代码写成 ``order_book_id``\ ，股票与指数
+可以混在一批里，由服务端按 instrument 给出的类型路由——股票按 ``adjust_type`` 复权，指数原样
+返回。本模块只做参数检查、越界提示与结果的形状。
+"""
 import datetime
+import warnings
+from typing import List, Optional, Union
 
 import pandas as pd
-import json
-import warnings
-import pdb
 
 from libfinance.client import get_client
 from libfinance.utils.cache import versioned_cache, warn_if_clamped
-from libfinance.utils.decorators import export_as_api, ttl_cache, compatible_with_parm
-from libfinance.utils.datetime_func import convert_dateteime_to_timestamp
+from libfinance.utils.decorators import export_as_api
 from libfinance.utils.utils import to_date_str
+from libfinance.utils.validators import check_items_in_container, ensure_list_of_string, ensure_string
 
-from libfinance.utils.validators import (
-    ensure_string,
-    ensure_list_of_string,
-    check_items_in_container,
-    ensure_instruments,
-    ensure_date_range,
-    is_panel_removed,
-)
-
-# 日频字段。股票这两组必须与上游 daybar 的权威列集逐字一致——
-# pystockdaybarcn.dataset.VALUE_COLUMNS =
-#     ("open", "high", "low", "close", "volume", "turnover", "limit_up", "limit_down")
-# reader 对未知字段是 InvalidFieldError，不会静默忽略。此前这里写的是 rqdatac 口径的
-# total_turnover 与 prev_close：前者在上游叫 turnover，后者上游根本没有，于是
-# fields=None（默认）的每一次调用都会被 reader 拒掉。
-#
-# 其余几组（future / fund / spot / option / convertible / repo）上游**都还没有 artifact**，
-# libfinanced 目前只出 CN 股票日频。留着它们只是为了 classify_order_book_ids 的分支不动；
-# 真传了这些标的，服务端会明确报错而不是给出半份数据。
-DAYBAR_FIELDS = {
-    "future": ["settlement", "prev_settlement", "open_interest", "limit_up", "limit_down",
-               "day_session_open"],
-    "common": ["open", "close", "high", "low", "turnover", "volume"],
-    "stock": ["limit_up", "limit_down"],
-    "fund": ["limit_up", "limit_down", "num_trades", "iopv"],
-    "spot": ["settlement", "prev_settlement", "open_interest", "limit_up", "limit_down"],
-    "option": ["open_interest", "strike_price", "contract_multiplier", "prev_settlement", "settlement", "limit_up",
-               "limit_down", "day_session_open"],
-    "convertible": ["limit_up", "limit_down", "num_trades"],
-    "index": [],
-    "repo": ["num_trades"],
-}
-
-WEEKBAR_FIELDS = {
-    "future": ["settlement", "prev_settlement", "open_interest", "day_session_open"],
-    "common": ["open", "close", "high", "low", "total_turnover", "volume"],
-    "stock": ["num_trades"],
-    "fund": ["num_trades", "iopv"],
-    "spot": ["settlement", "prev_settlement", "open_interest"],
-    "option": ["open_interest", "strike_price", "contract_multiplier", "settlement", "day_session_open"],
-    "convertible": ["num_trades"],
-    "index": [],
-    "repo": ["num_trades"],
-}
-
-MINBAR_FIELDS = {
-    "future": ["trading_date", "open_interest"],
-    "common": ["open", "close", "high", "low", "total_turnover", "volume"],
-    "stock": ["num_trades"],
-    "fund": ["num_trades", "iopv"],
-    "spot": ["trading_date", "open_interest"],
-    "option": ["trading_date", "open_interest"],
-    "convertible": ["num_trades"],
-    "index": [],
-    "repo": [],
-}
-
-def classify_order_book_ids(order_book_ids, as_of=None):
-    """按类型给标的分流。``as_of`` 决定用哪个时点的代码表 —— 见 ensure_instruments。"""
-    ins_list = ensure_instruments(order_book_ids, as_of=as_of)
-    _order_book_ids = []
-    stocks = []
-    funds = []
-    indexes = []
-    futures = []
-    futures_888 = {}
-    spots = []
-    options = []
-    convertibles = []
-    repos = []
-    for ins in ins_list:
-        if ins.order_book_id not in _order_book_ids:
-            _order_book_ids.append(ins.order_book_id)
-            if ins.type == "CS":
-                stocks.append(ins.order_book_id)
-            elif ins.type == "INDX":
-                indexes.append(ins.order_book_id)
-            elif ins.type in {"ETF", "LOF", "SF", "FUND"}:
-                funds.append(ins.order_book_id)
-            elif ins.type == "Future":
-                if ins.order_book_id.endswith(("88", "889")):
-                    futures_888[ins.order_book_id] = ins.underlying_symbol
-                futures.append(ins)
-            elif ins.type == "Spot":
-                spots.append(ins.order_book_id)
-            elif ins.type == "Option":
-                options.append(ins.order_book_id)
-            elif ins.type == "Convertible":
-                convertibles.append(ins.order_book_id)
-            elif ins.type == "Repo":
-                repos.append(ins.order_book_id)
-    return _order_book_ids, stocks, funds, indexes, futures, futures_888, spots, options, convertibles, repos
-
-def _ensure_date(start_date, end_date, stocks, funds, indexes, futures, spots, options, convertibles, repos):
-    default_start_date, default_end_date = ensure_date_range(start_date, end_date)
-
-    start_date = to_date_str(start_date) if start_date else default_start_date
-    end_date = to_date_str(end_date) if end_date else default_end_date
-    if start_date < "2000-01-04":
-        warnings.warn("start_date is earlier than 2000-01-04, adjusted to 2000-01-04")
-        start_date = "2000-01-04"
-    return start_date, end_date
-
-def _ensure_fields(fields, fields_dict, stocks, funds, futures, futures888, spots, options, convertibles, indexes,
-                   repos):
-    has_dominant_id = False
-    future_only = futures and not any([stocks, funds, spots, options, convertibles, indexes, repos])
-    # An ordered list, not a set: the default field order and the "choose any in" message must be
-    # the same on every run (and in every client language).
-    all_fields = list(fields_dict["common"])
-    for present, kind in ((futures, "future"), (stocks, "stock"), (funds, "fund"), (spots, "spot"),
-                          (options, "option"), (convertibles, "convertible"), (indexes, "index"), (repos, "repo")):
-        if present:
-            all_fields += [name for name in fields_dict[kind] if name not in all_fields]
-    if future_only and futures888 and len(futures) == len(futures888) and not fields:
-        has_dominant_id = True
-
-    if fields:
-        fields = ensure_list_of_string(fields, "fields")
-        if len(set(fields)) < len(fields):
-            warnings.warn("duplicated fields: %s" % [f for f in fields if fields.count(f) > 1])
-            fields = list(dict.fromkeys(fields))  # first occurrences, in order
-        # 只有期货类型
-        if 'dominant_id' in fields:
-            fields.remove("dominant_id")
-            if not fields:
-                raise ValueError("can't get dominant_id separately, please use futures.get_dominant")
-            if futures888:
-                has_dominant_id = True
-            else:
-                warnings.warn(
-                    "only if one of the order_book_id is future and contains 88/888/99/889 can the dominant_id be selected in fields")
-        check_items_in_container(fields, all_fields, "fields")
-        return fields, has_dominant_id
-    else:
-        return all_fields, has_dominant_id
-
+#: 后端发布的频率与复权方式。
+FREQUENCIES = ("1d",)
+ADJUST_TYPES = ("pre", "post", "none")
+#: 有日线的证券类型。
+TYPES = ("stock", "index")
 
 
 @export_as_api
 @versioned_cache
 def get_price_coverage(market: str = "cn") -> dict:
-    r"""日频行情的覆盖区间，形如 ``{"XSHG": {"start": ..., "end": ...}}``。
+    r"""日线行情的覆盖区间，按证券类型与场所给出：\ ``{"stock": {"XSHG": {...}}, "index": {...}}``\ 。
 
     :param market: 市场，\ ``"cn"``\ （默认）或 ``"us"``
 
-    **与交易日历的覆盖不是一回事**\ ：日历是提前发布的（实测确认到 2026-12-31），
-    而行情只到最后一个已收盘交易日。"查最近 10 天"之所以会失败，正是因为它把
-    end_date 取成了今天。
+    **与交易日历的覆盖不是一回事**\ ：日历是提前发布的，而行情只到最后一个已收盘交易日。
 
-    每个市场给四个值：
+    每个场所给出：
 
     ==============  ==========================================================
     键              含义
     ==============  ==========================================================
     start           最早有行情的日期
-    end             **复权价**\ 能查到的最后一天（默认 ``adjust_type="pre"`` 要用
-                    除权因子，而它的 cutoff 通常比行情本身更早，所以这里取两者
-                    的较小值）
-    raw_end         未复权价能查到的最后一天；上游没有给出日级上界时为 ``None``
-    adjust_cutoff   除权因子的 cutoff
+    end             能查到的最后一天。股票取复权价的上界：默认 ``adjust_type="pre"``
+                    要用除权因子，它的 cutoff 早于行情时取两者的较小值；指数不复权，
+                    即 ``raw_end``
+    raw_end         未复权价能查到的最后一天
+    adjust_cutoff   除权因子的 cutoff（只有股票有）
     ==============  ==========================================================
 
-    .. note::
-
-       ``market`` 有默认值是必需的：服务端的 ``daybar`` 命名空间同时绑了 CN 与 US，
-       不传 market 时它无从选路，会直接报 ``AmbiguousMarketError`` 而不是给一个
-       合并结果。
-
-    :raises RuntimeError: 服务端没有给出任何可用的覆盖信息时抛出。\ **不返回空字典**
+    :raises RuntimeError: 服务端没有给出该市场的任何覆盖信息时抛出。\ **不返回空字典**
         —— 否则"查不到覆盖信息"和"这个市场没有行情"在调用方看来一模一样。
-
-    :returns: dict，以交易所代码为键，值包含 start、end 等日期边界。
+    :returns: dict，``{类型: {场所: {start, end, raw_end[, adjust_cutoff]}}}``\ 。
     """
-    args = {"market": market}
-    info = get_client().call("daybar.dataset_info", args) or {}
-
-    # 两种形状：CN 按 MIC 分组（{"XSHG": {...}, "XSHE": {...}}），US 是单个数据集的
-    # 平铺字典，自己带一个 mic 字段。统一成前者再处理。
-    if "mic" in info and "dataset" in info:
-        info = {str(info.get("mic") or market.upper()): info}
-
+    wanted = ensure_string(market, "market").upper()
+    coverage = get_client().call("daybar.coverage", {"type": None}) or {}
     try:
-        cutoff = (get_client().call("exfactor.dataset_info", args) or {}).get("cutoff")
+        cutoff = (get_client().call("exfactor.coverage", {"market": wanted}) or {}).get("cutoff")
     except Exception:
         cutoff = None
 
     out = {}
-    for mic, item in info.items():
-        if not isinstance(item, dict):
-            continue
-        raw_end = item.get("coverage_end")
-        # US 的上游产物按月滚动分片，没有日级上界。这里**不从月份编出一个日期** ——
-        # 编出来的精度是数据本身没有的。复权价的上界用除权因子的 cutoff，它是日级且
-        # 权威；未复权价的上界如实留空。
-        end = raw_end
-        if cutoff and (end is None or end > cutoff):
-            end = cutoff
-        if end is None:
-            continue
-        entry = {"start": item.get("coverage_start"), "end": end, "raw_end": raw_end}
-        if cutoff:
-            entry["adjust_cutoff"] = cutoff
-        out[mic] = entry
-
+    for code_type in TYPES:
+        venues = ((coverage.get(code_type) or {}).get(wanted)) or {}
+        for venue, item in sorted(venues.items()):
+            if not isinstance(item, dict) or not item.get("coverage_end"):
+                continue
+            raw_end = item["coverage_end"]
+            entry = {"start": item.get("coverage_start"), "end": raw_end, "raw_end": raw_end}
+            if code_type == "stock" and cutoff:
+                entry["end"] = min(raw_end, cutoff)
+                entry["adjust_cutoff"] = cutoff
+            out.setdefault(code_type, {})[venue] = entry
     if not out:
         raise RuntimeError(
             "get_price_coverage: 服务端没有给出 market={!r} 的覆盖信息。"
@@ -230,21 +81,18 @@ def get_price_coverage(market: str = "cn") -> dict:
 def _warn_beyond_coverage(end_date):
     """end_date 超出行情覆盖时先说清楚，而不是让调用方拿到一句 RPC 报错。
 
-    服务端的拒绝本身是对的 ——"a date this release does not reach is not a date with
-    no trading" —— 它拒绝把"数据还没到"伪装成"那天没交易"。这里不改写调用方的请求，
-    只是提前把原因和可用的上界说出来。
+    服务端拒绝把"数据还没到"伪装成"那天没交易"；这里不改写请求，只提前说出原因与上界。
     """
-    if not end_date:
-        return
+    latest = None
     try:
-        cov = get_price_coverage()
+        for market in ("cn", "us"):
+            for venues in get_price_coverage(market).values():
+                for item in venues.values():
+                    if item.get("end") and (latest is None or item["end"] > latest):
+                        latest = item["end"]
     except Exception:
         return
-    ends = [v["end"] for v in cov.values() if v.get("end")]
-    if not ends:
-        return
-    latest = max(ends)
-    if str(end_date) > latest:
+    if latest and str(end_date) > latest:
         warnings.warn(
             "get_price: end_date={} 超出行情覆盖（最新已收盘交易日 {}）。服务端会拒绝"
             "这个区间——数据还没到不等于那天没交易。用 get_price_coverage() 查上界。"
@@ -255,122 +103,74 @@ def _warn_beyond_coverage(end_date):
 
 @export_as_api
 def get_price(
-    order_book_ids: list,
-    start_date: str,
-    end_date: str,
-    frequency: str="1d",
-    fields: List[str]=None,
-    skip_suspended: bool=False,
-    include_now: bool=True,
-    adjust_type: str="pre",
-    adjust_orig:datetime.datetime = None) -> pd.DataFrame:
-    r"""获取一个或多个证券的历史日频行情。
+    order_book_ids: Union[str, List[str]],
+    start_date,
+    end_date,
+    frequency: str = "1d",
+    fields: Optional[Union[str, List[str]]] = None,
+    skip_suspended: bool = False,
+    include_now: bool = True,
+    adjust_type: str = "pre",
+    adjust_orig: Optional[datetime.date] = None,
+) -> pd.DataFrame:
+    r"""获取股票与指数的日线。
 
-    :param order_book_ids: 单个代码或代码列表
+    :param order_book_ids: 单个代码或代码列表，股票与指数可以混在一批里，如
+        ``["600000.XSHG", "000300.XSHG", "AAPL.US"]``\ 。代码按 ``end_date`` 当日解析。
     :param start_date: 开始日期，必填
-    :param end_date: 结束日期，必填；应落在行情覆盖范围内
-    :param frequency: 当前支持日频 ``"1d"``
-    :param fields: 返回字段，省略取全部适用字段。常用 ``open`` / ``high`` /
-        ``low`` / ``close`` / ``volume`` / ``turnover``；股票另有涨跌停价字段
-    :param skip_suspended: 是否跳过停牌行，默认 False
-    :param include_now: 日频数据不受此参数影响，保留用于调用兼容
-    :param adjust_type: ``"pre"`` 前复权（默认）、``"none"`` 原始价或 ``"post"`` 后复权
-    :param adjust_orig: 复权基准日；省略使用服务端数据的复权截止日
-    :returns: 以 ``(order_book_id, datetime)`` 为索引的 DataFrame。
+    :param end_date: 结束日期，必填；应落在行情覆盖范围内（\ :func:`get_price_coverage`\ ）
+    :param frequency: 只发布日频 ``"1d"``
+    :param fields: 返回字段，省略取全部：\ ``open, high, low, close, volume, turnover, limit_up, limit_down``\ 。
+        字段由服务端核对。
+    :param skip_suspended: 是否去掉无成交的日子（成交量为 0），默认 False。只发布收盘点位、没有成交量
+        的指数日不算停牌。
+    :param include_now: 对日线没有影响，保留与 rqdata 的 ``get_price`` 对齐
+    :param adjust_type: 股票的复权方式：\ ``"pre"`` 前复权（默认）、\ ``"post"`` 后复权或 ``"none"`` 原始价；
+        指数原样返回
+    :param adjust_orig: 复权基准日；省略使用除权因子的 cutoff
+    :returns: 以 ``(order_book_id, datetime)`` 为索引的 DataFrame，列为 ``permanent_id`` 与所选字段。
 
-    成交量随复权反向缩放，成交额 ``turnover`` 不受复权影响。
-    查询上界可通过 :func:`get_price_coverage` 获取。
+    规则同 rqalpha：成交量随复权反向缩放，成交额 ``turnover`` 不受复权影响。
     """
-    # 这里曾经写的是 return ValueError(...) —— 把异常**返回**给了调用方而不是抛出。
-    # 于是 get_price(..., frequency="1m") 不报错，返回一个 ValueError 对象，调用方
-    # 直到 df.shape 才炸，且错误信息与真正的原因无关。
-    if frequency == "tick" or not frequency.endswith(("d", "w")):
-        raise ValueError(
-            "frequency: 目前只支持日频 '1d'，收到 {!r}".format(frequency)
-        )
-    if frequency.endswith(("d", "m", "w")):
-        duration = int(frequency[:-1])
-        _frequency = frequency[-1]
-        assert 1 <= duration <= 240, "frequency should in range [1, 240]"
-        if _frequency == "m" and duration not in (1, 5, 15, 30, 60):
-            raise ValueError("frequency should be str like 1m, 5m, 15m 30m,or 60m")
-        elif _frequency == 'w' and duration not in (1,):
-            raise ValueError("Weekly frequency should be str '1w'")
-    else:
-       raise ValueError("frequency should be str like 1d, 1m, 5m or tick")
-
-    valid_adjust = ["pre", "post", "none"]
+    ids = ensure_list_of_string(order_book_ids, "order_book_ids")
+    if not ids:
+        raise ValueError("order_book_ids: at least one order book id expected")
+    ensure_string(frequency, "frequency")
+    check_items_in_container(frequency, list(FREQUENCIES), "frequency")
     ensure_string(adjust_type, "adjust_type")
-    check_items_in_container(adjust_type, valid_adjust, "adjust_type")
-    order_book_ids = ensure_list_of_string(order_book_ids, "order_book_ids")
-
-    assert isinstance(skip_suspended, bool), "'skip_suspended' should be a bool"
-
-
-    # 按**查询窗口末端**解析代码，不是按今天 —— 与服务端 compose/price.py 同口径。
-    # 否则已退市的证券在这里就被当成无效代码丢掉，服务端根本没机会回答。
-    order_book_ids, stocks, funds, indexes, futures, futures888, spots, options, convertibles, repos = classify_order_book_ids(
-        order_book_ids, as_of=end_date)
-    if not order_book_ids:
-        warnings.warn("no valid instrument")
-        return
-
-    start_date, end_date = _ensure_date(
-        start_date, end_date, stocks, funds, indexes, futures, spots, options, convertibles, repos
-    )
-    # 分档限制会把 start_date 夹到边界，end_date 早于边界时也一起上拉 —— 结果是一张
-    # 空表，而调用方无从知道是档位问题还是真的没数据。先说出来。
+    check_items_in_container(adjust_type, list(ADJUST_TYPES), "adjust_type")
+    if not isinstance(skip_suspended, bool):
+        raise ValueError("skip_suspended: a bool expected, got {!r}".format(skip_suspended))
+    if fields is not None:
+        fields = ensure_list_of_string(fields, "fields")
+        if len(set(fields)) < len(fields):
+            warnings.warn("duplicated fields: %s" % [f for f in fields if fields.count(f) > 1])
+            fields = list(dict.fromkeys(fields))
+    start_date, end_date = to_date_str(start_date), to_date_str(end_date)
+    if start_date > end_date:
+        raise ValueError("start_date must not be after end_date")
+    # 分档限制会把 start_date 夹到边界——结果可能是一张空表，先说出来。
     warn_if_clamped("get_price", start_date)
     _warn_beyond_coverage(end_date)
 
-    fields, has_dominant_id = _ensure_fields(fields, DAYBAR_FIELDS, stocks, funds, futures, futures888, spots, options, convertibles, indexes, repos)
-    #start_date = convert_dateteime_to_timestamp(start_date)
-    #end_date = convert_dateteime_to_timestamp(end_date)
-    #pdb.set_trace()
-    frame = get_client().get_price(order_book_ids=order_book_ids,
-                                           start_date=start_date,
-                                           end_date=end_date,
-                                           frequency=frequency, 
-                                           fields=fields, 
-                                           skip_suspended=skip_suspended, 
-                                           include_now=include_now,
-                                           adjust_type=adjust_type, 
-                                           adjust_orig=adjust_orig)
+    frame = get_client().get_price(order_book_ids=list(dict.fromkeys(ids)),
+                                   start_date=start_date,
+                                   end_date=end_date,
+                                   frequency=frequency,
+                                   fields=fields,
+                                   skip_suspended=skip_suspended,
+                                   include_now=include_now,
+                                   adjust_type=adjust_type,
+                                   adjust_orig=to_date_str(adjust_orig) if adjust_orig is not None else None)
     return _to_panel(frame)
 
 
 def _to_panel(frame):
-    r"""把 daybar 的扁平列还原成本函数文档里承诺的形状。
-
-    本接口对外一直是 ``(order_book_id, datetime)`` 的 MultiIndex。上游给的是符号规范
-    §4.1 那个形式 ``<code>.<namespace>`` 的两列 —— ``symbol_namespace`` +
-    ``trading_code``\ ，两个市场逐列同形：\ ``XSHG`` + ``600000``\ 、\ ``US`` + ``AAPL``\ 。
-    拼接在这里做，不要求调用方自己拼。
-
-    两条兼容分支，各有各的由来：\ ``exchange_id`` 是 CN 上一版的列名（服务端镜像回滚到
-    旧 libfinanced 时还会出现）；\ ``order_book_id`` 是出参改名的产物，US 统一前给的就
-    是它。真正不认识的形状原样返回 —— 那时候该让调用方看见真实的列，而不是在这里猜。
-    """
-    if frame is None or not isinstance(frame, pd.DataFrame) or frame.empty:
+    r"""daybar 的扁平表（\ ``order_book_id, permanent_id, session_date, 字段...``\ ）还原成
+    ``(order_book_id, datetime)`` 索引。不认识的形状原样返回，让调用方看见真实的列。"""
+    if not isinstance(frame, pd.DataFrame) or not {"order_book_id", "session_date"} <= set(frame.columns):
         return frame
-    if "session_date" not in frame.columns:
-        # 服务端换了形状——原样返回，让调用方看见真实的列，而不是在这里猜。
-        return frame
-    # 契约形状：`symbol_namespace` + `trading_code`，两个市场逐列同形。
-    # `exchange_id` 是 CN 上一版的列名，服务端镜像回滚到旧 libfinanced 时还会出现。
-    namespace = next(
-        (c for c in ("symbol_namespace", "exchange_id") if c in frame.columns), None
-    )
-    if namespace is not None and "trading_code" in frame.columns:
-        frame = frame.copy()
-        frame["order_book_id"] = (
-            frame["trading_code"].astype(str) + "." + frame[namespace].astype(str)
-        )
-        frame = frame.drop(columns=[namespace, "trading_code"])
-    elif "order_book_id" in frame.columns:
-        frame = frame.copy()
-    else:
-        return frame
+    frame = frame.copy()
     frame["datetime"] = pd.to_datetime(frame["session_date"])
     frame = frame.drop(columns=["session_date"])
     return frame.set_index(["order_book_id", "datetime"]).sort_index()

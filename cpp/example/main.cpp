@@ -10,7 +10,7 @@ namespace lf = libfinance;
 int main() {
   try {
     for (const auto& instrument : lf::instruments("600000.XSHG", "2024-03-01"))
-      std::cout << instrument.order_book_id() << " " << instrument.symbol() << " " << instrument.type() << "\n";
+      std::cout << instrument.order_book_id() << " " << instrument.name() << " " << instrument.type() << "\n";
 
     const lf::Table bars = lf::get_price({"000001.XSHE", "600000.XSHG"}, "2024-03-01", "2024-03-06", "1d", {}, false,
                                          true, /*adjust_type=*/"none");
