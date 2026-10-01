@@ -24,8 +24,8 @@ Full example
     # 2. Shenwan level-1 industry on that day (note as_of=AS_OF, not today)
     ind = get_instrument_industry(list(w["order_book_id"]), source="SW", level=1, as_of=AS_OF)
 
-    # 3. Keep the banks (Shenwan banks are 801780.SW)
-    banks = ind.loc[ind["related_order_book_id"] == "801780.SW", "order_book_id"].tolist()
+    # 3. Keep the banks (Shenwan banks are 480000.SW)
+    banks = ind.loc[ind["related_order_book_id"] == "480000.SW", "order_book_id"].tolist()
 
     # 4. Attach the weights
     sub = w[w["order_book_id"].isin(banks)].sort_values("weight", ascending=False)
@@ -42,7 +42,7 @@ A real run:
     801730.SW    29
     801790.SW    27
     801150.SW    24
-    801780.SW    22
+    480000.SW    22
 
     >>> len(banks)
     22
@@ -74,7 +74,7 @@ Three lenses
         - Works on any trading day, not just rebalancing dates. Weights normalised
     *   - Industry
         - :func:`~libfinance.get_industry_constituents`
-        - Pass ``as_of``; name the industry by a code such as ``801780.SW``
+        - Pass ``as_of``; name the industry by a code such as ``480000.SW``
     *   - Concept sectors
         - :func:`~libfinance.get_concept_weights`
         - Look ``concept_id`` up via :func:`~libfinance.get_concept_meta`;
@@ -85,7 +85,7 @@ To take an industry across the whole market rather than within an index:
 .. code-block:: python
 
     >>> from libfinance import get_industry_constituents
-    >>> get_industry_constituents("801780.SW", as_of="2024-03-08")[:4]
+    >>> get_industry_constituents("480000.SW", as_of="2024-03-08")[:4]
     ['000001.XSHE', '001227.XSHE', '002142.XSHE', '002807.XSHE']
 
 Verifying there is no leakage

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """行业：证券属于哪些行业、行业包含哪些证券、成分各占多少。
 
-行业以 order_book_id（``<分类代码>.<分类体系>``，如 801780.SW）命名；source 是分类体系
+行业以 order_book_id（``<分类代码>.<分类体系>``，如 480000.SW）命名；source 是分类体系
 （SW、GICS），level 是层级；as_of 是那一天的事实。
 """
 from libfinance import get_industry_constituents, get_industry_weights, get_instrument_industry
@@ -30,6 +30,6 @@ if not industries.empty:
 # [get_industry_weights]
 # [get_industry_weights.1]
 # 行业成分的权重；每行都带 methodology，说明权重是怎么来的。
-print(get_industry_weights("801780.SW", as_of="2024-06-28"))
+print(get_industry_weights("480000.SW", as_of="2024-06-28"))
 # [/get_industry_weights.1]
 # [/get_industry_weights]

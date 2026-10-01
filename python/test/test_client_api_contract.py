@@ -221,7 +221,7 @@ def test_all_instruments_takes_the_backend_types_and_sources(monkeypatch):
      {"order_book_ids": ["600000.XSHG"], "as_of": "2024-06-28"}),
     ("get_index_weights", {"order_book_id": "000300.XSHG", "as_of": "2024-06-28"},
      {"order_book_id": "000300.XSHG", "as_of": "2024-06-28"}),
-    ("get_theme_weights", {"order_book_id": "885338.THS"}, {"order_book_id": "885338.THS", "as_of": None}),
+    ("get_theme_weights", {"order_book_id": "300900.THS"}, {"order_book_id": "300900.THS", "as_of": None}),
 ])
 def test_code_queries_send_codes_without_market(monkeypatch, name, kwargs, expected):
     import importlib

@@ -65,7 +65,7 @@ Industry classification
 =======================
 
 An industry is named by an ``order_book_id`` (``<classification code>.<classification>``): Shenwan banks are
-``801780.SW``, GICS energy is ``10.GICS``. ``source`` is the classification (``SW``, ``GICS``, ...), ``level`` its depth.
+``480000.SW``, GICS energy is ``10.GICS``. ``source`` is the classification (``SW``, ``GICS``, ...), ``level`` its depth.
 
 To look up which industries a stock belongs to:
 
@@ -74,8 +74,8 @@ To look up which industries a stock belongs to:
     >>> from libfinance import get_instrument_industry
     >>> get_instrument_industry(["000001.XSHE", "600000.XSHG"], source="SW", level=1, as_of="2024-03-08")
       order_book_id related_order_book_id source market  level
-    0   000001.XSHE             801780.SW     SW     CN      1
-    1   600000.XSHG             801780.SW     SW     CN      1
+    0   000001.XSHE             480000.SW     SW     CN      1
+    1   600000.XSHG             480000.SW     SW     CN      1
 
 Omit ``source`` / ``level`` for every classification and level. ``related_order_book_id`` is the industry code.
 
@@ -84,10 +84,10 @@ To go the other way and list an industry's members, and their weights:
 .. code-block:: python
 
     >>> from libfinance import get_industry_constituents, get_industry_weights
-    >>> get_industry_constituents("801780.SW", as_of="2024-03-08")[:6]
+    >>> get_industry_constituents("480000.SW", as_of="2024-03-08")[:6]
     ['000001.XSHE', '001227.XSHE', '002142.XSHE', '002807.XSHE',
      '002839.XSHE', '002936.XSHE']
-    >>> get_industry_weights("801780.SW", as_of="2024-03-08")   # each row carries its methodology
+    >>> get_industry_weights("480000.SW", as_of="2024-03-08")   # each row carries its methodology
 
 .. important::
 

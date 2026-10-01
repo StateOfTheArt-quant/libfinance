@@ -8,7 +8,7 @@
 
 namespace libfinance {
 
-//: The members of one theme (``885338.THS``) on as_of: their order_book_ids, or null.
+//: The members of one theme (``300900.THS``) on as_of: their order_book_ids, or null.
 Json get_theme_constituents(const std::string& order_book_id, const std::optional<DateLike>& as_of = std::nullopt);
 //: The themes order_book_ids belong to on as_of; no source means every catalogue.
 Table get_instrument_themes(const Codes& order_book_ids, const std::optional<std::string>& source = std::nullopt,

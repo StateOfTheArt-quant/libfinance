@@ -4,7 +4,7 @@ Industry classification
 
 .. currentmodule:: libfinance
 
-An industry is named by an ``order_book_id`` (``<classification code>.<classification>``, e.g. ``801780.SW``,
+An industry is named by an ``order_book_id`` (``<classification code>.<classification>``, e.g. ``480000.SW``,
 ``10.GICS``), with the same rules as a security; ``source`` is the classification (``SW``, ``GICS``, ...) and
 ``level`` its depth. All three functions answer with the facts of ``as_of``; a historical universe should
 use one ``as_of`` for industry membership, constituents and weights.
@@ -35,7 +35,7 @@ Semantics are covered in :doc:`../data/universe`.
     :param as_of: The facts of that day; omit for the latest confirmed date.
         **Pass this for historical work** — memberships change.
     :returns: ``DataFrame`` with ``order_book_id``, ``related_order_book_id`` (the industry code, e.g.
-        ``801780.SW``), ``source``, ``market`` and ``level``
+        ``480000.SW``), ``source``, ``market`` and ``level``
 
     **Examples**
 
@@ -63,7 +63,7 @@ Semantics are covered in :doc:`../data/universe`.
 
     Every security in an industry on a day.
 
-    :param order_book_id: Industry code, e.g. ``"801780.SW"`` (Shenwan banks) or ``"10.GICS"``
+    :param order_book_id: Industry code, e.g. ``"480000.SW"`` (Shenwan banks) or ``"10.GICS"``
     :param as_of: The facts of that day; omit for the latest confirmed date
     :returns: List of member ``order_book_id``; ``None`` when the industry did not exist that day
 
@@ -92,7 +92,7 @@ Semantics are covered in :doc:`../data/universe`.
 
     The weights of an industry's constituents on a day.
 
-    :param order_book_id: Industry code, e.g. ``"801780.SW"``
+    :param order_book_id: Industry code, e.g. ``"480000.SW"``
     :param as_of: The facts of that day; omit for the latest confirmed date
     :returns: ``DataFrame`` with ``order_book_id`` (the member), ``weight``, ``methodology``, ``source``,
         ``effective_from`` and ``effective_to``. No weights are made up: without a vendor weight and an

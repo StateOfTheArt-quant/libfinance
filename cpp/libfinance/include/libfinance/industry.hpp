@@ -8,7 +8,7 @@
 
 namespace libfinance {
 
-//: The members of one industry (``801780.SW``) on as_of: their order_book_ids, or null.
+//: The members of one industry (``480000.SW``) on as_of: their order_book_ids, or null.
 Json get_industry_constituents(const std::string& order_book_id, const std::optional<DateLike>& as_of = std::nullopt);
 //: The industries order_book_ids belong to on as_of; no source / level means every classification / level.
 Table get_instrument_industry(const Codes& order_book_ids, const std::optional<std::string>& source = std::nullopt,
