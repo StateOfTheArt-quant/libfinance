@@ -32,7 +32,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/api.cmake)
 # third-party
 load_nlohmann_json(${CMAKE_CURRENT_SOURCE_DIR} v3.11.3)
 load_arrow()
-load_contextrpc_client(${CMAKE_CURRENT_SOURCE_DIR})
+load_lz4()
 
 # ================================================================
 # targets

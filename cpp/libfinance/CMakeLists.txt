@@ -29,7 +29,7 @@ target_link_libraries(libfinance
         nlohmann_json::nlohmann_json
         Arrow::arrow_shared
     PRIVATE
-        contextrpc::client
+        LZ4::lz4
 )
 target_compile_options(libfinance PRIVATE -Wall -Wextra)
 

@@ -8,9 +8,9 @@
 #include <arrow/api.h>
 #include <arrow/io/memory.h>
 #include <arrow/ipc/reader.h>
-#include <contextrpc/client.h>
 
 #include "internal.hpp"
+#include "wire.hpp"
 
 namespace libfinance {
 
@@ -136,17 +136,11 @@ Table from_arrow_ipc(const Json::binary_t& bytes) {
 // ---------------------------------------------------------------- RpcClient
 
 struct RpcClient::Connection {
-  contextrpc::Client rpc;
-  Connection(const std::string& host, int port) : rpc(host, static_cast<uint16_t>(port)) {}
+  wire::Connection wire;
+  Connection(const std::string& host, int port) : wire(host, port) {}
 };
 
-RpcClient::RpcClient(const std::string& host, int port) {
-  try {
-    connection_ = std::make_unique<Connection>(host, port);
-  } catch (const contextrpc::RpcError& error) {
-    throw RpcError(error.code(), error.what());
-  }
-}
+RpcClient::RpcClient(const std::string& host, int port) : connection_(std::make_unique<Connection>(host, port)) {}
 
 RpcClient::~RpcClient() = default;
 
@@ -154,17 +148,10 @@ Json RpcClient::call(const std::string& function, const Json& args) const {
   constexpr int kAttempts = 3;
   for (int attempt = 1;; ++attempt) {
     try {
-      return connection_->rpc.call(function, args);
-    } catch (const contextrpc::RpcError& error) {
-      const bool unreachable = error.code() < 0;  // CONNECTION_FAILED / TIMEOUT: worth another try
-      if (!unreachable || attempt == kAttempts) {
-        const Json& answer = error.response();
-        const std::string message = answer.is_object() && answer.contains("message") && answer["message"].is_string()
-                                        ? answer["message"].get<std::string>()
-                                        : error.what();
-        throw RpcError(error.code(), message,
-                       answer.is_object() ? answer.value("kind", std::string()) : std::string());
-      }
+      return connection_->wire.call(function, args);
+    } catch (const wire::TransportError&) {
+      // a call that never got the server's answer (connection, timeout) is worth another try
+      if (attempt == kAttempts) throw;
       std::this_thread::sleep_for(std::chrono::milliseconds(600));
     }
   }
