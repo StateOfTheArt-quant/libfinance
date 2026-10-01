@@ -4,7 +4,7 @@
   "notes": [
     "functions: what users call, the same name, parameters (order and defaults) and meaning in every client language.",
     "wire: the RPC functions a libfinance server serves; clients call only these. `returns` is how the answer is encoded.",
-    "target: the data family capability (<namespace>.<method>) that serves a wire function; the server gives the function the target's parameters and exposure policy. null: served by the server itself (ping, describe_capabilities, live quotes) or by nothing yet (get_factor).",
+    "target: the data family capability (<namespace>.<method>) that serves a wire function; the server gives the function the target's parameters and exposure policy. null: served by the server itself (ping, describe_capabilities, live quotes) or by nothing yet.",
     "types: str | int | bool | date (an ISO day; clients also accept their language's date types) | T? (optional) | list[T] | str_or_list (one string or a list of them).",
     "returns: dataframe = a table (wire: {type: arrow, data: <Arrow IPC>}, or {type: pandas, data: <orient=table JSON>} from the Python service); datetime_index = a list of days; raw = JSON."
   ],
@@ -28,8 +28,8 @@
     "get_allotments": {"target": "allotment.get_allotments", "params": ["order_book_ids", "start_date", "end_date", "fields", "as_of"], "returns": "dataframe"},
     "get_spinoffs": {"target": "spinoff.get_spinoffs", "params": ["order_book_ids", "start_date", "end_date", "fields", "as_of"], "returns": "dataframe"},
 
-    "get_pit_financials_ex": {"target": "financialstatement.get_pit_financials_ex", "params": ["order_book_ids", "fields", "start_quarter", "end_quarter", "as_of", "statements"], "returns": "dataframe"},
-    "get_factor": {"target": null, "params": ["order_book_ids", "factors", "start_quarter", "end_quarter", "as_of"], "returns": "dataframe", "note": "no server serves it yet"},
+    "get_pit_financials_ex": {"target": "financialstatement.get_pit_financials_ex", "params": ["order_book_ids", "fields", "start_quarter", "end_quarter", "as_of", "statements"], "returns": "dataframe", "note": "columns order_book_id, quarter, info_date, then one per field, if_adjusted"},
+    "get_financial_metrics": {"target": "financialmetrics.get_financial_metrics", "params": ["order_book_ids", "fields", "start_date", "end_date"], "returns": "dataframe", "note": "columns order_book_id, date, then one per field: the value on each trading day from the latest report visible that day"},
 
     "get_index_constituents": {"target": "indexconstituents.get_index_constituents", "params": ["order_book_id", "as_of"], "returns": "raw"},
     "get_instrument_indices": {"target": "indexconstituents.get_instrument_indices", "params": ["order_book_ids", "source", "as_of"], "returns": "dataframe"},
@@ -67,8 +67,8 @@
 
     {"name": "get_ex_factor", "module": "exfactor", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}], "returns": "dataframe indexed by ex_date: order_book_id, permanent_id, ex_factor, ex_cum_factor", "wire": ["get_ex_factor"]},
 
-    {"name": "get_pit_financials_ex", "module": "financials", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "fields", "type": "str_or_list"}, {"name": "start_quarter", "type": "str"}, {"name": "end_quarter", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}, {"name": "statements", "type": "str", "default": "latest"}], "returns": "dataframe", "wire": ["get_pit_financials_ex"], "client": "quarters like 2026q1 (dashes dropped, lower-cased); statements in latest/all"},
-    {"name": "get_factor", "module": "financials", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "factors", "type": "str_or_list"}, {"name": "start_quarter", "type": "str"}, {"name": "end_quarter", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe", "wire": ["get_factor"]},
+    {"name": "get_pit_financials_ex", "module": "financials", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "fields", "type": "str_or_list"}, {"name": "start_quarter", "type": "str"}, {"name": "end_quarter", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}, {"name": "statements", "type": "str", "default": "latest"}], "returns": "dataframe indexed (order_book_id, quarter): info_date, one column per field, if_adjusted", "wire": ["get_pit_financials_ex"], "client": "quarters like 2026q1 (dashes dropped, lower-cased); statements in latest/all"},
+    {"name": "get_financial_metrics", "module": "financials", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "fields", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}], "returns": "dataframe indexed (order_book_id, date): one column per field", "wire": ["get_financial_metrics"], "client": "fields from financialmetrics' catalog (roe_lf, revenue_ttm, net_profit_growth_lyr, ...); no dates: the latest trading day"},
 
     {"name": "get_index_constituents", "module": "index_components", "params": [{"name": "order_book_id", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}], "returns": "list[str]? (the members' order_book_ids; null when the index did not exist that day)", "wire": ["get_index_constituents"]},
     {"name": "get_instrument_indices", "module": "index_components", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "source", "type": "str?", "default": null}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe: order_book_id, related_order_book_id (the index), source, market, level", "wire": ["get_instrument_indices"]},

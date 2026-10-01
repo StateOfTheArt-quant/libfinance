@@ -115,8 +115,8 @@ What data is here
         - Quarterly, with full revision history
     *   - Financial factors
         - CN
-        - :func:`~libfinance.get_factor`
-        - Quarterly derived metrics
+        - :func:`~libfinance.get_financial_metrics`
+        - Derived financial metrics, per trading day
     *   - Industry classification
         - CN
         - :func:`~libfinance.get_instrument_industry`

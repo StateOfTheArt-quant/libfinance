@@ -207,12 +207,12 @@ def test_all_instruments_takes_the_backend_types_and_sources(monkeypatch):
     ("get_splits", {"order_book_ids": "NVDA.US"}, {"order_book_ids": ["NVDA.US"]}),
     ("get_allotments", {"order_book_ids": "600000.XSHG"}, {"order_book_ids": ["600000.XSHG"]}),
     ("get_spinoffs", {"order_book_ids": "MMM.US"}, {"order_book_ids": ["MMM.US"]}),
-    ("get_pit_financials_ex", {"order_book_ids": "600000.XSHG", "fields": ["net_profit"],
+    ("get_pit_financials_ex", {"order_book_ids": "600000.XSHG", "fields": ["net_income_parent"],
       "start_quarter": "2024q1", "end_quarter": "2024q3", "as_of": "2024-11-01"},
-     {"order_book_ids": ["600000.XSHG"], "fields": ["net_profit"], "as_of": "2024-11-01"}),
-    ("get_factor", {"order_book_ids": "600000.XSHG", "factors": ["net_profit_ttm"],
-      "start_quarter": "2024q1", "end_quarter": "2024q3"},
-     {"order_book_ids": ["600000.XSHG"], "factors": ["net_profit_ttm"]}),
+     {"order_book_ids": ["600000.XSHG"], "fields": ["net_income_parent"], "as_of": "2024-11-01"}),
+    ("get_financial_metrics", {"order_book_ids": "600000.XSHG", "fields": "roe_lf",
+      "start_date": "2024-11-01", "end_date": 20241105},
+     {"order_book_ids": ["600000.XSHG"], "fields": ["roe_lf"], "start_date": "2024-11-01", "end_date": "2024-11-05"}),
     ("get_instrument_industry", {"order_book_ids": ["600000.XSHG"], "level": 3, "as_of": "2024-06-28"},
      {"order_book_ids": ["600000.XSHG"], "level": 3, "as_of": "2024-06-28"}),
     ("get_instrument_indices", {"order_book_ids": "600000.XSHG", "source": "CSI"},
@@ -348,3 +348,24 @@ def test_as_of_keeps_a_timestamp(monkeypatch):
     assert as_of_text(datetime.date(2025, 6, 30)) == "2025-06-30"
     assert as_of_text(datetime.datetime(2025, 6, 30, 15, 0, tzinfo=datetime.timezone.utc)) == "2025-06-30T15:00:00+00:00"
 
+
+
+def test_financial_frames_get_rqdatas_index_whichever_server_answers(monkeypatch):
+    """The C++ server answers flat tables; the client indexes them as RQData does."""
+    import pandas as pd
+    from libfinance.api import financials
+
+    class Client:
+        def get_financial_metrics(self, **kwargs):
+            return pd.DataFrame([{"order_book_id": "B", "date": "2024-11-05", "roe_lf": 0.2},
+                                 {"order_book_id": "A", "date": "2024-11-05", "roe_lf": 0.1}])
+
+        def get_pit_financials_ex(self, **kwargs):
+            return pd.DataFrame([{"order_book_id": "A", "quarter": "2024q1", "info_date": "2024-04-30",
+                                  "assets": 1.0, "if_adjusted": 0}])
+
+    monkeypatch.setattr(financials, "get_client", lambda: Client())
+    metrics = financials.get_financial_metrics(["A", "B"], "roe_lf")
+    assert metrics.index.names == ["order_book_id", "date"] and list(metrics.roe_lf) == [0.1, 0.2]
+    pit = financials.get_pit_financials_ex("A", "assets", "2024q1", "2024q1")
+    assert pit.index.names == ["order_book_id", "quarter"] and list(pit.columns) == ["info_date", "assets", "if_adjusted"]

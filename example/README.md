@@ -11,7 +11,7 @@
 | 04 | 复权因子 | [04_exfactor.py](python/04_exfactor.py) | [04_exfactor.cpp](cpp/04_exfactor.cpp) | `get_ex_factor` |
 | 05 | 公司行为 | [05_corporate_actions.py](python/05_corporate_actions.py) | [05_corporate_actions.cpp](cpp/05_corporate_actions.cpp) | `get_dividends`、`get_splits`、`get_allotments`、`get_spinoffs` |
 | 06 | 股本 | [06_shares.py](python/06_shares.py) | [06_shares.cpp](cpp/06_shares.cpp) | `get_shares` |
-| 07 | 财务 | [07_financials.py](python/07_financials.py) | [07_financials.cpp](cpp/07_financials.cpp) | `get_pit_financials_ex`、`get_factor` |
+| 07 | 财务 | [07_financials.py](python/07_financials.py) | [07_financials.cpp](cpp/07_financials.cpp) | `get_pit_financials_ex`、`get_financial_metrics` |
 | 08 | 行业 | [08_industry.py](python/08_industry.py) | [08_industry.cpp](cpp/08_industry.cpp) | `get_instrument_industry`、`get_industry_constituents`、`get_industry_weights` |
 | 09 | 指数 | [09_index.py](python/09_index.py) | [09_index.cpp](cpp/09_index.cpp) | `get_instrument_indices`、`get_index_constituents`、`get_index_weights` |
 | 10 | 主题 | [10_theme.py](python/10_theme.py) | [10_theme.cpp](cpp/10_theme.cpp) | `get_instrument_themes`、`get_theme_constituents`、`get_theme_weights` |

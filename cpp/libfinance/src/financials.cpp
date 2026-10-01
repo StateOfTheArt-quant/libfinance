@@ -46,15 +46,14 @@ Table get_pit_financials_ex(const Codes& order_book_ids, const Codes& fields, co
                                                       {"statements", statements}});
 }
 
-Table get_factor(const Codes& order_book_ids, const Codes& factors, const std::string& start_quarter,
-                 const std::string& end_quarter, const std::optional<DateLike>& as_of) {
+Table get_financial_metrics(const Codes& order_book_ids, const Codes& fields,
+                            const std::optional<DateLike>& start_date, const std::optional<DateLike>& end_date) {
   const Json ids = detail::order_book_ids(order_book_ids);
-  const Json names = at_least_one(factors, "factors", "factor");
-  return detail::call_table("get_factor", {{"order_book_ids", ids},
-                                           {"factors", names},
-                                           {"start_quarter", quarter(start_quarter, "start_quarter")},
-                                           {"end_quarter", quarter(end_quarter, "end_quarter")},
-                                           {"as_of", detail::iso_or_null(as_of)}});
+  const Json names = at_least_one(fields, "fields", "field");
+  return detail::call_table("get_financial_metrics", {{"order_book_ids", ids},
+                                                      {"fields", names},
+                                                      {"start_date", detail::iso_or_null(start_date)},
+                                                      {"end_date", detail::iso_or_null(end_date)}});
 }
 
 }  // namespace libfinance

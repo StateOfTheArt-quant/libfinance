@@ -101,7 +101,7 @@ What is shared is the vocabulary and the calling convention; the differences in 
 | Dividends / splits / allotments | CN · US | `get_dividends` | Ex-rights events — the source of price gaps |
 | Spinoffs | US | `get_spinoffs` | A-shares do not produce these events |
 | Financial statements (PIT) | CN | `get_pit_financials_ex` | By quarter, with restatement history |
-| Financial factors | CN | `get_factor` | Quarterly derived factors |
+| Financial metrics | CN, US | `get_financial_metrics` | Derived financial metrics per trading day (RQData get_factor shape) |
 | Industry classification | CN / US | `get_instrument_industry`, `get_industry_constituents`, `get_industry_weights` | Shenwan, GICS and more |
 | Index constituents and weights | CN | `get_index_weights` | Constituent weights on any session |
 | Concept board constituents | CN | `get_concept_weights` | THS concept taxonomy |
