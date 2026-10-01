@@ -346,3 +346,36 @@ def test_exfactor_normalizes_dates_and_preserves_factor_table(monkeypatch):
     with pytest.raises(TypeError):
         exfactor.get_ex_factor("AAPL.US", market="us")
     assert len(calls) == 1
+
+
+def test_get_shares_takes_the_unified_fields_and_as_of(monkeypatch):
+    """The backend publishes the unified fields for every market; the panel comes back flat and is
+    indexed by (order_book_id, date) here."""
+    from datetime import date
+    import pandas as pd
+    from libfinance.api import shares
+
+    calls = []
+
+    class Client:
+        def get_shares(self, **kwargs):
+            calls.append(kwargs)
+            return pd.DataFrame([{"order_book_id": "600000.XSHG", "date": "2025-06-03", "issued_shares": 2.9e10}])
+
+    monkeypatch.setattr(shares, "get_client", lambda: Client())
+    out = shares.get_shares("600000.XSHG", "2025-06-01", "2025-06-30", fields="issued_shares", as_of=date(2025, 6, 30))
+    assert calls == [{"order_book_ids": ["600000.XSHG"], "start_date": "2025-06-01", "end_date": "2025-06-30",
+                      "fields": ["issued_shares"], "as_of": "2025-06-30"}]
+    assert list(out.index.names) == ["order_book_id", "date"] and list(out.columns) == ["issued_shares"]
+    with pytest.raises(ValueError):
+        shares.get_shares("600000.XSHG", fields=["total"])
+
+
+def test_as_of_keeps_a_timestamp(monkeypatch):
+    import datetime
+    from libfinance.utils.utils import as_of_text
+
+    assert as_of_text(None) is None and as_of_text("2025-06-30") == "2025-06-30"
+    assert as_of_text(datetime.date(2025, 6, 30)) == "2025-06-30"
+    assert as_of_text(datetime.datetime(2025, 6, 30, 15, 0, tzinfo=datetime.timezone.utc)) == "2025-06-30T15:00:00+00:00"
+

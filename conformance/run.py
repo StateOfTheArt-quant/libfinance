@@ -102,6 +102,8 @@ CASES = [
     # shares, quotes
     ("get_shares", {"order_book_ids": CN, "start_date": "2025-01-01", "end_date": "2025-06-30"}),
     ("get_shares", {"order_book_ids": CN, "fields": ["float"]}),
+    ("get_shares", {"order_book_ids": CN + ["AAPL.US"], "start_date": "2025-06-02", "end_date": "2025-06-06",
+                    "fields": ["issued_shares", "tradable_shares"], "as_of": "2025-06-30"}),
     ("get_last_quotes", {"order_book_ids": CN}),
 ]
 

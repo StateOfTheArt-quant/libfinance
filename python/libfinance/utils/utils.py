@@ -269,3 +269,14 @@ def pf_fill_nan(pf, order_book_ids):
         if order_book_id not in pf:
             pf[order_book_id] = np.NAN
     return pf.transpose(1, 2, 0)
+
+
+def as_of_text(value):
+    """``as_of``（知识截止时点）的线上形式：日期 -> ``YYYY-MM-DD``，时间戳 -> ISO 8601（保留时刻与时区），
+    字符串原样；``None`` 仍为 ``None``。不能用 to_date_str：它会把时间戳截成日期。"""
+    if value is None or isinstance(value, str):
+        return value
+    if hasattr(value, "isoformat"):  # date, datetime, pandas.Timestamp
+        return value.isoformat()
+    raise TypeError("as_of: a date, a timestamp or an ISO string expected, got {!r}".format(value))
+

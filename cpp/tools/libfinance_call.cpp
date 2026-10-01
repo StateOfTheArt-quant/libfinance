@@ -214,7 +214,8 @@ const std::map<std::string, Function>& functions() {
       {"get_shares",
        [](const Json& a) {
          return table(lf::get_shares(codes(a, "order_book_ids"), optional_date(a, "start_date"),
-                                     optional_date(a, "end_date"), codes(a, "fields")));
+                                     optional_date(a, "end_date"), codes(a, "fields"),
+                                     optional_date(a, "as_of")));
        }},
       {"get_last_quotes", [](const Json& a) { return lf::get_last_quotes(strings(a, "order_book_ids")); }},
   };

@@ -18,7 +18,7 @@ Security-code queries infer the market on the server and accept no market argume
 
 Columns and units are covered in :doc:`../data/fundamentals`.
 
-.. py:function:: get_shares(order_book_ids, start_date=None, end_date=None, fields=None)
+.. py:function:: get_shares(order_book_ids, start_date=None, end_date=None, fields=None, as_of=None)
 
     Per-session share capital panel.
 
