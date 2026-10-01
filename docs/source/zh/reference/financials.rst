@@ -29,7 +29,7 @@ get_pit_financials_ex — 按季度查询财报，限制披露时点并查看修
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/2_financials.py
+.. literalinclude:: ../../../../example/python/07_financials.py
     :language: python
     :start-after: # [get_pit_financials_ex.1]
     :end-before: # [/get_pit_financials_ex.1]
@@ -40,7 +40,7 @@ get_pit_financials_ex — 按季度查询财报，限制披露时点并查看修
 .. literalinclude:: ../../../_shared/example_outputs/get_pit_financials_ex.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/2_financials.py
+.. literalinclude:: ../../../../example/python/07_financials.py
     :language: python
     :start-after: # [get_pit_financials_ex.2]
     :end-before: # [/get_pit_financials_ex.2]
@@ -50,7 +50,7 @@ get_pit_financials_ex — 按季度查询财报，限制披露时点并查看修
 .. literalinclude:: ../../../_shared/example_outputs/get_pit_financials_ex.2.txt
     :language: text
 
-.. literalinclude:: ../../../../example/2_financials.py
+.. literalinclude:: ../../../../example/python/07_financials.py
     :language: python
     :start-after: # [get_pit_financials_ex.3]
     :end-before: # [/get_pit_financials_ex.3]
@@ -62,7 +62,7 @@ get_pit_financials_ex — 按季度查询财报，限制披露时点并查看修
 
 结果解读：示意中 2024q1 有三次披露。as_of 排除 2025 年版本；all 保留截止日前的两版，而 latest 只保留较新的一版。
 
-:download:`下载完整示例 <../../../../example/2_financials.py>`
+:download:`下载完整示例 <../../../../example/python/07_financials.py>`
 
 get_factor — 查询 TTM 等财务衍生因子
 ------------------------------------------------------
@@ -74,7 +74,7 @@ get_factor — 查询 TTM 等财务衍生因子
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/2_financials.py
+.. literalinclude:: ../../../../example/python/07_financials.py
     :language: python
     :start-after: # [get_factor.1]
     :end-before: # [/get_factor.1]
@@ -85,7 +85,7 @@ get_factor — 查询 TTM 等财务衍生因子
 .. literalinclude:: ../../../_shared/example_outputs/get_factor.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/2_financials.py
+.. literalinclude:: ../../../../example/python/07_financials.py
     :language: python
     :start-after: # [get_factor.2]
     :end-before: # [/get_factor.2]
@@ -97,4 +97,4 @@ get_factor — 查询 TTM 等财务衍生因子
 
 结果解读：因子按季度返回。最新因子也可能受后续财报修订影响，所以历史比较要统一 as_of。
 
-:download:`下载完整示例 <../../../../example/2_financials.py>`
+:download:`下载完整示例 <../../../../example/python/07_financials.py>`

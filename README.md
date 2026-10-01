@@ -131,7 +131,7 @@ get_trading_dates("2024-01-01", "2024-01-31", market="us")   # 不涉及具体�
 | --- | --- |
 | [📘 中文文档](https://libfinance.readthedocs.io/zh-cn/latest/) | 概念设计、数据说明、操作指南与 API 参考 |
 | [📗 English documentation](https://libfinance.readthedocs.io/en/latest/) | The same documentation tree in English |
-| [💻 示例代码](https://github.com/StateOfTheArt-quant/libfinance/tree/main/python/example) | 六类 API 的可运行脚本，与 API 参考对照阅读 |
+| [💻 示例代码](https://github.com/StateOfTheArt-quant/libfinance/tree/main/example) | 按数据族排序的可运行示例（Python 与 C++ 一一对应），与 API 参考对照阅读 |
 | [🧩 操作指南](https://libfinance.readthedocs.io/zh-cn/latest/howto/index.html) | 取行情面板、PIT 回测、订阅实时行情等成套做法 |
 | [🩺 故障排查](https://libfinance.readthedocs.io/zh-cn/latest/howto/troubleshooting.html) | 按**症状**编排：看到什么现象，就从哪一行开始 |
 

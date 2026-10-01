@@ -41,7 +41,7 @@ Columns and units are covered in :doc:`../data/fundamentals`.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/4a_shares.py
+    .. literalinclude:: ../../../../example/python/06_shares.py
         :language: python
         :start-after: # [get_shares.1]
         :end-before: # [/get_shares.1]
@@ -52,7 +52,7 @@ Columns and units are covered in :doc:`../data/fundamentals`.
     .. literalinclude:: ../../../_shared/example_outputs/get_shares.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/4a_shares.py
+    .. literalinclude:: ../../../../example/python/06_shares.py
         :language: python
         :start-after: # [get_shares.2]
         :end-before: # [/get_shares.2]
@@ -62,7 +62,7 @@ Columns and units are covered in :doc:`../data/fundamentals`.
     .. literalinclude:: ../../../_shared/example_outputs/get_shares.2.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/4a_shares.py
+    .. literalinclude:: ../../../../example/python/06_shares.py
         :language: python
         :start-after: # [get_shares.3]
         :end-before: # [/get_shares.3]
@@ -74,4 +74,4 @@ Columns and units are covered in :doc:`../data/fundamentals`.
 
     Reading the result: All values are in shares. A single-day query retains both index levels; circulating A-shares and free float are different measures.
 
-    :download:`Download the full example <../../../../example/4a_shares.py>`
+    :download:`Download the full example <../../../../example/python/06_shares.py>`

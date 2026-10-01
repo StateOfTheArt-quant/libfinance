@@ -148,7 +148,7 @@ def test_names_used_by_examples_are_documented():
     没有说明的路上。
     """
     used = set()
-    for path in sorted((_ROOT / "example").rglob("*.py")):
+    for path in sorted((_REPO / "example" / "python").rglob("*.py")):
         try:
             tree = ast.parse(path.read_text(encoding="utf-8"))
         except SyntaxError:

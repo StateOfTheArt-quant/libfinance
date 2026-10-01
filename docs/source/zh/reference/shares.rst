@@ -27,7 +27,7 @@ get_shares — 查询总股本、流通股本与自由流通股本的历史变�
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/4a_shares.py
+.. literalinclude:: ../../../../example/python/06_shares.py
     :language: python
     :start-after: # [get_shares.1]
     :end-before: # [/get_shares.1]
@@ -38,7 +38,7 @@ get_shares — 查询总股本、流通股本与自由流通股本的历史变�
 .. literalinclude:: ../../../_shared/example_outputs/get_shares.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/4a_shares.py
+.. literalinclude:: ../../../../example/python/06_shares.py
     :language: python
     :start-after: # [get_shares.2]
     :end-before: # [/get_shares.2]
@@ -48,7 +48,7 @@ get_shares — 查询总股本、流通股本与自由流通股本的历史变�
 .. literalinclude:: ../../../_shared/example_outputs/get_shares.2.txt
     :language: text
 
-.. literalinclude:: ../../../../example/4a_shares.py
+.. literalinclude:: ../../../../example/python/06_shares.py
     :language: python
     :start-after: # [get_shares.3]
     :end-before: # [/get_shares.3]
@@ -60,4 +60,4 @@ get_shares — 查询总股本、流通股本与自由流通股本的历史变�
 
 结果解读：所有数值单位均为股。单日查询仍保留证券和日期两层索引；流通 A 股与自由流通股本含义不同。
 
-:download:`下载完整示例 <../../../../example/4a_shares.py>`
+:download:`下载完整示例 <../../../../example/python/06_shares.py>`

@@ -35,7 +35,7 @@ get_dividends — 查询现金分红及送转分配事件
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/corporate_actions.py
+.. literalinclude:: ../../../../example/python/05_corporate_actions.py
     :language: python
     :start-after: # [get_dividends.1]
     :end-before: # [/get_dividends.1]
@@ -46,7 +46,7 @@ get_dividends — 查询现金分红及送转分配事件
 .. literalinclude:: ../../../_shared/example_outputs/get_dividends.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/corporate_actions.py
+.. literalinclude:: ../../../../example/python/05_corporate_actions.py
     :language: python
     :start-after: # [get_dividends.2]
     :end-before: # [/get_dividends.2]
@@ -56,7 +56,7 @@ get_dividends — 查询现金分红及送转分配事件
 .. literalinclude:: ../../../_shared/example_outputs/get_dividends.2.txt
     :language: text
 
-.. literalinclude:: ../../../../example/corporate_actions.py
+.. literalinclude:: ../../../../example/python/05_corporate_actions.py
     :language: python
     :start-after: # [get_dividends.3]
     :end-before: # [/get_dividends.3]
@@ -66,7 +66,7 @@ get_dividends — 查询现金分红及送转分配事件
 .. literalinclude:: ../../../_shared/example_outputs/get_dividends.3.txt
     :language: text
 
-.. literalinclude:: ../../../../example/corporate_actions.py
+.. literalinclude:: ../../../../example/python/05_corporate_actions.py
     :language: python
     :start-after: # [get_dividends.4]
     :end-before: # [/get_dividends.4]
@@ -79,7 +79,7 @@ get_dividends — 查询现金分红及送转分配事件
 
 结果解读：前几段展示全历史、字段筛选、知识截止；最后一段展示中美市场合并，order_book_id 区分证券。示意数值不代表证券的真实分红。
 
-:download:`下载完整示例 <../../../../example/corporate_actions.py>`
+:download:`下载完整示例 <../../../../example/python/05_corporate_actions.py>`
 
 get_splits — 查询拆股与送转比例
 --------------------------------------------
@@ -91,7 +91,7 @@ get_splits — 查询拆股与送转比例
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/corporate_actions.py
+.. literalinclude:: ../../../../example/python/05_corporate_actions.py
     :language: python
     :start-after: # [get_splits.1]
     :end-before: # [/get_splits.1]
@@ -102,7 +102,7 @@ get_splits — 查询拆股与送转比例
 .. literalinclude:: ../../../_shared/example_outputs/get_splits.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/corporate_actions.py
+.. literalinclude:: ../../../../example/python/05_corporate_actions.py
     :language: python
     :start-after: # [get_splits.2]
     :end-before: # [/get_splits.2]
@@ -114,7 +114,7 @@ get_splits — 查询拆股与送转比例
 
 结果解读：ratio_from 与 ratio_to 表示变动前后的股数比例；表中的事件仅用于说明结构。
 
-:download:`下载完整示例 <../../../../example/corporate_actions.py>`
+:download:`下载完整示例 <../../../../example/python/05_corporate_actions.py>`
 
 get_allotments — 查询配股事件
 ----------------------------------------------
@@ -126,7 +126,7 @@ get_allotments — 查询配股事件
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/corporate_actions.py
+.. literalinclude:: ../../../../example/python/05_corporate_actions.py
     :language: python
     :start-after: # [get_allotments.1]
     :end-before: # [/get_allotments.1]
@@ -137,7 +137,7 @@ get_allotments — 查询配股事件
 .. literalinclude:: ../../../_shared/example_outputs/get_allotments.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/corporate_actions.py
+.. literalinclude:: ../../../../example/python/05_corporate_actions.py
     :language: python
     :start-after: # [get_allotments.2]
     :end-before: # [/get_allotments.2]
@@ -149,7 +149,7 @@ get_allotments — 查询配股事件
 
 结果解读：缩小窗口后可能没有事件。空 DataFrame 与查询失败是不同情况。
 
-:download:`下载完整示例 <../../../../example/corporate_actions.py>`
+:download:`下载完整示例 <../../../../example/python/05_corporate_actions.py>`
 
 get_spinoffs — 查询美股分拆事件及其估值依据
 ----------------------------------------------------------
@@ -161,7 +161,7 @@ get_spinoffs — 查询美股分拆事件及其估值依据
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/corporate_actions.py
+.. literalinclude:: ../../../../example/python/05_corporate_actions.py
     :language: python
     :start-after: # [get_spinoffs.1]
     :end-before: # [/get_spinoffs.1]
@@ -174,7 +174,7 @@ get_spinoffs — 查询美股分拆事件及其估值依据
 
 结果解读：估值价格、依据和来源需要一起看；示意数值和文字不代表该证券的真实分拆条款。
 
-:download:`下载完整示例 <../../../../example/corporate_actions.py>`
+:download:`下载完整示例 <../../../../example/python/05_corporate_actions.py>`
 
 
 get_ex_factor — 查询单次及累计复权因子
@@ -217,7 +217,7 @@ get_ex_factor — 查询单次及累计复权因子
 以下输出为结构示意，并非真实因子；数值和事件不能用于投资计算。
 单证券查询、日期窗口与混合市场查询分别演示三种使用场景。
 
-.. literalinclude:: ../../../../example/4b_exfactor.py
+.. literalinclude:: ../../../../example/python/04_exfactor.py
     :language: python
     :start-after: # [get_ex_factor.1]
     :end-before: # [/get_ex_factor.1]
@@ -228,7 +228,7 @@ get_ex_factor — 查询单次及累计复权因子
 .. literalinclude:: ../../../_shared/example_outputs/get_ex_factor.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/4b_exfactor.py
+.. literalinclude:: ../../../../example/python/04_exfactor.py
     :language: python
     :start-after: # [get_ex_factor.2]
     :end-before: # [/get_ex_factor.2]
@@ -242,7 +242,7 @@ get_ex_factor — 查询单次及累计复权因子
 则当日累计值为 ``5 × 1.04 = 5.2``\ 。仅查询 2023 年 7 月仍返回 5.2，
 不会变成 1.04；下一次事件后的累计值为 ``5.2 × 1.05 = 5.46``\ 。
 
-.. literalinclude:: ../../../../example/4b_exfactor.py
+.. literalinclude:: ../../../../example/python/04_exfactor.py
     :language: python
     :start-after: # [get_ex_factor.3]
     :end-before: # [/get_ex_factor.3]
@@ -252,4 +252,4 @@ get_ex_factor — 查询单次及累计复权因子
 .. literalinclude:: ../../../_shared/example_outputs/get_ex_factor.3.txt
     :language: text
 
-:download:`下载完整示例 <../../../../example/4b_exfactor.py>`
+:download:`下载完整示例 <../../../../example/python/04_exfactor.py>`

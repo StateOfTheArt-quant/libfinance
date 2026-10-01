@@ -37,7 +37,7 @@ Semantics are covered in :doc:`../data/instruments`.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/0a_instrument.py
+    .. literalinclude:: ../../../../example/python/02_instrument.py
         :language: python
         :start-after: # [all_instruments.1]
         :end-before: # [/all_instruments.1]
@@ -48,7 +48,7 @@ Semantics are covered in :doc:`../data/instruments`.
     .. literalinclude:: ../../../_shared/example_outputs/all_instruments.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/0a_instrument.py
+    .. literalinclude:: ../../../../example/python/02_instrument.py
         :language: python
         :start-after: # [all_instruments.2]
         :end-before: # [/all_instruments.2]
@@ -58,7 +58,7 @@ Semantics are covered in :doc:`../data/instruments`.
     .. literalinclude:: ../../../_shared/example_outputs/all_instruments.2.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/0a_instrument.py
+    .. literalinclude:: ../../../../example/python/02_instrument.py
         :language: python
         :start-after: # [all_instruments.3]
         :end-before: # [/all_instruments.3]
@@ -68,7 +68,7 @@ Semantics are covered in :doc:`../data/instruments`.
     .. literalinclude:: ../../../_shared/example_outputs/all_instruments.3.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/0a_instrument.py
+    .. literalinclude:: ../../../../example/python/02_instrument.py
         :language: python
         :start-after: # [all_instruments.4]
         :end-before: # [/all_instruments.4]
@@ -78,7 +78,7 @@ Semantics are covered in :doc:`../data/instruments`.
     .. literalinclude:: ../../../_shared/example_outputs/all_instruments.4.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/0a_instrument.py
+    .. literalinclude:: ../../../../example/python/02_instrument.py
         :language: python
         :start-after: # [all_instruments.5]
         :end-before: # [/all_instruments.5]
@@ -90,7 +90,7 @@ Semantics are covered in :doc:`../data/instruments`.
 
     Reading the result: The type and market filters change the universe; as_of selects an identity snapshot. A historical query may still contain the same securities.
 
-    :download:`Download the full example <../../../../example/0a_instrument.py>`
+    :download:`Download the full example <../../../../example/python/02_instrument.py>`
 
 .. py:function:: instruments(order_book_ids, as_of=None, last_known=False)
 
@@ -111,7 +111,7 @@ Semantics are covered in :doc:`../data/instruments`.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/0a_instrument.py
+    .. literalinclude:: ../../../../example/python/02_instrument.py
         :language: python
         :start-after: # [instruments.1]
         :end-before: # [/instruments.1]
@@ -122,7 +122,7 @@ Semantics are covered in :doc:`../data/instruments`.
     .. literalinclude:: ../../../_shared/example_outputs/instruments.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/0a_instrument.py
+    .. literalinclude:: ../../../../example/python/02_instrument.py
         :language: python
         :start-after: # [instruments.2]
         :end-before: # [/instruments.2]
@@ -132,7 +132,7 @@ Semantics are covered in :doc:`../data/instruments`.
     .. literalinclude:: ../../../_shared/example_outputs/instruments.2.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/0a_instrument.py
+    .. literalinclude:: ../../../../example/python/02_instrument.py
         :language: python
         :start-after: # [instruments.3]
         :end-before: # [/instruments.3]
@@ -142,7 +142,7 @@ Semantics are covered in :doc:`../data/instruments`.
     .. literalinclude:: ../../../_shared/example_outputs/instruments.3.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/0a_instrument.py
+    .. literalinclude:: ../../../../example/python/02_instrument.py
         :language: python
         :start-after: # [instruments.4]
         :end-before: # [/instruments.4]
@@ -154,7 +154,7 @@ Semantics are covered in :doc:`../data/instruments`.
 
     Reading the result: A string returns one object; a list returns objects in input order. Historical queries resolve the code valid at the specified observation time.
 
-    :download:`Download the full example <../../../../example/0a_instrument.py>`
+    :download:`Download the full example <../../../../example/python/02_instrument.py>`
 
 .. currentmodule:: libfinance.api.instrument
 

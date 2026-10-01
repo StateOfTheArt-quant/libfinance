@@ -43,7 +43,7 @@ Semantics are covered in :doc:`../data/universe`.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/3a_industry.py
+    .. literalinclude:: ../../../../example/python/08_industry.py
         :language: python
         :start-after: # [get_instrument_industry.1]
         :end-before: # [/get_instrument_industry.1]
@@ -57,7 +57,7 @@ Semantics are covered in :doc:`../data/universe`.
     Reading the result: The loop prints level 1 and then level 3. ``related_order_book_id`` is the industry
     code and can be passed straight to :func:`~libfinance.get_industry_constituents`.
 
-    :download:`Download the full example <../../../../example/3a_industry.py>`
+    :download:`Download the full example <../../../../example/python/08_industry.py>`
 
 .. py:function:: get_industry_constituents(order_book_id, as_of=None)
 
@@ -73,7 +73,7 @@ Semantics are covered in :doc:`../data/universe`.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/3a_industry.py
+    .. literalinclude:: ../../../../example/python/08_industry.py
         :language: python
         :start-after: # [get_industry_constituents.1]
         :end-before: # [/get_industry_constituents.1]
@@ -86,7 +86,7 @@ Semantics are covered in :doc:`../data/universe`.
 
     Reading the result: The two lists illustrate historical and current membership. Placeholder codes show the structure only.
 
-    :download:`Download the full example <../../../../example/3a_industry.py>`
+    :download:`Download the full example <../../../../example/python/08_industry.py>`
 
 .. py:function:: get_industry_weights(order_book_id, as_of=None)
 
@@ -104,7 +104,7 @@ Semantics are covered in :doc:`../data/universe`.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/3a_industry.py
+    .. literalinclude:: ../../../../example/python/08_industry.py
         :language: python
         :start-after: # [get_industry_weights.1]
         :end-before: # [/get_industry_weights.1]
@@ -117,4 +117,4 @@ Semantics are covered in :doc:`../data/universe`.
 
     Reading the result: One row per member; ``methodology`` says where the weight comes from.
 
-    :download:`Download the full example <../../../../example/3a_industry.py>`
+    :download:`Download the full example <../../../../example/python/08_industry.py>`

@@ -57,7 +57,7 @@ Semantics are covered in :doc:`../data/price`; coverage bounds in
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/1_get_price.py
+    .. literalinclude:: ../../../../example/python/03_daybar.py
         :language: python
         :start-after: # [get_price.1]
         :end-before: # [/get_price.1]
@@ -68,7 +68,7 @@ Semantics are covered in :doc:`../data/price`; coverage bounds in
     .. literalinclude:: ../../../_shared/example_outputs/get_price.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/1_get_price.py
+    .. literalinclude:: ../../../../example/python/03_daybar.py
         :language: python
         :start-after: # [get_price.2]
         :end-before: # [/get_price.2]
@@ -78,7 +78,7 @@ Semantics are covered in :doc:`../data/price`; coverage bounds in
     .. literalinclude:: ../../../_shared/example_outputs/get_price.2.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/1_get_price.py
+    .. literalinclude:: ../../../../example/python/03_daybar.py
         :language: python
         :start-after: # [get_price.3]
         :end-before: # [/get_price.3]
@@ -88,7 +88,7 @@ Semantics are covered in :doc:`../data/price`; coverage bounds in
     .. literalinclude:: ../../../_shared/example_outputs/get_price.3.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/1_get_price.py
+    .. literalinclude:: ../../../../example/python/03_daybar.py
         :language: python
         :start-after: # [get_price.4]
         :end-before: # [/get_price.4]
@@ -98,7 +98,7 @@ Semantics are covered in :doc:`../data/price`; coverage bounds in
     .. literalinclude:: ../../../_shared/example_outputs/get_price.4.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/1_get_price.py
+    .. literalinclude:: ../../../../example/python/03_daybar.py
         :language: python
         :start-after: # [get_price.5]
         :end-before: # [/get_price.5]
@@ -110,7 +110,7 @@ Semantics are covered in :doc:`../data/price`; coverage bounds in
 
     Reading the result: Adjustment changes prices and volume in opposite directions, while turnover stays the same. unstack turns each security into a column.
 
-    :download:`Download the full example <../../../../example/1_get_price.py>`
+    :download:`Download the full example <../../../../example/python/03_daybar.py>`
 
 .. py:function:: get_price_coverage(market='cn')
 
@@ -135,7 +135,7 @@ Semantics are covered in :doc:`../data/price`; coverage bounds in
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/1_get_price.py
+    .. literalinclude:: ../../../../example/python/03_daybar.py
         :language: python
         :start-after: # [get_price_coverage.1]
         :end-before: # [/get_price_coverage.1]
@@ -146,7 +146,7 @@ Semantics are covered in :doc:`../data/price`; coverage bounds in
     .. literalinclude:: ../../../_shared/example_outputs/get_price_coverage.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/1_get_price.py
+    .. literalinclude:: ../../../../example/python/03_daybar.py
         :language: python
         :start-after: # [get_price_coverage.2]
         :end-before: # [/get_price_coverage.2]
@@ -158,4 +158,4 @@ Semantics are covered in :doc:`../data/price`; coverage bounds in
 
     Reading the result: The second block reuses coverage from the first. The illustrated end date determines the trailing window; your version can have a different end date.
 
-    :download:`Download the full example <../../../../example/1_get_price.py>`
+    :download:`Download the full example <../../../../example/python/03_daybar.py>`

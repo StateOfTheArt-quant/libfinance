@@ -38,7 +38,7 @@ get_last_quotes — 一次查询单只或多只证券的最新快照
 以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
 并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
 
-.. literalinclude:: ../../../../example/last_quote.py
+.. literalinclude:: ../../../../example/python/11_live_quote.py
     :language: python
     :start-after: # [get_last_quotes.1]
     :end-before: # [/get_last_quotes.1]
@@ -49,7 +49,7 @@ get_last_quotes — 一次查询单只或多只证券的最新快照
 .. literalinclude:: ../../../_shared/example_outputs/get_last_quotes.1.txt
     :language: text
 
-.. literalinclude:: ../../../../example/last_quote.py
+.. literalinclude:: ../../../../example/python/11_live_quote.py
     :language: python
     :start-after: # [get_last_quotes.2]
     :end-before: # [/get_last_quotes.2]
@@ -61,7 +61,7 @@ get_last_quotes — 一次查询单只或多只证券的最新快照
 
 结果解读：第一段展示代码到 Quote 的字典；第二段读取具体属性，并处理 None（暂无快照）。
 
-:download:`下载完整示例 <../../../../example/last_quote.py>`
+:download:`下载完整示例 <../../../../example/python/11_live_quote.py>`
 
 QuoteApi / QuoteSpi — 持续订阅
 ----------------------------------------------------
@@ -99,4 +99,4 @@ QuoteApi / QuoteSpi — 持续订阅
 
 .. autoclass:: libfinance.subscribe.md_protocol.Quote
 
-:download:`下载完整订阅示例 <../../../../example/subscription/python/live_subscribe_example.py>`
+:download:`下载完整订阅示例 <../../../../example/python/12_live_subscription.py>`

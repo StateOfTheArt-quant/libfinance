@@ -47,7 +47,7 @@ defaulting to ``"cn"``.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [get_trading_dates.1]
         :end-before: # [/get_trading_dates.1]
@@ -58,7 +58,7 @@ defaulting to ``"cn"``.
     .. literalinclude:: ../../../_shared/example_outputs/get_trading_dates.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [get_trading_dates.2]
         :end-before: # [/get_trading_dates.2]
@@ -70,7 +70,7 @@ defaulting to ``"cn"``.
 
     Reading the result: The same range can contain different trading dates in different markets; January 15 illustrates the difference here.
 
-    :download:`Download the full example <../../../../example/0b_trading_calendar.py>`
+    :download:`Download the full example <../../../../example/python/01_calendar.py>`
 
 .. py:function:: is_trading_date(date, market='cn')
 
@@ -86,7 +86,7 @@ defaulting to ``"cn"``.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [is_trading_date.1]
         :end-before: # [/is_trading_date.1]
@@ -97,7 +97,7 @@ defaulting to ``"cn"``.
     .. literalinclude:: ../../../_shared/example_outputs/is_trading_date.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [is_trading_date.2]
         :end-before: # [/is_trading_date.2]
@@ -109,7 +109,7 @@ defaulting to ``"cn"``.
 
     Reading the result: The boolean result can be used directly in a condition.
 
-    :download:`Download the full example <../../../../example/0b_trading_calendar.py>`
+    :download:`Download the full example <../../../../example/python/01_calendar.py>`
 
 .. py:function:: get_previous_trading_date(date, n=1, market='cn')
 
@@ -127,7 +127,7 @@ defaulting to ``"cn"``.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [get_previous_trading_date.1]
         :end-before: # [/get_previous_trading_date.1]
@@ -138,7 +138,7 @@ defaulting to ``"cn"``.
     .. literalinclude:: ../../../_shared/example_outputs/get_previous_trading_date.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [get_previous_trading_date.2]
         :end-before: # [/get_previous_trading_date.2]
@@ -150,7 +150,7 @@ defaulting to ``"cn"``.
 
     Reading the result: Both offsets exclude the input date. n counts trading days, not calendar days.
 
-    :download:`Download the full example <../../../../example/0b_trading_calendar.py>`
+    :download:`Download the full example <../../../../example/python/01_calendar.py>`
 
 .. py:function:: get_next_trading_date(date, n=1, market='cn')
 
@@ -168,7 +168,7 @@ defaulting to ``"cn"``.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [get_next_trading_date.1]
         :end-before: # [/get_next_trading_date.1]
@@ -179,7 +179,7 @@ defaulting to ``"cn"``.
     .. literalinclude:: ../../../_shared/example_outputs/get_next_trading_date.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [get_next_trading_date.2]
         :end-before: # [/get_next_trading_date.2]
@@ -191,7 +191,7 @@ defaulting to ``"cn"``.
 
     Reading the result: The first trading day after Friday is Monday; n=3 moves to the third trading day.
 
-    :download:`Download the full example <../../../../example/0b_trading_calendar.py>`
+    :download:`Download the full example <../../../../example/python/01_calendar.py>`
 
 .. py:function:: get_n_trading_dates_until(date, n, market='cn')
 
@@ -208,7 +208,7 @@ defaulting to ``"cn"``.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [get_n_trading_dates_until.1]
         :end-before: # [/get_n_trading_dates_until.1]
@@ -219,7 +219,7 @@ defaulting to ``"cn"``.
     .. literalinclude:: ../../../_shared/example_outputs/get_n_trading_dates_until.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [get_n_trading_dates_until.2]
         :end-before: # [/get_n_trading_dates_until.2]
@@ -231,7 +231,7 @@ defaulting to ``"cn"``.
 
     Reading the result: A trading-day cutoff includes that day. A Sunday cutoff ends at the preceding Friday.
 
-    :download:`Download the full example <../../../../example/0b_trading_calendar.py>`
+    :download:`Download the full example <../../../../example/python/01_calendar.py>`
 
 .. py:function:: count_trading_dates(start_date, end_date, market='cn')
 
@@ -248,7 +248,7 @@ defaulting to ``"cn"``.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [count_trading_dates.1]
         :end-before: # [/count_trading_dates.1]
@@ -261,7 +261,7 @@ defaulting to ``"cn"``.
 
     Reading the result: The result is an integer count, not a list of dates.
 
-    :download:`Download the full example <../../../../example/0b_trading_calendar.py>`
+    :download:`Download the full example <../../../../example/python/01_calendar.py>`
 
 .. py:function:: get_all_trading_dates(market='cn')
 
@@ -276,7 +276,7 @@ defaulting to ``"cn"``.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [get_all_trading_dates.1]
         :end-before: # [/get_all_trading_dates.1]
@@ -289,7 +289,7 @@ defaulting to ``"cn"``.
 
     Reading the result: The result is a date index, not a DataFrame with security columns.
 
-    :download:`Download the full example <../../../../example/0b_trading_calendar.py>`
+    :download:`Download the full example <../../../../example/python/01_calendar.py>`
 
 .. py:function:: get_calendar_coverage(market='cn')
 
@@ -304,7 +304,7 @@ defaulting to ``"cn"``.
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [get_calendar_coverage.1]
         :end-before: # [/get_calendar_coverage.1]
@@ -315,7 +315,7 @@ defaulting to ``"cn"``.
     .. literalinclude:: ../../../_shared/example_outputs/get_calendar_coverage.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/0b_trading_calendar.py
+    .. literalinclude:: ../../../../example/python/01_calendar.py
         :language: python
         :start-after: # [get_calendar_coverage.2]
         :end-before: # [/get_calendar_coverage.2]
@@ -327,4 +327,4 @@ defaulting to ``"cn"``.
 
     Reading the result: These bounds depend on the data version. Calendar coverage is different from price coverage.
 
-    :download:`Download the full example <../../../../example/0b_trading_calendar.py>`
+    :download:`Download the full example <../../../../example/python/01_calendar.py>`

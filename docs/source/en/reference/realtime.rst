@@ -38,7 +38,7 @@ Subscriptions
     from a live service. Values, identifiers and events are not market facts; ellipses
     mark omitted content.
 
-    .. literalinclude:: ../../../../example/last_quote.py
+    .. literalinclude:: ../../../../example/python/11_live_quote.py
         :language: python
         :start-after: # [get_last_quotes.1]
         :end-before: # [/get_last_quotes.1]
@@ -49,7 +49,7 @@ Subscriptions
     .. literalinclude:: ../../../_shared/example_outputs/get_last_quotes.1.txt
         :language: text
 
-    .. literalinclude:: ../../../../example/last_quote.py
+    .. literalinclude:: ../../../../example/python/11_live_quote.py
         :language: python
         :start-after: # [get_last_quotes.2]
         :end-before: # [/get_last_quotes.2]
@@ -61,7 +61,7 @@ Subscriptions
 
     Reading the result: The first block shows the dictionary. The second reads Quote attributes and handles None when no snapshot is available.
 
-    :download:`Download the full example <../../../../example/last_quote.py>`
+    :download:`Download the full example <../../../../example/python/11_live_quote.py>`
 
 .. currentmodule:: libfinance.subscribe.quote_api
 
