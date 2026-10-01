@@ -6,11 +6,11 @@ int main() {
     // [get_shares]
     // 1. 不传日期，从首个股本事件到最后一个股本事件，返回全部字段。
     show(lf::get_shares("600000.XSHG"));
-    // 2. 多只股票、指定窗口，只取总股本与流通 A 股股本。
-    show(lf::get_shares({"000001.XSHE", "600000.XSHG"}, "2024-01-01", "2024-06-28", {"total", "circulation_a"}));
-    // 3. 开始日等于结束日，查询单日截面；自由流通股本与流通 A 股不是同一个字段。
+    // 2. 多只股票、指定窗口，只取发行股本与可流通股本。
+    show(lf::get_shares({"000001.XSHE", "600000.XSHG"}, "2024-01-01", "2024-06-28", {"issued_shares", "tradable_shares"}));
+    // 3. 开始日等于结束日，查询单日截面；自由流通股本与可流通股本不是同一个字段。
     show(lf::get_shares({"000001.XSHE", "600000.XSHG"}, "2024-06-28", "2024-06-28",
-                        {"circulation_a", "free_circulation"}));
+                        {"tradable_shares", "free_float_shares"}));
     // [/get_shares]
   });
 }

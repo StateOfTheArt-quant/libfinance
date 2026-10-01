@@ -14,7 +14,7 @@ import pandas as pd
 
 from libfinance.client import get_client
 from libfinance.utils.decorators import export_as_api
-from libfinance.utils.utils import to_date_str
+from libfinance.utils.utils import as_of_text, to_date_str
 from libfinance.utils.validators import ensure_list_of_string
 
 
@@ -36,7 +36,7 @@ def _args(order_book_ids, start_date, end_date, fields, as_of):
         raise ValueError("invalid date range: [{!r}, {!r}]".format(start_date, end_date))
     return dict(
         order_book_ids=ids, start_date=start_date, end_date=end_date,
-        fields=fields, as_of=as_of,
+        fields=fields, as_of=as_of_text(as_of),
     )
 
 

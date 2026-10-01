@@ -38,7 +38,7 @@
     "get_concept_meta": {"target": "conceptinstrument.all_instruments", "params": ["source", "fields", "market"], "returns": "dataframe"},
     "get_concept_weights": {"target": "conceptweight.get_concept_weights", "params": ["concept_ids", "source", "market", "as_of"], "returns": "dataframe"},
 
-    "get_shares": {"target": "shares.get_shares_panel", "params": ["order_book_ids", "start_date", "end_date", "fields"], "returns": "dataframe"},
+    "get_shares": {"target": "shares.get_shares_panel", "params": ["order_book_ids", "start_date", "end_date", "fields", "as_of"], "returns": "dataframe", "note": "columns order_book_id, date, then one per unified share field"},
     "get_last_quotes": {"target": null, "params": ["order_book_ids"], "returns": "raw", "note": "{order_book_id: quote dict or null}"}
   },
   "functions": [
@@ -74,7 +74,7 @@
     {"name": "get_concept_meta", "module": "concept_components", "params": [{"name": "source", "type": "str", "default": "THS"}, {"name": "fields", "type": "str_or_list?", "default": null}, {"name": "market", "type": "str?", "default": null}], "returns": "dataframe", "wire": ["get_concept_meta"], "client": "cached by data_version"},
     {"name": "get_concept_weights", "module": "concept_components", "params": [{"name": "concept_ids", "type": "list[str]"}, {"name": "as_of", "type": "date?", "default": null}, {"name": "source", "type": "str", "default": "THS"}, {"name": "market", "type": "str?", "default": null}], "returns": "dataframe", "wire": ["get_concept_meta", "get_concept_weights"], "client": "warns on concept ids missing from get_concept_meta"},
 
-    {"name": "get_shares", "module": "shares", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}, {"name": "fields", "type": "str_or_list?", "default": null}], "returns": "dataframe", "wire": ["get_shares"], "client": "fields within total, total_a, circulation_a, non_circulation_a, free_circulation, preferred_shares"},
+    {"name": "get_shares", "module": "shares", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}, {"name": "fields", "type": "str_or_list?", "default": null}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe indexed (order_book_id, date): one column per unified share field", "wire": ["get_shares"], "client": "fields within free_float_shares, issued_shares, preferred_shares, restricted_shares, shares_outstanding, tradable_shares (the unified fields, every market)"},
 
     {"name": "get_last_quotes", "module": "live_quote", "params": [{"name": "order_book_ids", "type": "list[str]"}], "returns": "{order_book_id: Quote?}", "wire": ["get_last_quotes"]}
   ]
