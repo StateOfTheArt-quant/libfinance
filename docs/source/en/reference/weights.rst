@@ -4,7 +4,7 @@ Index and theme constituents
 
 .. currentmodule:: libfinance
 
-Indices (``000300.XSHG``, ``SPX.US``) and themes (``885338.THS``) are named by an ``order_book_id``, with the
+Indices (``000300.XSHG``, ``SPX.US``) and themes (``300900.THS``) are named by an ``order_book_id``, with the
 same rules as a security; their catalogues are ``all_instruments(type="index")`` and
 ``all_instruments(type="theme")``. Every function answers with the facts of ``as_of``.
 
@@ -66,13 +66,13 @@ Themes
 
 .. py:function:: get_theme_constituents(order_book_id, as_of=None)
 
-    :param order_book_id: Theme code, e.g. ``"885338.THS"``
+    :param order_book_id: Theme code, e.g. ``"300900.THS"``
     :param as_of: The facts of that day; omit for the latest confirmed date
     :returns: List of member ``order_book_id``; ``None`` when the theme did not exist that day
 
 .. py:function:: get_theme_weights(order_book_id, as_of=None)
 
-    :param order_book_id: Theme code, e.g. ``"885338.THS"``
+    :param order_book_id: Theme code, e.g. ``"300900.THS"``
     :param as_of: The facts of that day; omit for the latest confirmed date
     :returns: ``DataFrame`` with ``order_book_id`` (the member), ``weight``, ``methodology``, ``source``,
         ``effective_from`` and ``effective_to``. THS weights are ``derived_equal_weight``: equal weights

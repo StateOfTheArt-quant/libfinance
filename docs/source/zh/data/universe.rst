@@ -60,7 +60,7 @@
 行业分类
 ========
 
-行业以 ``order_book_id``\ （\ ``<分类代码>.<分类体系>``\ ）命名：申万银行是 ``801780.SW``\ ，GICS 能源是 ``10.GICS``\ 。
+行业以 ``order_book_id``\ （\ ``<分类代码>.<分类体系>``\ ）命名：申万银行是 ``480000.SW``\ ，GICS 能源是 ``10.GICS``\ 。
 ``source`` 是分类体系（\ ``SW``\ 、``GICS``\ ……），``level`` 是层级。
 
 查某只股票属于哪些行业：
@@ -70,8 +70,8 @@
     >>> from libfinance import get_instrument_industry
     >>> get_instrument_industry(["000001.XSHE", "600000.XSHG"], source="SW", level=1, as_of="2024-03-08")
       order_book_id related_order_book_id source market  level
-    0   000001.XSHE             801780.SW     SW     CN      1
-    1   600000.XSHG             801780.SW     SW     CN      1
+    0   000001.XSHE             480000.SW     SW     CN      1
+    1   600000.XSHG             480000.SW     SW     CN      1
 
 省略 ``source`` / ``level`` 则返回全部分类体系、全部层级。``related_order_book_id`` 就是行业代码。
 
@@ -80,10 +80,10 @@
 ..  code-block:: python
 
     >>> from libfinance import get_industry_constituents, get_industry_weights
-    >>> get_industry_constituents("801780.SW", as_of="2024-03-08")[:6]
+    >>> get_industry_constituents("480000.SW", as_of="2024-03-08")[:6]
     ['000001.XSHE', '001227.XSHE', '002142.XSHE', '002807.XSHE',
      '002839.XSHE', '002936.XSHE']
-    >>> get_industry_weights("801780.SW", as_of="2024-03-08")   # 每行带 methodology
+    >>> get_industry_weights("480000.SW", as_of="2024-03-08")   # 每行带 methodology
 
 ..  important::
 

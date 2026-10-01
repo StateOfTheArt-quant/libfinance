@@ -1,6 +1,6 @@
 // 行业：证券属于哪些行业、行业包含哪些证券、成分各占多少（Python：example/python/08_industry.py）。
 //
-// 行业以 order_book_id（<分类代码>.<分类体系>，如 801780.SW）命名；source 是分类体系，level 是层级。
+// 行业以 order_book_id（<分类代码>.<分类体系>，如 480000.SW）命名；source 是分类体系，level 是层级。
 #include "show.hpp"
 
 int main() {
@@ -24,7 +24,7 @@ int main() {
 
     // [get_industry_weights]
     // 行业成分的权重；每行都带 methodology，说明权重是怎么来的。
-    show(lf::get_industry_weights("801780.SW", "2024-06-28"));
+    show(lf::get_industry_weights("480000.SW", "2024-06-28"));
     // [/get_industry_weights]
   });
 }

@@ -1,6 +1,6 @@
   order_book_id related_order_book_id source market  level
-0   000001.XSHE             801780.SW     SW     CN      1
-1   600000.XSHG             801780.SW     SW     CN      1
+0   000001.XSHE             480000.SW     SW     CN      1
+1   600000.XSHG             480000.SW     SW     CN      1
 
   order_book_id related_order_book_id source market  level
 0   000001.XSHE             857831.SW     SW     CN      3

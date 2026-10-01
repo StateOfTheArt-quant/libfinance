@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 r"""行业的成员与权重。
 
-行业以 ``order_book_id``\ （``<分类代码>.<分类体系>``，如 ``801780.SW``、``10.GICS``\ ）命名，
+行业以 ``order_book_id``\ （``<分类代码>.<分类体系>``，如 ``480000.SW``、``10.GICS``\ ）命名，
 规则与证券相同；行业目录是 ``all_instruments(type="industry")``\ 。按行业查成分与权重，
 按证券查所属行业。
 """
@@ -20,7 +20,7 @@ from libfinance.utils.validators import ensure_string
 def get_industry_constituents(order_book_id: str, as_of=None) -> Optional[List[str]]:
     r"""获取某个行业在指定日期的成分证券。
 
-    :param order_book_id: 行业代码，``<分类代码>.<分类体系>``\ ，如 ``"801780.SW"``\ （申万银行）、``"10.GICS"``
+    :param order_book_id: 行业代码，``<分类代码>.<分类体系>``\ ，如 ``"480000.SW"``\ （申万银行）、``"10.GICS"``
     :param as_of: 那一天的事实；省略则取数据已确认的最新日期
     :returns: list[str]，成分证券的 ``order_book_id``\ ；该日没有这个行业时为 ``None``\ 。
     """
@@ -38,7 +38,7 @@ def get_instrument_industry(order_book_ids, source: Optional[str] = None, level:
     :param source: 分类体系，如 ``"SW"``\ （申万）、``"GICS"``\ ；省略则返回全部分类体系
     :param level: 分类层级（申万 1、2、3）；省略则返回全部层级
     :param as_of: 那一天的事实；省略则取数据已确认的最新日期
-    :returns: pandas.DataFrame，包含 order_book_id、related_order_book_id（行业代码，如 ``801780.SW``\ ）、
+    :returns: pandas.DataFrame，包含 order_book_id、related_order_book_id（行业代码，如 ``480000.SW``\ ）、
               source、market 和 level。
     """
     return get_client().get_instrument_industry(
@@ -52,7 +52,7 @@ def get_industry_weights(order_book_id: str, as_of=None) -> pd.DataFrame:
 
     每一行都带 ``methodology``\ ：没有供应商权重和明确方法时不生成权重。
 
-    :param order_book_id: 行业代码，如 ``"801780.SW"``
+    :param order_book_id: 行业代码，如 ``"480000.SW"``
     :param as_of: 那一天的事实；省略则取数据已确认的最新日期
     :returns: pandas.DataFrame，包含 order_book_id（成分证券）、weight、methodology、source、effective_from、effective_to。
     """

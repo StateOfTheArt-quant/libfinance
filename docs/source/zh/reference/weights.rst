@@ -3,7 +3,7 @@
 
 .. currentmodule:: libfinance
 
-指数（\ ``000300.XSHG``\ 、``SPX.US``\ ）与主题（\ ``885338.THS``\ ）以 ``order_book_id`` 命名，规则与证券相同；
+指数（\ ``000300.XSHG``\ 、``SPX.US``\ ）与主题（\ ``300900.THS``\ ）以 ``order_book_id`` 命名，规则与证券相同；
 目录分别是 ``all_instruments(type="index")`` 与 ``all_instruments(type="theme")``\ 。每个函数都按 ``as_of``
 回答"那一天的事实"。
 
