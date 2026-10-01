@@ -82,15 +82,4 @@ Table column_first(const Table& table, const std::string& name) {
   return *moved;
 }
 
-std::vector<std::string> strings_of(const Table& table, const std::string& name) {
-  std::vector<std::string> values;
-  if (!table || !table->GetColumnByName(name)) return values;
-  for (const auto& chunk : table->GetColumnByName(name)->chunks())
-    for (int64_t i = 0; i < chunk->length(); ++i) {
-      const Json value = cell(*chunk, i);
-      values.push_back(value.is_string() ? value.get<std::string>() : value.is_null() ? "" : value.dump());
-    }
-  return values;
-}
-
 }  // namespace libfinance::detail

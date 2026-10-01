@@ -4,10 +4,8 @@
 
 这些是**静态**检查，不需要服务端。钉住的是几个曾经真的坏过的点。
 """
-import ast
 import inspect
 import pathlib
-import warnings
 
 import pytest
 
@@ -39,59 +37,25 @@ def test_industry_defaults_mean_every_classification():
 
     曾经默认 source='010303'（旧数据源的申万编码），服务端不认，于是用默认参数调**一直是报错的**。
     现在分类体系由服务端的 industryconstituents 给出（SW、GICS……），不存在一个对所有市场都对的默认值。
+    指数的发布机构、主题的定义方同理。
     """
-    from libfinance.api.index_components import get_instrument_industry
-    from libfinance.api.industry import get_industry_constituents, get_industry_weights
+    from libfinance.api.index_components import get_instrument_indices
+    from libfinance.api.industry import get_instrument_industry
+    from libfinance.api.theme import get_instrument_themes
 
     defaults = _defaults(get_instrument_industry)
     assert defaults["source"] is None and defaults["level"] is None and defaults["as_of"] is None
-    for func in (get_industry_constituents, get_industry_weights):
-        assert _defaults(func)["order_book_id"] is inspect.Parameter.empty, func.__name__
+    for func in (get_instrument_indices, get_instrument_themes):
+        assert _defaults(func)["source"] is None and _defaults(func)["as_of"] is None, func.__name__
 
 
-def test_index_code_is_required_not_silently_defaulted():
-    """get_index_weights 不该默认给沪深300 —— 拿错指数比报错更难发现。"""
-    from libfinance.api.index_components import get_index_weights
+def test_the_object_is_required_not_silently_defaulted():
+    """按对象查的函数不替用户选对象：get_index_weights 曾经默认沪深300，拿错指数比报错更难发现。"""
+    import libfinance
 
-    assert _defaults(get_index_weights)["index_code"] is inspect.Parameter.empty
-
-
-def test_no_api_still_sends_the_retired_date_parameter_as_as_of():
-    """服务端把 as_of（知识截止）与 date（数据日期）分开了，客户端要跟上。
-
-    get_concept_weights 曾经发 date，被服务端直接拒绝：
-    未知参数 ['date']；可用 ['as_of', 'concept_ids', 'market', 'source']
-    """
-    source = (_ROOT / "libfinance" / "api" / "concept_components.py").read_text(encoding="utf-8")
-    tree = ast.parse(source)
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.Call):
-            continue
-        func = node.func
-        if getattr(func, "attr", None) != "get_concept_weights":
-            continue
-        sent = {k.arg for k in node.keywords if k.arg}
-        assert "date" not in sent, "又把 date 发给服务端了；它要的是 as_of"
-
-
-def test_deprecated_names_still_work_but_warn():
-    from libfinance.utils.compat import renamed
-
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always")
-        out = renamed("date", "as_of", {"date": "2026-01-01"}, "f")
-    assert out == {"as_of": "2026-01-01"}
-    assert caught and issubclass(caught[0].category, DeprecationWarning)
-
-    # 两个都给 —— 不替调用方猜要哪个语义。
-    with pytest.raises(TypeError, match="只能给一个"):
-        renamed("date", "as_of", {"date": "2026-01-01", "as_of": "2026-02-01"}, "f")
-
-    # 旧名给 None 等于没给，不该发警告。
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always")
-        assert renamed("date", "as_of", {"date": None, "as_of": "x"}, "f") == {"as_of": "x"}
-    assert not caught
+    for name in ("get_index_constituents", "get_index_weights", "get_industry_constituents",
+                 "get_industry_weights", "get_theme_constituents", "get_theme_weights"):
+        assert _defaults(getattr(libfinance, name))["order_book_id"] is inspect.Parameter.empty, name
 
 
 def test_get_price_sends_the_codes_to_daybar_as_given(monkeypatch):
@@ -251,8 +215,13 @@ def test_all_instruments_takes_the_backend_types_and_sources(monkeypatch):
      {"order_book_ids": ["600000.XSHG"], "factors": ["net_profit_ttm"]}),
     ("get_instrument_industry", {"order_book_ids": ["600000.XSHG"], "level": 3, "as_of": "2024-06-28"},
      {"order_book_ids": ["600000.XSHG"], "level": 3, "as_of": "2024-06-28"}),
-    ("get_index_weights", {"index_code": "000300.XSHG", "date": "2024-06-28"},
-     {"index_code": "000300.XSHG", "date": "2024-06-28"}),
+    ("get_instrument_indices", {"order_book_ids": "600000.XSHG", "source": "CSI"},
+     {"order_book_ids": "600000.XSHG", "source": "CSI"}),
+    ("get_instrument_themes", {"order_book_ids": ["600000.XSHG"], "as_of": "2024-06-28"},
+     {"order_book_ids": ["600000.XSHG"], "as_of": "2024-06-28"}),
+    ("get_index_weights", {"order_book_id": "000300.XSHG", "as_of": "2024-06-28"},
+     {"order_book_id": "000300.XSHG", "as_of": "2024-06-28"}),
+    ("get_theme_weights", {"order_book_id": "885338.THS"}, {"order_book_id": "885338.THS", "as_of": None}),
 ])
 def test_code_queries_send_codes_without_market(monkeypatch, name, kwargs, expected):
     import importlib

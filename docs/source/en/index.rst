@@ -123,12 +123,12 @@ What data is here
         - Shenwan, GICS and more; members and weights via :func:`~libfinance.get_industry_constituents`
     *   - Index constituents
         - CN
-        - :func:`~libfinance.get_index_weights`
-        - Weights on any trading day
-    *   - Concept sectors
+        - :func:`~libfinance.get_index_constituents`
+        - CSI, S&P and more; weights via :func:`~libfinance.get_index_weights`
+    *   - Themes
         - CN
-        - :func:`~libfinance.get_concept_weights`
-        - THS concept classification
+        - :func:`~libfinance.get_theme_constituents`
+        - THS themes; weights via :func:`~libfinance.get_theme_weights`
     *   - Live quotes
         - CN
         - :class:`~libfinance.subscribe.quote_api.QuoteApi`

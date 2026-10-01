@@ -91,12 +91,18 @@ API 参考
           - 反向查询某行业在指定日期包含哪些证券
         * - :func:`~libfinance.get_industry_weights`
           - 查询某行业成分的权重（带 methodology）
+        * - :func:`~libfinance.get_instrument_indices`
+          - 查询证券在指定日期属于哪些指数
+        * - :func:`~libfinance.get_index_constituents`
+          - 查询指数在指定日期包含哪些证券
         * - :func:`~libfinance.get_index_weights`
-          - 查询指数在指定交易日的成分股及权重
-        * - :func:`~libfinance.get_concept_meta`
-          - 发现可查询的概念名称和编号
-        * - :func:`~libfinance.get_concept_weights`
-          - 查询一个或多个概念在指定知识时点的成分权重
+          - 查询指数成分的权重（带 methodology）
+        * - :func:`~libfinance.get_instrument_themes`
+          - 查询证券在指定日期属于哪些主题
+        * - :func:`~libfinance.get_theme_constituents`
+          - 查询主题在指定日期包含哪些证券
+        * - :func:`~libfinance.get_theme_weights`
+          - 查询主题成分的权重（带 methodology）
 
     :doc:`classification`
 

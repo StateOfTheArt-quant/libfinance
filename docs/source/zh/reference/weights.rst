@@ -1,12 +1,11 @@
-指数与概念成分
+指数与主题成分
 ========================================
 
 .. currentmodule:: libfinance
 
-get_index_weights 从完整指数代码推断市场；概念编号不是证券代码，概念查询仍保留 market。
-
-指数用 ``index_code`` 查询，概念用目录中的 ``concept_id`` 查询。
-指数的 ``date`` 是权重日期；概念的 ``as_of`` 是信息可见性截止日。详见 :doc:`../data/universe`\ 。
+指数（\ ``000300.XSHG``\ 、``SPX.US``\ ）与主题（\ ``885338.THS``\ ）以 ``order_book_id`` 命名，规则与证券相同；
+目录分别是 ``all_instruments(type="index")`` 与 ``all_instruments(type="theme")``\ 。每个函数都按 ``as_of``
+回答"那一天的事实"。
 
 .. list-table::
     :header-rows: 1
@@ -14,124 +13,37 @@ get_index_weights 从完整指数代码推断市场；概念编号不是证券�
 
     * - 函数 / 类
       - 解决的问题
+    * - :func:`~libfinance.get_instrument_indices`
+      - 查询证券在指定日期属于哪些指数
+    * - :func:`~libfinance.get_index_constituents`
+      - 查询指数在指定日期包含哪些证券
     * - :func:`~libfinance.get_index_weights`
-      - 查询指数在指定交易日的成分股及权重
-    * - :func:`~libfinance.get_concept_meta`
-      - 发现可查询的概念名称和编号
-    * - :func:`~libfinance.get_concept_weights`
-      - 查询一个或多个概念在指定知识时点的成分权重
+      - 查询指数成分的权重（带 methodology）
+    * - :func:`~libfinance.get_instrument_themes`
+      - 查询证券在指定日期属于哪些主题
+    * - :func:`~libfinance.get_theme_constituents`
+      - 查询主题在指定日期包含哪些证券
+    * - :func:`~libfinance.get_theme_weights`
+      - 查询主题成分的权重（带 methodology）
 
-get_index_weights — 查询指数在指定交易日的成分股及权重
---------------------------------------------------------------------------
+指数
+----
+
+.. autofunction:: get_instrument_indices
+
+.. autofunction:: get_index_constituents
 
 .. autofunction:: get_index_weights
 
-**示例**
+:download:`下载完整示例 <../../../../example/python/09_index.py>`
 
-以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
-并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
+主题
+----
 
-.. literalinclude:: ../../../../example/python/09_index_weights.py
-    :language: python
-    :start-after: # [get_index_weights.1]
-    :end-before: # [/get_index_weights.1]
-    :prepend: from libfinance import get_index_weights
+.. autofunction:: get_instrument_themes
 
-打印结果（示意）：
+.. autofunction:: get_theme_constituents
 
-.. literalinclude:: ../../../_shared/example_outputs/get_index_weights.1.txt
-    :language: text
+.. autofunction:: get_theme_weights
 
-.. literalinclude:: ../../../../example/python/09_index_weights.py
-    :language: python
-    :start-after: # [get_index_weights.2]
-    :end-before: # [/get_index_weights.2]
-
-打印结果（示意）：
-
-.. literalinclude:: ../../../_shared/example_outputs/get_index_weights.2.txt
-    :language: text
-
-.. literalinclude:: ../../../../example/python/09_index_weights.py
-    :language: python
-    :start-after: # [get_index_weights.3]
-    :end-before: # [/get_index_weights.3]
-
-打印结果（示意）：
-
-.. literalinclude:: ../../../_shared/example_outputs/get_index_weights.3.txt
-    :language: text
-
-.. literalinclude:: ../../../../example/python/09_index_weights.py
-    :language: python
-    :start-after: # [get_index_weights.4]
-    :end-before: # [/get_index_weights.4]
-
-打印结果（示意）：
-
-.. literalinclude:: ../../../_shared/example_outputs/get_index_weights.4.txt
-    :language: text
-
-结果解读：省略 date 取最新锚点；指定 date 返回该交易日权重。权重和对完整结果计算，不能只加总展示的前几行。
-
-:download:`下载完整示例 <../../../../example/python/09_index_weights.py>`
-
-get_concept_meta — 发现可查询的概念名称和编号
-----------------------------------------------------------------
-
-.. autofunction:: get_concept_meta
-
-**示例**
-
-以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
-并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
-
-.. literalinclude:: ../../../../example/python/10_concept.py
-    :language: python
-    :start-after: # [get_concept_meta.1]
-    :end-before: # [/get_concept_meta.1]
-    :prepend: from libfinance import get_concept_meta
-
-打印结果（示意）：
-
-.. literalinclude:: ../../../_shared/example_outputs/get_concept_meta.1.txt
-    :language: text
-
-.. literalinclude:: ../../../../example/python/10_concept.py
-    :language: python
-    :start-after: # [get_concept_meta.2]
-    :end-before: # [/get_concept_meta.2]
-
-打印结果（示意）：
-
-.. literalinclude:: ../../../_shared/example_outputs/get_concept_meta.2.txt
-    :language: text
-
-结果解读：DEMO01/DEMO02 是示意编号，不可直接用于查询；脚本从实际目录取得有效编号。fields 缩小返回列。
-
-:download:`下载完整示例 <../../../../example/python/10_concept.py>`
-
-get_concept_weights — 查询一个或多个概念在指定知识时点的成分权重
---------------------------------------------------------------------------------------
-
-.. autofunction:: get_concept_weights
-
-**示例**
-
-以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
-并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
-
-.. literalinclude:: ../../../../example/python/10_concept.py
-    :language: python
-    :start-after: # [get_concept_weights.1]
-    :end-before: # [/get_concept_weights.1]
-    :prepend: from libfinance import get_concept_weights, get_concept_meta
-
-打印结果（示意）：
-
-.. literalinclude:: ../../../_shared/example_outputs/get_concept_weights.1.txt
-    :language: text
-
-结果解读：三张表依次展示一个概念、两个概念和历史可见成分。示意中概念乙在截止日尚无可见记录，因此最后不出现。
-
-:download:`下载完整示例 <../../../../example/python/10_concept.py>`
+:download:`下载完整示例 <../../../../example/python/10_theme.py>`

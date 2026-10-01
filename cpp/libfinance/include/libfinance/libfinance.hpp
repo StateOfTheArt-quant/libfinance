@@ -4,7 +4,6 @@
 
 #include "libfinance/calendar.hpp"
 #include "libfinance/client.hpp"
-#include "libfinance/concept_components.hpp"
 #include "libfinance/corporate_actions.hpp"
 #include "libfinance/errors.hpp"
 #include "libfinance/exfactor.hpp"
@@ -15,5 +14,6 @@
 #include "libfinance/live_quote.hpp"
 #include "libfinance/price.hpp"
 #include "libfinance/shares.hpp"
+#include "libfinance/theme.hpp"
 #include "libfinance/types.hpp"
 #include "libfinance/version.h"

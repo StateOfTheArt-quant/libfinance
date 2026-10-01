@@ -13,8 +13,8 @@
 | 06 | 股本 | [06_shares.py](python/06_shares.py) | [06_shares.cpp](cpp/06_shares.cpp) | `get_shares` |
 | 07 | 财务 | [07_financials.py](python/07_financials.py) | [07_financials.cpp](cpp/07_financials.cpp) | `get_pit_financials_ex`、`get_factor` |
 | 08 | 行业 | [08_industry.py](python/08_industry.py) | [08_industry.cpp](cpp/08_industry.cpp) | `get_instrument_industry`、`get_industry_constituents`、`get_industry_weights` |
-| 09 | 指数权重 | [09_index_weights.py](python/09_index_weights.py) | [09_index_weights.cpp](cpp/09_index_weights.cpp) | `get_index_weights` |
-| 10 | 概念 | [10_concept.py](python/10_concept.py) | [10_concept.cpp](cpp/10_concept.cpp) | `get_concept_meta`、`get_concept_weights` |
+| 09 | 指数 | [09_index.py](python/09_index.py) | [09_index.cpp](cpp/09_index.cpp) | `get_instrument_indices`、`get_index_constituents`、`get_index_weights` |
+| 10 | 主题 | [10_theme.py](python/10_theme.py) | [10_theme.cpp](cpp/10_theme.cpp) | `get_instrument_themes`、`get_theme_constituents`、`get_theme_weights` |
 | 11 | 实时快照 | [11_live_quote.py](python/11_live_quote.py) | [11_live_quote.cpp](cpp/11_live_quote.cpp) | `get_last_quotes` |
 | 12 | 实时订阅 | [12_live_subscription.py](python/12_live_subscription.py) | —（订阅 SDK 只有 Python） | `QuoteApi` |
 

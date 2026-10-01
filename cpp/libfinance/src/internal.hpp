@@ -53,8 +53,6 @@ std::string py_list(const std::vector<std::string>& values);
 std::vector<Json> rows_of(const Table& table);
 //: The table with `name` moved to the first column (unchanged when it has no such column).
 Table column_first(const Table& table, const std::string& name);
-//: A string column's values ("" for null).
-std::vector<std::string> strings_of(const Table& table, const std::string& name);
 
 // ---------------------------------------------------------------- caches
 
