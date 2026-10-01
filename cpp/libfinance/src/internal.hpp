@@ -56,9 +56,6 @@ Table column_first(const Table& table, const std::string& name);
 //: A string column's values ("" for null).
 std::vector<std::string> strings_of(const Table& table, const std::string& name);
 
-//: {order_book_id: type} of every security as of a day (instrument.cpp; get_price classifies with it).
-std::map<std::string, std::string> type_by_order_book_id(const std::optional<DateLike>& as_of);
-
 // ---------------------------------------------------------------- caches
 
 //: The server's data version (ping's data_version), asked at most every 2 s; nullopt when the
