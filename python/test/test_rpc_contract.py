@@ -60,7 +60,7 @@ def test_every_rpc_the_client_calls_exists_on_the_server():
     # 判据是**能不能路由到**，不是"在不在 describe_capabilities 里"。
     #
     # 那份清单只报 81 个 capability，而服务端注册了 102 个 handler：get_calendar_coverage /
-    # get_concept_meta / get_last_quotes 这类扁平别名存在且可调，只是不在清单里。拿清单
+    # get_last_quotes 这类扁平别名存在且可调，只是不在清单里。拿清单
     # 当白名单会把好接口误判成缺失。
     #
     # 所以逐个打一次空参调用：只有 FUNCTION_NOT_FOUND(1101) 算"不存在"，参数错、数据错

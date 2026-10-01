@@ -121,12 +121,12 @@ A 股，分拆事件只出现在美股；美股没有涨跌停，成交额在部
         - 申万、GICS 等分类体系；成员与权重见 :func:`~libfinance.get_industry_constituents`
     *   - 指数成分与权重
         - CN
-        - :func:`~libfinance.get_index_weights`
-        - 任意交易日的成分权重
-    *   - 概念板块成分
+        - :func:`~libfinance.get_index_constituents`
+        - 中证、标普等；权重见 :func:`~libfinance.get_index_weights`
+    *   - 主题成分与权重
         - CN
-        - :func:`~libfinance.get_concept_weights`
-        - 同花顺概念分类
+        - :func:`~libfinance.get_theme_constituents`
+        - 同花顺主题；权重见 :func:`~libfinance.get_theme_weights`
     *   - 实时行情
         - CN
         - :class:`~libfinance.subscribe.quote_api.QuoteApi`

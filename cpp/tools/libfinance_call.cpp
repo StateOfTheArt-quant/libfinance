@@ -187,29 +187,36 @@ const std::map<std::string, Function>& functions() {
          return table(lf::get_factor(codes(a, "order_book_ids"), codes(a, "factors"), required_text(a, "start_quarter"),
                                      required_text(a, "end_quarter"), optional_date(a, "as_of")));
        }},
-      // industry, index, concepts
+      // index, industry, theme: members and weights
+      {"get_index_constituents",
+       [](const Json& a) { return lf::get_index_constituents(required_text(a, "order_book_id"), optional_date(a, "as_of")); }},
+      {"get_instrument_indices",
+       [](const Json& a) {
+         return table(lf::get_instrument_indices(codes(a, "order_book_ids"), optional_text(a, "source"),
+                                                 optional_date(a, "as_of")));
+       }},
+      {"get_index_weights",
+       [](const Json& a) { return table(lf::get_index_weights(required_text(a, "order_book_id"), optional_date(a, "as_of"))); }},
+      {"get_industry_constituents",
+       [](const Json& a) { return lf::get_industry_constituents(required_text(a, "order_book_id"), optional_date(a, "as_of")); }},
       {"get_instrument_industry",
        [](const Json& a) {
          return table(lf::get_instrument_industry(codes(a, "order_book_ids"), optional_text(a, "source"),
                                                   optional_integer(a, "level"), optional_date(a, "as_of")));
        }},
-      {"get_index_weights",
-       [](const Json& a) { return table(lf::get_index_weights(required_text(a, "index_code"), optional_date(a, "date"))); }},
-      {"get_industry_constituents",
-       [](const Json& a) { return lf::get_industry_constituents(required_text(a, "order_book_id"), optional_date(a, "as_of")); }},
       {"get_industry_weights",
        [](const Json& a) {
          return table(lf::get_industry_weights(required_text(a, "order_book_id"), optional_date(a, "as_of")));
        }},
-      {"get_concept_meta",
+      {"get_theme_constituents",
+       [](const Json& a) { return lf::get_theme_constituents(required_text(a, "order_book_id"), optional_date(a, "as_of")); }},
+      {"get_instrument_themes",
        [](const Json& a) {
-         return table(lf::get_concept_meta(text(a, "source", "THS"), codes(a, "fields"), optional_text(a, "market")));
+         return table(lf::get_instrument_themes(codes(a, "order_book_ids"), optional_text(a, "source"),
+                                                optional_date(a, "as_of")));
        }},
-      {"get_concept_weights",
-       [](const Json& a) {
-         return table(lf::get_concept_weights(strings(a, "concept_ids"), optional_date(a, "as_of"),
-                                              text(a, "source", "THS"), optional_text(a, "market")));
-       }},
+      {"get_theme_weights",
+       [](const Json& a) { return table(lf::get_theme_weights(required_text(a, "order_book_id"), optional_date(a, "as_of"))); }},
       // shares, quotes
       {"get_shares",
        [](const Json& a) {
