@@ -18,7 +18,7 @@
     AS_OF = "2024-03-08"
 
     # 1. 那一天的指数成分与权重
-    w = get_index_weights(index_code="000300.XSHG", date=AS_OF)
+    w = get_index_weights("000300.XSHG", as_of=AS_OF)
 
     # 2. 那一天的申万一级行业（注意 as_of=AS_OF，不是今天）
     ind = get_instrument_industry(list(w["order_book_id"]), source="SW", level=1, as_of=AS_OF)
@@ -75,9 +75,9 @@
         - :func:`~libfinance.get_industry_constituents`
         - 传 ``as_of``\ ；行业以 ``480000.SW`` 这样的代码指定
     *   - 概念板块
-        - :func:`~libfinance.get_concept_weights`
-        - ``concept_id`` 要从 :func:`~libfinance.get_concept_meta` 查，
-          写死的 id 可能已经失效
+        - :func:`~libfinance.get_theme_constituents`
+        - 传 ``as_of``\ ；主题以 ``300008.THS`` 这样的代码指定（用
+          ``all_instruments(type="theme")`` 列出）
 
 按行业直接取全市场成分（不限于指数内）：
 
@@ -125,6 +125,6 @@
     universe = {}
     for d in rebalance:
         day = d.strftime("%Y-%m-%d")
-        universe[day] = get_index_weights(index_code="000300.XSHG", date=day)
+        universe[day] = get_index_weights("000300.XSHG", as_of=day)
 
 财务数据的前视偏差是另一个话题，见 :doc:`pit_backtest`\ 。

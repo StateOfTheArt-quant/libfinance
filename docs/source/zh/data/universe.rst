@@ -18,7 +18,7 @@
         - :func:`~libfinance.get_industry_constituents` / :func:`~libfinance.get_instrument_industry`
         - 全市场覆盖，多级层次，多种分类体系
     *   - 概念板块
-        - :func:`~libfinance.get_concept_weights`
+        - :func:`~libfinance.get_theme_constituents`, :func:`~libfinance.get_theme_weights`
         - 主题驱动，数量多，边界模糊
 
 指数成分与权重
@@ -27,20 +27,21 @@
 ..  code-block:: python
 
     >>> from libfinance import get_index_weights
-    >>> get_index_weights(index_code="000300.XSHG", date="2024-03-08").head()
-        index_code       date order_book_id   weight
-    0  000300.XSHG 2024-03-08   000001.XSHE  0.00576
-    1  000300.XSHG 2024-03-08   000002.XSHE  0.00383
-    2  000300.XSHG 2024-03-08   000063.XSHE  0.00534
-    3  000300.XSHG 2024-03-08   000069.XSHE  0.00085
-    4  000300.XSHG 2024-03-08   000100.XSHE  0.00477
+    >>> w = get_index_weights("000300.XSHG", as_of="2024-02-29")
+    >>> w[["order_book_id", "weight", "source", "basis", "date"]].head()
+      order_book_id   weight source   basis       date
+    0   000001.XSHE  0.00576    CSI  origin 2024-02-29
+    1   000002.XSHE  0.00383    CSI  origin 2024-02-29
+    2   000063.XSHE  0.00534    CSI  origin 2024-02-29
+    3   000069.XSHE  0.00085    CSI  origin 2024-02-29
+    4   000100.XSHE  0.00477    CSI  origin 2024-02-29
 
 权重已经归一化：
 
 ..  code-block:: python
 
-    >>> get_index_weights(index_code="000300.XSHG", date="2024-03-08")["weight"].sum()
-    0.9999999996000001
+    >>> w["weight"].sum()
+    1.0
 
 ..  note::
 
@@ -52,9 +53,11 @@
     用复权收益率是必需的——区间内如果有送转或拆股，用原始价的涨跌幅会把股本变动
     误读成收益。
 
-省略 ``date`` 则返回最新一期。参数名是 ``index_code``\ （不是 ``index_id``\ ）。
+省略 ``as_of`` 则返回最新一期。指数用它的 ``order_book_id`` 指定（\ ``000300.XSHG``\ 、\ ``SPX.US``\ ）。
+每行说明权重的来历：\ ``basis`` 为 ``origin``\ （数据源发布）或 ``reconstructed``\ （按编制方法重构），
+``date`` 是该权重所属的快照日（漂移得到的为 ``as_of``\ ，\ ``quality_flags`` 带 ``DRIFTED``\ ）。
 
-返回值只有四列，不含指数名称和成分股名称——名称属于证券主数据，要的话用
+返回值不含指数名称和成分股名称——名称属于证券主数据，要的话用
 :func:`~libfinance.instruments` 另取。
 
 行业分类

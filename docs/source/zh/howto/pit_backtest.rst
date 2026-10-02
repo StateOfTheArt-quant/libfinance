@@ -61,7 +61,7 @@
         day = d.strftime("%Y-%m-%d")
 
         # 1. 那一天的股票池（也要按那一天取）
-        pool = get_index_weights(index_code="000300.XSHG", date=day)
+        pool = get_index_weights("000300.XSHG", as_of=day)
         codes = list(pool["order_book_id"])
 
         # 2. 那一天能看到的财务数据
@@ -86,13 +86,13 @@
     *   - :func:`~libfinance.get_pit_financials_ex`
         - **需要**
         - 财报会被追溯修订
-    *   - :func:`~libfinance.get_factor`
+    *   - :func:`~libfinance.get_financial_metrics`
         - **需要**
         - 基于财报算出来的
     *   - :func:`~libfinance.get_dividends` 等公司行动
         - **需要**
         - 事件会被修订或撤销
-    *   - :func:`~libfinance.get_concept_weights`
+    *   - :func:`~libfinance.get_theme_constituents`
         - **需要**
         - 成分会调整
     *   - :func:`~libfinance.get_price`
