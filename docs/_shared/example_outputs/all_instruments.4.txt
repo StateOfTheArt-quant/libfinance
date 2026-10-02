@@ -1,4 +1,16 @@
-  order_book_id  symbol type market  listed_date  ...
-0   000001.XSHE  平安银行  CS     cn   1991-04-03  ...
-1   600000.XSHG  浦发银行  CS     cn   1999-11-10  ...
-...
+  order_book_id                          permanent_id  ... exchange source
+0     110000.SW  32185aca-6ecc-416b-83c9-303af0552167  ...     None     SW
+1     110100.SW  98d987b1-dc0c-487d-bdbd-2d274840cc1d  ...     None     SW
+2     110101.SW  a26ba29b-5abc-4dd4-9b0c-4fd7c7332d4b  ...     None     SW
+3     110102.SW  7cb57e18-8022-4519-bf51-6e6328f16071  ...     None     SW
+4     110103.SW  0caf448e-484a-4827-bd88-9189f2c90e8f  ...     None     SW
+
+[5 rows x 7 columns]
+   order_book_id                          permanent_id  ... exchange source
+0        10.GICS  20f614a4-b61f-4920-a461-a10e8b6054dd  ...     None   GICS
+1      1010.GICS  ce59daa5-5a9a-459a-ad40-127337832d14  ...     None   GICS
+2    101010.GICS  04ddbeae-5da5-4ea5-835b-4a303ee8e351  ...     None   GICS
+3  10101010.GICS  75886a1d-5fc0-400d-96e9-a55d6ecf48c8  ...     None   GICS
+4  10101020.GICS  4024c977-2b1c-4827-8cb6-23fb2393fa07  ...     None   GICS
+
+[5 rows x 7 columns]

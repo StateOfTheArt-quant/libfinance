@@ -1,3 +1,7 @@
-[Instrument(order_book_id='AAPL.US', symbol='Apple Inc.', type='EQTY', market='us', ...),
- Instrument(order_book_id='000001.XSHE', symbol='平安银行', type='CS', market='cn', ...),
- Instrument(order_book_id='000300.XSHG', symbol='沪深300', type='INDX', market='cn', ...)]
+000001.XSHE stock CN XSHE 平安银行
+000300.XSHG index CN CSI 沪深300
+480000.SW industry CN SW 银行
+300008.THS theme CN THS 新能源汽车
+AAPL.US stock US XNAS Apple Inc. - Common Stock
+SPX.US index US SPDJI S&P 500
+45.GICS industry US GICS Information Technology

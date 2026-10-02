@@ -1,0 +1,9 @@
+400 608
+  order_book_id                          permanent_id  ... exchange source
+0       STOK.US  f84b95c2-baf2-5d15-95b3-0fc5c43e1525  ...     XNAS   XNAS
+1        IMG.US  e63f817d-30d1-571f-9b19-e0a412e64cd0  ...     XNAS   XNAS
+2       BCBP.US  8ccfd1c6-3732-53bf-b444-981fbdaf2592  ...     XNAS   XNAS
+3       XMTR.US  0866d336-fbe0-550d-8e88-723ad790cbc9  ...     XNAS   XNAS
+4       MRAM.US  e205e488-62c0-58ff-8bcd-562f0ad7e5bd  ...     XNAS   XNAS
+
+[5 rows x 7 columns]

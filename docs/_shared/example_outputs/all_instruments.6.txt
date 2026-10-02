@@ -1,0 +1,6 @@
+type      source
+index     CNI       110
+          CSI       178
+          SZSE        2
+industry  SW        608
+dtype: int64
