@@ -27,8 +27,7 @@ A complete runnable example
 
     from libfinance.subscribe.quote_api import QuoteApi, QuoteSpi
 
-    INSTRUMENTS = ["600519"]      # note: no .XSHG suffix here
-    EXCHANGE = "XSHG"
+    ORDER_BOOK_IDS = ["600519.XSHG", "000001.XSHE"]   # the codes every libfinance function takes
 
     stop = threading.Event()
     for sig in (signal.SIGINT, signal.SIGTERM):
@@ -53,7 +52,7 @@ A complete runnable example
                 return
             print("[client] login OK")
             # Must be here — reconnects re-fire this, replaying the subscription
-            self.api.subscribe(INSTRUMENTS, EXCHANGE)
+            self.api.subscribe(ORDER_BOOK_IDS)
 
         def on_rsp_subscribe(self, rsp, request_id):
             if rsp.error_id != 0:
@@ -90,17 +89,19 @@ Subscribe inside ``on_rsp_login``
     the logs look normal, and no quote ever arrives again.** This is the hardest
     kind of failure to notice.
 
-Codes carry no suffix
----------------------
+Codes are order_book_ids
+------------------------
 
-``subscribe()`` takes the bare code; the exchange is the second argument:
+``subscribe()`` takes the codes every other libfinance function takes, one or a list, exchanges mixed:
 
 .. code-block:: python
 
-    api.subscribe(["600519"], "XSHG")      # right
-    api.subscribe(["600519.XSHG"], ...)    # wrong
+    api.subscribe(["600519.XSHG", "000001.XSHE"])
+    api.subscribe("600519.XSHG", source="sim")
 
-The ``quote.order_book_id`` you receive in callbacks is the assembled full code.
+Quotes, subscription receipts (``rsp.order_book_id``) and gap notices carry the same code. The
+gateway serves the A-share and Chinese futures exchanges (XSHG, XSHE, XBSE, CCFX, XSGE, XDCE, XZCE,
+XINE); any other suffix raises ``ValueError`` before a request is sent. ``source`` is keyword-only.
 
 Do no heavy work in callbacks
 -----------------------------
@@ -120,9 +121,9 @@ Source selection
 
     *   - Form
         - Behaviour
-    *   - ``api.subscribe(ids, "XSHG")``
+    *   - ``api.subscribe(ids)``
         - The gateway picks a source and fails over automatically when it drops
-    *   - ``api.subscribe(ids, "XSHG", source="sim")``
+    *   - ``api.subscribe(ids, source="sim")``
         - Only that source, no failover; fails explicitly if it is unavailable
 
 A contract has one route on the gateway, so the two **cannot be mixed**;
@@ -197,3 +198,31 @@ A value of ``None`` means no snapshot is available right now (outside trading
 hours, or no live feed on this deployment). Check before dereferencing.
 
 Field meanings are in :doc:`../data/realtime`.
+
+C++
+===
+
+The C++ client has the same ``QuoteApi`` / ``QuoteSpi`` (``#include <libfinance/libfinance.hpp>``): the same
+methods and callbacks, automatic tickets, reconnection and resume, and codes are order_book_ids too.
+
+.. code-block:: cpp
+
+    namespace lf = libfinance;
+
+    struct DemoSpi : lf::QuoteSpi {
+      lf::QuoteApi* api = nullptr;
+      void on_rsp_login(const lf::LoginRsp& rsp, int) override {
+        if (rsp.error_id == 0) api->subscribe({"600519.XSHG", "000001.XSHE"});   // replayed after a reconnect
+      }
+      void on_depth_market_data(const lf::Quote& q, const lf::RecordEnvelope&) override {
+        std::cout << q.order_book_id() << " " << q.last_price << "\n";
+      }
+    };
+
+    lf::QuoteApi api;
+    DemoSpi spi;
+    spi.api = &api;
+    api.register_spi(&spi);
+    api.connect();          // no login needed
+
+Full example: ``example/cpp/12_live_subscription.cpp``.

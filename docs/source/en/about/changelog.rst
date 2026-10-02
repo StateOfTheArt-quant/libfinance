@@ -9,6 +9,18 @@ Unreleased
 
 .. danger::
 
+    **Live subscription takes the unified order_book_id:** ``QuoteApi.subscribe(instruments, exchange_id, source="")``
+    → ``subscribe(order_book_ids, *, source="")`` (``unsubscribe`` likewise).
+
+    - ``api.subscribe(["600519"], "XSHG")`` → ``api.subscribe(["600519.XSHG"])``; exchanges may be mixed.
+    - ``source`` is keyword-only: the old call's second positional argument raises ``TypeError`` instead of being
+      taken silently as a source name.
+    - A code without a suffix, or with one the gateway does not serve, raises ``ValueError`` before any request.
+    - Subscription receipts, trade / order / tick / depth records and gap notices carry ``order_book_id``.
+    - The C++ client gains the same ``libfinance::QuoteApi`` / ``QuoteSpi`` (``libfinance/quote_api.hpp``).
+
+.. danger::
+
     **The industry functions follow the new industry data families:** ``get_industry`` and
     ``get_industry_mapping`` are removed.
 

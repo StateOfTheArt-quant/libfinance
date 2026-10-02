@@ -13,6 +13,8 @@
 #include "libfinance/instrument.hpp"
 #include "libfinance/live_quote.hpp"
 #include "libfinance/price.hpp"
+#include "libfinance/quote_api.hpp"
+#include "libfinance/quote_protocol.hpp"
 #include "libfinance/shares.hpp"
 #include "libfinance/theme.hpp"
 #include "libfinance/types.hpp"

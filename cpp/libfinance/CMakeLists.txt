@@ -23,6 +23,7 @@ target_include_directories(libfinance
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
+find_package(Threads REQUIRED)  # QuoteApi's reader and heartbeat threads
 # PUBLIC: the headers return arrow::Table and nlohmann::json
 target_link_libraries(libfinance
     PUBLIC
@@ -30,6 +31,7 @@ target_link_libraries(libfinance
         Arrow::arrow_shared
     PRIVATE
         LZ4::lz4
+        Threads::Threads
 )
 target_compile_options(libfinance PRIVATE -Wall -Wextra)
 

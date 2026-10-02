@@ -6,7 +6,7 @@ quote_api.py — dynamics 实时行情订阅（纯 Python，XTP 风格，协议 
     class MySpi(QuoteSpi):
         def on_rsp_login(self, rsp, _):
             if rsp.error_id == 0:
-                api.subscribe(["600519"], "XSHG")      # 写在这里：重连后自动重订阅并续传
+                api.subscribe(["600519.XSHG", "000001.XSHE"])   # 写在这里：重连后自动重订阅并续传
         def on_depth_market_data(self, quote, envelope):
             print(quote.order_book_id, quote.last_price)
 
@@ -19,8 +19,9 @@ quote_api.py — dynamics 实时行情订阅（纯 Python，XTP 风格，协议 
 没有登录的调用方按 IP 拿到最小一档的额度（订阅数、市场、连接数、每秒消息数）；已登录的按账号等级。
 也可以 `login(token)` / `login(provider)` 自己提供票据，或 `connect("host:port,host:port")` 指定网关地址。
 
-交易所用 rqdata 风格后缀：XSHG(上交所) / XSHE(深交所)。同代码靠后缀区分，
-如 000001.XSHG 是上证指数、000001.XSHE 是平安银行。
+代码是 libfinance 统一的 order_book_id（``600519.XSHG``），与 get_price、instruments 等函数同一种写法；
+一次订阅可混合交易所。后缀即交易所（rqdata 风格）：XSHG(上交所) / XSHE(深交所) / XBSE(北交所) 及期货交易所，
+如 000001.XSHG 是上证指数、000001.XSHE 是平安银行。行情、回执与缺口通知都带 ``order_book_id``。
 
 断线自愈（7×24）：连接断开后自动重连（多个网关地址时立即切到下一个），自动重新登录，并按 seq
 **续传**断线期间的记录（不重不漏）。把订阅写在 on_rsp_login 里即可在重连后自动重放。
@@ -43,7 +44,7 @@ from libfinance.subscribe.md_protocol import (
     MAGIC, VERSION, HEADER_SIZE, MAX_BODY_LEN, HEARTBEAT_INTERVAL, HEARTBEAT_TIMEOUT, MAX_TOKEN_BYTES,
     MsgType, RecordTag, ErrorCode, SessionCloseReason,
     MarketType, SubscribeInstrumentType, SubscribeDataType,
-    unpack_header, make_frame, make_heartbeat, instrument_hash,
+    unpack_header, make_frame, make_heartbeat, instrument_hash, split_order_book_id, _Coded,
     pack_login_req, pack_reauth_req, pack_sub_req, pack_sub_all_req, pack_resume_positions,
     unpack_login_rsp, unpack_sub_rsp, unpack_sub_all_rsp, unpack_source_dir_list,
     unpack_stream_status, unpack_session_closed, iter_batch, RECORD_UNPACKERS,
@@ -55,7 +56,7 @@ TokenProvider = Callable[[], str]
 
 
 @dataclass
-class SequenceGap:
+class SequenceGap(_Coded):
     """SDK 检测到的缺口：received_inst_seq - expected_inst_seq 条记录未送达。"""
     stream_id: int
     tag: int
@@ -100,6 +101,14 @@ def libfinance_ticket() -> dict:
     """向 libfinance-service 取一张行情票据（不登录按 IP 额度）。返回 {token, expires_at, grant, gateways}。"""
     from libfinance.client import get_client
     return get_client().call("issue_quote_ticket", {})
+
+
+def _split(order_book_ids: Union[str, List[str]]) -> List[Tuple[str, str]]:
+    """一个或多个 order_book_id -> [(exchange_id, instrument_id)]；全部合法才返回，不发半截订阅。"""
+    codes = [order_book_ids] if isinstance(order_book_ids, str) else list(order_book_ids)
+    if not codes:
+        raise ValueError("order_book_ids: at least one order book id expected")
+    return [split_order_book_id(code) for code in dict.fromkeys(codes)]
 
 
 def _parse_addresses(addresses: str) -> List[Tuple[str, int]]:
@@ -198,19 +207,21 @@ class QuoteApi:
         return self._send_login()
 
     # ── 逐合约订阅 ────────────────────────────────────────────────
+    # order_book_ids：一个或多个统一代码（600519.XSHG），可混合交易所；每只一条回执（on_rsp_subscribe）。
     # source 为空 = 无源订阅（网关按健康+优先级选源，源掉线自动灾备切换）；
     # source 非空 = 定向订阅（只推该源数据，不自动切源）。
-    def subscribe(self, instruments: List[str], exchange_id: str, source: str = "") -> int:
+    def subscribe(self, order_book_ids: Union[str, List[str]], *, source: str = "") -> int:
+        """订阅；返回最后一条请求的序号（0 = 断线间隙，重连后在 on_rsp_login 里重放）。"""
         last = 0
-        for inst in instruments:
-            last = self._send(MsgType.REQ_SUBSCRIBE, pack_sub_req(exchange_id, inst, source))
+        for exchange_id, code in _split(order_book_ids):
+            last = self._send(MsgType.REQ_SUBSCRIBE, pack_sub_req(exchange_id, code, source))
         return last
 
-    def unsubscribe(self, instruments: List[str], exchange_id: str, source: str = "") -> int:
+    def unsubscribe(self, order_book_ids: Union[str, List[str]], *, source: str = "") -> int:
         last = 0
-        for inst in instruments:
-            self._forget_baseline(instrument_hash(exchange_id, inst))
-            last = self._send(MsgType.REQ_UNSUBSCRIBE, pack_sub_req(exchange_id, inst, source))
+        for exchange_id, code in _split(order_book_ids):
+            self._forget_baseline(instrument_hash(exchange_id, code))
+            last = self._send(MsgType.REQ_UNSUBSCRIBE, pack_sub_req(exchange_id, code, source))
         return last
 
     # ── 整市场订阅 ────────────────────────────────────────────────
