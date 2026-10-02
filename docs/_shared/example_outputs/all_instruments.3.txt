@@ -1,4 +1,19 @@
-  order_book_id symbol  type market  ...
-0   000001.XSHG   上证指数  INDX     cn  ...
-1   000300.XSHG   沪深300  INDX     cn  ...
-...
+  order_book_id                          permanent_id  ... exchange source
+0   000987.XSHG  0156aa19-c322-5d4e-8052-375ad6fb6884  ...     None    CSI
+1   000836.XSHG  0322f1a8-f8f2-59e4-a410-f9e3de69e850  ...     None    CSI
+2   000977.XSHG  0461fbb0-46f7-5657-bfc3-dc8c560f8db3  ...     None    CSI
+3   000834.XSHG  047fd2db-d36f-5609-a354-8c76e1609200  ...     None    CSI
+4   399966.XSHE  04ecc769-e081-5066-9c1e-7d4dbf8caed8  ...     None    CSI
+
+[5 rows x 7 columns]
+  order_book_id                          permanent_id  ... exchange        source
+0        RUT.US  234dc71c-d531-52e6-9eb2-f00abfe44ba1  ...     None  FTSE_RUSSELL
+1        RUI.US  3f67ec89-cbc6-59e8-8cd2-d958e6936691  ...     None  FTSE_RUSSELL
+2        NDX.US  42f296d8-84ed-5702-8434-009ad0249300  ...     None        NASDAQ
+3        MID.US  5e22055e-a6a5-55e9-9a34-4f903eae31ac  ...     None         SPDJI
+4        SPX.US  7ea68c4b-80b0-5edf-a3c5-65a41972418e  ...     None         SPDJI
+5        RUA.US  82aaca4f-0144-5469-be8e-33e6bb73ace6  ...     None  FTSE_RUSSELL
+6       DJIA.US  8cd333cd-d82a-5f63-ba39-a346bc8d8f91  ...     None         SPDJI
+7        SML.US  bd546e91-aba9-52d6-a089-4d7257d3c167  ...     None         SPDJI
+
+[8 rows x 7 columns]

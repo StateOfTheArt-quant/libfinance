@@ -6,7 +6,7 @@
 | # | 数据族 | Python | C++ | 函数 |
 | --- | --- | --- | --- | --- |
 | 01 | 交易日历 | [01_calendar.py](python/01_calendar.py) | [01_calendar.cpp](cpp/01_calendar.cpp) | `get_trading_dates`、`get_previous_trading_date`、`get_calendar_coverage`… |
-| 02 | 证券目录 | [02_instrument.py](python/02_instrument.py) | [02_instrument.cpp](cpp/02_instrument.cpp) | `all_instruments`、`instruments` |
+| 02 | 证券目录 | [02_instrument.py](python/02_instrument.py) | [02_instrument.cpp](cpp/02_instrument.cpp) | `all_instruments`、`instruments`：股票、指数、行业、主题分类型展示 |
 | 03 | 日线 | [03_daybar.py](python/03_daybar.py) | [03_daybar.cpp](cpp/03_daybar.cpp) | `get_price`、`get_price_coverage` |
 | 04 | 复权因子 | [04_exfactor.py](python/04_exfactor.py) | [04_exfactor.cpp](cpp/04_exfactor.cpp) | `get_ex_factor` |
 | 05 | 公司行为 | [05_corporate_actions.py](python/05_corporate_actions.py) | [05_corporate_actions.cpp](cpp/05_corporate_actions.cpp) | `get_dividends`、`get_splits`、`get_allotments`、`get_spinoffs` |

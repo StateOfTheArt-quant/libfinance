@@ -1,2 +1,4 @@
-[Instrument(order_book_id='000001.XSHE', symbol='平安银行', type='CS', market='cn', ...),
- Instrument(order_book_id='000300.XSHG', symbol='沪深300', type='INDX', market='cn', ...)]
+000001.XSHE stock 平安银行
+000300.XSHG index 沪深300
+480000.SW industry 银行
+SPX.US index S&P 500

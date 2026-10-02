@@ -1,4 +1,9 @@
-  order_book_id  symbol    type market  ...
-0   000001.XSHE  平安银行     CS     cn  ...
-1   600000.XSHG  浦发银行     CS     cn  ...
-...
+type      market
+index     CN        1004
+          US           8
+industry  CN         608
+          US        2386
+stock     CN        5572
+          US        5395
+theme     CN         375
+dtype: int64
