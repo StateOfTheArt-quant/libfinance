@@ -88,15 +88,16 @@ Subscriptions
         Optional. Supply your own ticket: a string, or a function returning one
         (called on first login, on every reconnect and before expiry).
 
-    .. py:method:: subscribe(instruments, exchange_id, source="")
+    .. py:method:: subscribe(order_book_ids, *, source="")
 
-        Subscribe to contracts. ``instruments`` carry **no suffix**; the exchange
-        is given separately. An empty ``source`` lets the gateway pick and fail
-        over; a named source disables failover.
+        Subscribe to securities by order_book_id (``"600519.XSHG"``, one or a list; exchanges may be
+        mixed). Every code is checked before anything is sent (``ValueError``). An empty ``source``
+        lets the gateway pick and fail over; a named source disables failover. One
+        ``on_rsp_subscribe`` per code, carrying its ``order_book_id``.
 
         Call this inside ``on_rsp_login`` so it is replayed after a reconnect.
 
-    .. py:method:: unsubscribe(instruments, exchange_id, source="")
+    .. py:method:: unsubscribe(order_book_ids, *, source="")
 
         Cancel a subscription.
 

@@ -37,7 +37,7 @@ def wait(pred, timeout=10.0):
 
 
 class Recorder(QuoteSpi):
-    def __init__(self, api, instruments=("600000",)):
+    def __init__(self, api, instruments=("600000.XSHG",)):
         self.api = api
         self.instruments = list(instruments)
         self.logins, self.subs, self.quotes, self.gaps = [], [], [], []
@@ -46,7 +46,7 @@ class Recorder(QuoteSpi):
     def on_rsp_login(self, rsp, _):
         self.logins.append(rsp)
         if rsp.error_id == 0 and self.instruments:
-            self.api.subscribe(self.instruments, "XSHG")
+            self.api.subscribe(self.instruments)
 
     def on_rsp_subscribe(self, rsp, _):
         self.subs.append(rsp)
@@ -62,6 +62,44 @@ class Recorder(QuoteSpi):
 def test_protocol_version_and_hash_are_v3():
     assert mp.VERSION == 3
     assert mp.instrument_hash("XSHG", "600000") != mp.instrument_hash("XSHE", "600000")
+
+
+def _sent(monkeypatch):
+    api, frames = QuoteApi(), []
+    monkeypatch.setattr(api, "_send", lambda msg_type, body=b"": frames.append((msg_type, body)) or len(frames))
+    return api, frames
+
+
+def test_subscribe_takes_order_book_ids_across_exchanges(monkeypatch):
+    api, frames = _sent(monkeypatch)
+    assert api.subscribe(["600519.XSHG", "000001.XSHE", "600519.XSHG"], source="sim") == 2   # duplicates once
+    assert frames == [(mp.MsgType.REQ_SUBSCRIBE, mp.pack_sub_req("XSHG", "600519", "sim")),
+                      (mp.MsgType.REQ_SUBSCRIBE, mp.pack_sub_req("XSHE", "000001", "sim"))]
+    api.unsubscribe("000001.XSHE")
+    assert frames[-1] == (mp.MsgType.REQ_UNSUBSCRIBE, mp.pack_sub_req("XSHE", "000001"))
+
+
+def test_a_bad_code_sends_nothing(monkeypatch):
+    api, frames = _sent(monkeypatch)
+    with pytest.raises(ValueError, match="not <code>.<exchange>"):
+        api.subscribe(["600519.XSHG", "600000"])
+    with pytest.raises(ValueError, match="serves"):
+        api.subscribe("AAPL.US")
+    with pytest.raises(ValueError, match="at least one"):
+        api.subscribe([])
+    with pytest.raises(TypeError):
+        api.subscribe(["600519"], "XSHG")          # the old (codes, exchange) form: source is keyword-only
+    assert frames == []
+
+
+def test_records_and_receipts_carry_the_order_book_id():
+    rsp = mp.unpack_sub_rsp(mp.struct.pack(mp.SUB_RSP_FMT, b"sim", b"XSHE", b"000001", 0, b"", 1, 10))
+    assert rsp.order_book_id == "000001.XSHE"
+    tick = mp.unpack_tick(mp.struct.pack(mp.TICK_FMT, 1, b"600519", b"XSHG", 1, 1.0, 2.0, 3.0, 4.0))
+    assert tick.order_book_id == "600519.XSHG"
+    gap = qa.SequenceGap(1, mp.RecordTag.QUOTE, "XSHG", "600519", 3, 5)
+    assert gap.order_book_id == "600519.XSHG"
+    assert mp.unpack_sub_all_rsp(mp.struct.pack(mp.SUB_ALL_RSP_FMT, b"", 0, b"")).source == ""
 
 
 @live

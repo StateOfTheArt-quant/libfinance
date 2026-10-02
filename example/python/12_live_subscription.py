@@ -15,7 +15,7 @@
 
 要点：
     订阅写在 on_rsp_login 里 —— 断线自动重连+重登录后会再次触发，订阅随之重放。
-    交易所用 rqdata 风格后缀：XSHG(上交所) / XSHE(深交所)。
+    代码是统一的 order_book_id（600519.XSHG），与 get_price 等函数相同；一次订阅可混合交易所。
     行情帧不带来源，要知道数据来自哪个源看订阅回执的 rsp.source。
     整市场订阅另见 tools/fullmarket_health_check.py。
 """
@@ -26,8 +26,7 @@ import time
 
 from libfinance.subscribe.quote_api import QuoteApi, QuoteSpi
 
-INSTRUMENTS = ["600519"]      # 贵州茅台
-EXCHANGE = "XSHG"             # 上交所
+ORDER_BOOK_IDS = ["600519.XSHG", "000001.XSHE"]   # 贵州茅台、平安银行
 
 stop = threading.Event()
 for _sig in (signal.SIGINT, signal.SIGTERM):
@@ -70,12 +69,12 @@ class DemoSpi(QuoteSpi):
             print("[client] 暂无可用于自动路由的健康源，不订阅")
             return
         tag = f"定向 {self.source}" if self.source else "无源(网关自动选源)"
-        print(f"[client] 订阅 {EXCHANGE}.{','.join(INSTRUMENTS)}  方式={tag}")
-        self.api.subscribe(INSTRUMENTS, EXCHANGE, source=self.source)
+        print(f"[client] 订阅 {','.join(ORDER_BOOK_IDS)}  方式={tag}")
+        self.api.subscribe(ORDER_BOOK_IDS, source=self.source)
 
     def on_rsp_subscribe(self, rsp, _):
         if rsp.error_id == 0:
-            print(f"[client] subscribed {rsp.exchange_id}.{rsp.instrument_id} "
+            print(f"[client] subscribed {rsp.order_book_id} "
                   f"← 供数源 '{rsp.source}'  ({rsp.current_subs}/{rsp.max_subs})")
         elif rsp.error_id == 6:
             print(f"[client] 订阅数达到上限（不登录按 IP 额度，登录后按账号等级）: {rsp.error_msg}")

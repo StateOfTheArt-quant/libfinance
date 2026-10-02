@@ -68,9 +68,10 @@ QuoteApi / QuoteSpi — 持续订阅
 
 ``connect()`` 即可：不必登录，SDK 自动向服务取行情票据（不登录按 IP 额度）、到期前自动续期。
 登录成功（``on_rsp_login``）后发起订阅，在 ``on_depth_market_data(quote, envelope)`` 中接收报价。
-``subscribe(["600519"], "XSHG")`` 将代码与交易所分开传递；
+``subscribe(["600519.XSHG", "000001.XSHE"])`` 传统一的 order_book_id，可混合交易所；
 省略 ``source`` 自动选源，指定 ``source`` 则定向订阅。
-完整示例包含登录回调、行情源发现和退出清理，见 :doc:`../howto/subscribe`\ 。
+完整示例包含登录回调、行情源发现和退出清理，见 :doc:`../howto/subscribe`\ ；C++ 客户端有同样的
+``libfinance::QuoteApi`` / ``QuoteSpi``\ （\ ``example/cpp/12_live_subscription.cpp``\ ）。
 
 .. list-table::
     :header-rows: 1

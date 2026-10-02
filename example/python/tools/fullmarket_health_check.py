@@ -61,7 +61,7 @@ class HealthSpi(QuoteSpi):
 
     def on_depth_market_data(self, q, envelope):
         now = time.time()
-        key = f"{q.exchange_id}.{q.instrument_id}"
+        key = q.order_book_id
         with self.lock:
             self.total += 1
             if key not in self.first:

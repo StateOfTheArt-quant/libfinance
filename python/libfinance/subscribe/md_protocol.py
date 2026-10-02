@@ -160,6 +160,35 @@ EXCHANGE_OF_MARKET = {
 }
 
 
+#: 网关承接的交易所（order_book_id 后缀）。
+EXCHANGES = frozenset(EXCHANGE_OF_MARKET.values())
+
+
+def split_order_book_id(order_book_id: str) -> Tuple[str, str]:
+    """``600519.XSHG`` -> (``XSHG``, ``600519``)：线上的 (exchange_id, instrument_id)。
+
+    与 libfinance 其余函数同一种代码；后缀必须是网关承接的交易所（EXCHANGES）。"""
+    if not isinstance(order_book_id, str):
+        raise TypeError("order_book_id must be a string, got {!r}".format(order_book_id))
+    code, dot, exchange = order_book_id.rpartition(".")
+    if not dot or not code or not exchange:
+        raise ValueError("{!r} is not <code>.<exchange>, e.g. 600519.XSHG".format(order_book_id))
+    if exchange not in EXCHANGES:
+        raise ValueError("{!r}: the quote gateway serves {} only".format(order_book_id, sorted(EXCHANGES)))
+    if len(code.encode()) >= INSTRUMENT_ID_LEN:
+        raise ValueError("{!r}: the code is longer than the gateway takes".format(order_book_id))
+    return exchange, code
+
+
+class _Coded:
+    """行情记录、回执与缺口通知共有的 order_book_id（由 instrument_id 与 exchange_id 拼成）。"""
+
+    @property
+    def order_book_id(self) -> str:
+        """rqdata 风格标识，如 600519.XSHG。"""
+        return "{}.{}".format(self.instrument_id, self.exchange_id) if self.instrument_id else ""
+
+
 def instrument_hash(exchange_id: str, instrument_id: str) -> int:
     """与服务端 instrument_hash 一致（FNV-1a 64，交易所与代码之间以 0x1f 分隔）= RecordEnvelope.instrument_key。"""
     h = 14695981039346656037
@@ -276,7 +305,7 @@ def pack_sub_req(exchange_id: str, instrument_id: str, source: str = "") -> byte
 
 
 @dataclass
-class SubRsp:
+class SubRsp(_Coded):
     source: str          # 回显：无源订阅时是网关实际选中的源
     exchange_id: str
     instrument_id: str
@@ -447,7 +476,7 @@ assert QUOTE_SIZE == 529
 
 
 @dataclass
-class Quote:
+class Quote(_Coded):
     data_time: int
     instrument_id: str
     exchange_id: str
@@ -475,11 +504,6 @@ class Quote:
     bid_volume: List[float] = field(default_factory=list)   # [10]
     ask_volume: List[float] = field(default_factory=list)   # [10]
     trading_phase_code: str = ""
-
-    @property
-    def order_book_id(self) -> str:
-        """rqdata 风格标识，如 600519.XSHG。"""
-        return f"{self.instrument_id}.{self.exchange_id}"
 
 
 def unpack_quote(data: bytes) -> Quote:
@@ -527,7 +551,7 @@ assert struct.calcsize(DEPTH_FMT) == 74
 
 
 @dataclass
-class Entrust:
+class Entrust(_Coded):
     data_time: int
     instrument_id: str
     exchange_id: str
@@ -543,7 +567,7 @@ class Entrust:
 
 
 @dataclass
-class Transaction:
+class Transaction(_Coded):
     data_time: int
     instrument_id: str
     exchange_id: str
@@ -560,7 +584,7 @@ class Transaction:
 
 
 @dataclass
-class Tick:
+class Tick(_Coded):
     data_time: int
     instrument_id: str
     exchange_id: str
@@ -572,7 +596,7 @@ class Tick:
 
 
 @dataclass
-class Depth:
+class Depth(_Coded):
     data_time: int
     instrument_id: str
     exchange_id: str

@@ -11,3 +11,5 @@ endfunction()
 
 libfinance_test(test_types test_types.cpp)
 libfinance_test(test_tables test_tables.cpp)
+libfinance_test(test_quote_protocol test_quote_protocol.cpp)
+libfinance_test(test_quote_api test_quote_api.cpp)

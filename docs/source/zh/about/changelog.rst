@@ -9,6 +9,17 @@
 
 ..  danger::
 
+    **实时订阅按统一的 order_book_id 订阅：**\ ``QuoteApi.subscribe(instruments, exchange_id, source="")`` →
+    ``subscribe(order_book_ids, *, source="")``\ （\ ``unsubscribe`` 同）。
+
+    - ``api.subscribe(["600519"], "XSHG")`` → ``api.subscribe(["600519.XSHG"])``\ ；一次可混合交易所。
+    - ``source`` 只能按关键字传：旧写法第二个位置参数会报 ``TypeError``\ ，而不是被当成源名静默订错。
+    - 后缀不是网关承接的交易所、或没有后缀的代码，在发出任何请求前报 ``ValueError``\ 。
+    - 订阅回执、逐笔成交 / 委托 / 盘口 / 深度记录与缺口通知都有 ``order_book_id``\ 。
+    - C++ 客户端新增同样的 ``libfinance::QuoteApi`` / ``QuoteSpi``\ （\ ``libfinance/quote_api.hpp``\ ）。
+
+..  danger::
+
     **行业接口按新的行业数据族重写：**\ ``get_industry`` 与 ``get_industry_mapping`` 删除。
 
     - 行业以 ``order_book_id``\ （\ ``801780.SW``\ 、``10.GICS``\ ）命名；``source`` 是分类体系（\ ``SW``\ 、``GICS``\ ……）。

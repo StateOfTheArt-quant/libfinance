@@ -58,7 +58,7 @@
         def on_rsp_login(self, rsp, request_id):
             if rsp.error_id == 0:
                 # 订阅写在这里，不要写在 main 里 —— 见下面的说明
-                api.subscribe(["600519"], "XSHG")
+                api.subscribe(["600519.XSHG", "000001.XSHE"])
 
         def on_depth_market_data(self, quote, envelope):
             print(quote.order_book_id, quote.last_price)
