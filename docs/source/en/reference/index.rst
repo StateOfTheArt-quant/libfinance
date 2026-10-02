@@ -68,8 +68,8 @@ Example dates must fall within the coverage of your service.
           - Purpose
         * - :func:`~libfinance.get_pit_financials_ex`
           - Read quarterly statements and their visible revisions
-        * - :func:`~libfinance.get_factor`
-          - Read derived financial factors
+        * - :func:`~libfinance.get_financial_metrics`
+          - Read derived financial metrics on each trading day
         * - :func:`~libfinance.get_shares`
           - Read historical share capital
 

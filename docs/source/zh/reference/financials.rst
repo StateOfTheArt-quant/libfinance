@@ -16,8 +16,8 @@
       - 解决的问题
     * - :func:`~libfinance.get_pit_financials_ex`
       - 按季度查询财报，限制披露时点并查看修订版本
-    * - :func:`~libfinance.get_factor`
-      - 查询 TTM 等财务衍生因子
+    * - :func:`~libfinance.get_financial_metrics`
+      - 按交易日查询财务衍生指标
 
 get_pit_financials_ex — 按季度查询财报，限制披露时点并查看修订版本
 ------------------------------------------------------------------------------------------
@@ -64,37 +64,9 @@ get_pit_financials_ex — 按季度查询财报，限制披露时点并查看修
 
 :download:`下载完整示例 <../../../../example/python/07_financials.py>`
 
-get_factor — 查询 TTM 等财务衍生因子
+get_financial_metrics — 按交易日查询财务衍生指标
 ------------------------------------------------------
 
-.. autofunction:: get_factor
-
-**示例**
-
-以下按顺序执行，代码后的打印内容为\ **输出示意**\ ：展示返回结构与参数差异，
-并非本次服务实测；数值、编号和事件不作为真实数据使用，省略号表示未展示部分。
-
-.. literalinclude:: ../../../../example/python/07_financials.py
-    :language: python
-    :start-after: # [get_factor.1]
-    :end-before: # [/get_factor.1]
-    :prepend: from libfinance import get_factor
-
-打印结果（示意）：
-
-.. literalinclude:: ../../../_shared/example_outputs/get_factor.1.txt
-    :language: text
-
-.. literalinclude:: ../../../../example/python/07_financials.py
-    :language: python
-    :start-after: # [get_factor.2]
-    :end-before: # [/get_factor.2]
-
-打印结果（示意）：
-
-.. literalinclude:: ../../../_shared/example_outputs/get_factor.2.txt
-    :language: text
-
-结果解读：因子按季度返回。最新因子也可能受后续财报修订影响，所以历史比较要统一 as_of。
+.. autofunction:: get_financial_metrics
 
 :download:`下载完整示例 <../../../../example/python/07_financials.py>`

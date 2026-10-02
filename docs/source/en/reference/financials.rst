@@ -14,8 +14,8 @@ Security-code queries infer the market on the server and accept no market argume
       - Purpose
     * - :func:`~libfinance.get_pit_financials_ex`
       - Read quarterly statements and their visible revisions
-    * - :func:`~libfinance.get_factor`
-      - Read derived financial factors
+    * - :func:`~libfinance.get_financial_metrics`
+      - Read derived financial metrics on each trading day
 
 
 Semantics are covered in :doc:`../data/fundamentals`; ``as_of`` in
@@ -78,47 +78,16 @@ Semantics are covered in :doc:`../data/fundamentals`; ``as_of`` in
 
     :download:`Download the full example <../../../../example/python/07_financials.py>`
 
-.. py:function:: get_factor(order_book_ids, factors, start_quarter, end_quarter, as_of=None)
+.. py:function:: get_financial_metrics(order_book_ids, fields, start_date=None, end_date=None)
 
-    Quarterly derived financial factors.
+    Derived financial metrics (RQData ``get_factor``'s shape), one formula set for CN and US. A
+    trading day's value comes from the latest report visible after that day's close: values jump on
+    announcement days and stay flat in between; one the latest report cannot give is NaN.
 
     :param order_book_ids: One code or a list
-    :param factors: Factor names; the available set comes from the server
-    :param start_quarter: First quarter, like ``"2024q1"``
-    :param end_quarter: Last quarter
-    :param as_of: As for :py:func:`get_pit_financials_ex`
-    :returns: ``DataFrame`` indexed by ``(order_book_id, quarter)``
-
-    US codes are not supported, and the resulting error does not say so clearly —
-    see :doc:`../howto/us_market`.
-
-    **Examples**
-
-    Run these blocks in order. Printed results below are **illustrative**, not captured
-    from a live service. Values, identifiers and events are not market facts; ellipses
-    mark omitted content.
-
-    .. literalinclude:: ../../../../example/python/07_financials.py
-        :language: python
-        :start-after: # [get_factor.1]
-        :end-before: # [/get_factor.1]
-        :prepend: from libfinance import get_factor
-
-    Illustrative printed result:
-
-    .. literalinclude:: ../../../_shared/example_outputs/get_factor.1.txt
-        :language: text
-
-    .. literalinclude:: ../../../../example/python/07_financials.py
-        :language: python
-        :start-after: # [get_factor.2]
-        :end-before: # [/get_factor.2]
-
-    Illustrative printed result:
-
-    .. literalinclude:: ../../../_shared/example_outputs/get_factor.2.txt
-        :language: text
-
-    Reading the result: Historical factor comparisons need the same as_of cutoff because later restatements can change calculated factors.
+    :param fields: Metric names, e.g. ``roe_lf``, ``revenue_ttm``, ``net_profit_growth_lyr``, ``debt_to_assets_lf``
+    :param start_date: First day; with ``end_date`` omitted as well, the latest trading day
+    :param end_date: Last day
+    :returns: ``DataFrame`` indexed by ``(order_book_id, date)``, one column per metric
 
     :download:`Download the full example <../../../../example/python/07_financials.py>`

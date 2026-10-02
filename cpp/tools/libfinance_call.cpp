@@ -182,10 +182,10 @@ const std::map<std::string, Function>& functions() {
                                                 required_text(a, "start_quarter"), required_text(a, "end_quarter"),
                                                 optional_date(a, "as_of"), text(a, "statements", "latest")));
        }},
-      {"get_factor",
+      {"get_financial_metrics",
        [](const Json& a) {
-         return table(lf::get_factor(codes(a, "order_book_ids"), codes(a, "factors"), required_text(a, "start_quarter"),
-                                     required_text(a, "end_quarter"), optional_date(a, "as_of")));
+         return table(lf::get_financial_metrics(codes(a, "order_book_ids"), codes(a, "fields"),
+                                                optional_date(a, "start_date"), optional_date(a, "end_date")));
        }},
       // index, industry, theme: members and weights
       {"get_index_constituents",

@@ -113,8 +113,8 @@ A 股，分拆事件只出现在美股；美股没有涨跌停，成交额在部
         - 按季度取，带修订历史
     *   - 财务因子
         - CN
-        - :func:`~libfinance.get_factor`
-        - 季度财务衍生因子
+        - :func:`~libfinance.get_financial_metrics`
+        - 按交易日的财务衍生指标
     *   - 行业分类
         - CN
         - :func:`~libfinance.get_instrument_industry`
