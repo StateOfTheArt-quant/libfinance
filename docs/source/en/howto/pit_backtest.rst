@@ -63,7 +63,7 @@ The correct workflow
         day = d.strftime("%Y-%m-%d")
 
         # 1. The universe as of that day
-        pool = get_index_weights(index_code="000300.XSHG", date=day)
+        pool = get_index_weights("000300.XSHG", as_of=day)
         codes = list(pool["order_book_id"])
 
         # 2. The financials visible on that day
@@ -88,13 +88,13 @@ Which data needs ``as_of``
     *   - :func:`~libfinance.get_pit_financials_ex`
         - **Yes**
         - Statements are restated
-    *   - :func:`~libfinance.get_factor`
+    *   - :func:`~libfinance.get_financial_metrics`
         - **Yes**
         - Derived from statements
     *   - :func:`~libfinance.get_dividends` and other corporate actions
         - **Yes**
         - Events are revised and cancelled
-    *   - :func:`~libfinance.get_concept_weights`
+    *   - :func:`~libfinance.get_theme_constituents`
         - **Yes**
         - Membership changes
     *   - :func:`~libfinance.get_price`

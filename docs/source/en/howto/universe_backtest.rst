@@ -19,7 +19,7 @@ Full example
     AS_OF = "2024-03-08"
 
     # 1. Constituents and weights on that day
-    w = get_index_weights(index_code="000300.XSHG", date=AS_OF)
+    w = get_index_weights("000300.XSHG", as_of=AS_OF)
 
     # 2. Shenwan level-1 industry on that day (note as_of=AS_OF, not today)
     ind = get_instrument_industry(list(w["order_book_id"]), source="SW", level=1, as_of=AS_OF)
@@ -76,9 +76,9 @@ Three lenses
         - :func:`~libfinance.get_industry_constituents`
         - Pass ``as_of``; name the industry by a code such as ``480000.SW``
     *   - Concept sectors
-        - :func:`~libfinance.get_concept_weights`
-        - Look ``concept_id`` up via :func:`~libfinance.get_concept_meta`;
-          hard-coded ids go stale
+        - :func:`~libfinance.get_theme_constituents`
+        - Pass ``as_of``; name the theme by a code such as ``300008.THS`` (list them with
+          ``all_instruments(type="theme")``)
 
 To take an industry across the whole market rather than within an index:
 
@@ -127,6 +127,6 @@ To rebuild monthly, fetch again on each rebalancing date:
     universe = {}
     for d in rebalance:
         day = d.strftime("%Y-%m-%d")
-        universe[day] = get_index_weights(index_code="000300.XSHG", date=day)
+        universe[day] = get_index_weights("000300.XSHG", as_of=day)
 
 Look-ahead bias in financial data is a separate topic — see :doc:`pit_backtest`.

@@ -19,7 +19,7 @@ and update cadence:
         - :func:`~libfinance.get_industry_constituents` / :func:`~libfinance.get_instrument_industry`
         - Full market coverage, several levels and classifications
     *   - Concept sectors
-        - :func:`~libfinance.get_concept_weights`
+        - :func:`~libfinance.get_theme_constituents`, :func:`~libfinance.get_theme_weights`
         - Theme-driven, numerous, fuzzy boundaries
 
 Index constituents and weights
@@ -28,20 +28,21 @@ Index constituents and weights
 .. code-block:: python
 
     >>> from libfinance import get_index_weights
-    >>> get_index_weights(index_code="000300.XSHG", date="2024-03-08").head()
-        index_code       date order_book_id   weight
-    0  000300.XSHG 2024-03-08   000001.XSHE  0.00576
-    1  000300.XSHG 2024-03-08   000002.XSHE  0.00383
-    2  000300.XSHG 2024-03-08   000063.XSHE  0.00534
-    3  000300.XSHG 2024-03-08   000069.XSHE  0.00085
-    4  000300.XSHG 2024-03-08   000100.XSHE  0.00477
+    >>> w = get_index_weights("000300.XSHG", as_of="2024-02-29")
+    >>> w[["order_book_id", "weight", "source", "basis", "date"]].head()
+      order_book_id   weight source   basis       date
+    0   000001.XSHE  0.00576    CSI  origin 2024-02-29
+    1   000002.XSHE  0.00383    CSI  origin 2024-02-29
+    2   000063.XSHE  0.00534    CSI  origin 2024-02-29
+    3   000069.XSHE  0.00085    CSI  origin 2024-02-29
+    4   000100.XSHE  0.00477    CSI  origin 2024-02-29
 
 Weights are normalised:
 
 .. code-block:: python
 
-    >>> get_index_weights(index_code="000300.XSHG", date="2024-03-08")["weight"].sum()
-    0.9999999996000001
+    >>> w["weight"].sum()
+    1.0
 
 .. note::
 
@@ -55,11 +56,14 @@ Weights are normalised:
     Using adjusted returns is essential — with a bonus issue or split inside the
     window, raw price changes would misread a share-count change as a return.
 
-Omit ``date`` for the latest snapshot. The argument is ``index_code`` (not
-``index_id``).
+Omit ``as_of`` for the latest snapshot. The index is named by its ``order_book_id``
+(``000300.XSHG``, ``SPX.US``). Each row says where its weight came from: ``basis`` is
+``origin`` (published by a data source) or ``reconstructed`` (rebuilt by the index
+methodology), ``date`` is the snapshot the weight belongs to (``as_of`` when it was
+drifted, with ``DRIFTED`` in ``quality_flags``).
 
-The result has four columns and carries no index or constituent names — names are
-security master data; fetch them with :func:`~libfinance.instruments` if needed.
+The result carries no index or constituent names — names are security master data;
+fetch them with :func:`~libfinance.instruments` if needed.
 
 Industry classification
 =======================
