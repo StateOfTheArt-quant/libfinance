@@ -10,7 +10,9 @@ int main() {
     // 1. 单只证券也使用列表。
     show(lf::get_last_quotes({"600000.XSHG"}));
     // 2. 一次查询多只证券，减少逐只请求。
-    for (const auto& [code, quote] : lf::get_last_quotes({"600000.XSHG", "000001.XSHE"}).items()) {
+    // keep the answer in a variable: items() of a temporary dangles once the loop starts
+    const lf::Json quotes = lf::get_last_quotes({"600000.XSHG", "000001.XSHE"});
+    for (const auto& [code, quote] : quotes.items()) {
       if (quote.is_null()) std::cout << code << " 暂无快照\n";
       else std::cout << code << " " << quote.value("last_price", lf::Json()) << " " << quote.value("volume", lf::Json()) << "\n";
     }
