@@ -106,16 +106,6 @@ cmake --build build -j
 build/my_strategy
 ```
 
-客户端在第一次调用时连接服务：地址取环境变量 `LIBFINANCE_HOST` 与 `LIBFINANCE_PORT`，都没设时连
-生产服务 `libfinance.tech:8080`。自建服务时：
-
-```bash
-LIBFINANCE_HOST=<服务地址> LIBFINANCE_PORT=8080 build/my_strategy
-```
-
-用 conda 的 Arrow 在本机构建时，运行前加 `LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6`（conda 的
-libstdc++ 缺 `GLIBCXX_3.4.30`）。
-
 ### 安装后用 find_package
 
 不想在每个项目里重新编译时，装一次 libfinance，之后按包查找：
@@ -158,7 +148,8 @@ cmake -S cpp -B cpp/build -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DENABLE_UNITTEST=ON
 cmake --build cpp/build -j && (cd cpp/build && ctest)
 ```
 
-nlohmann/json、googletest 由构建取到 `third_party/`。
+nlohmann/json、googletest 由构建取到 `third_party/`。用 conda 的 Arrow 在本机构建时，运行前加
+`LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6`（conda 的 libstdc++ 缺 `GLIBCXX_3.4.30`）。
 
 ## 布局
 
