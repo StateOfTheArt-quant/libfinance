@@ -46,6 +46,15 @@ cd libfinance/python
 pip install -e .
 ```
 
+The C++ client (the same function names and arguments as the Python one; see [cpp/readme_en.md](cpp/readme_en.md),
+including how to use it from your project with CMake FetchContent):
+
+```cpp
+#include <libfinance/libfinance.hpp>
+
+auto bars = libfinance::get_price({"000001.XSHE", "600000.XSHG"}, "2024-03-01", "2024-03-06");
+```
+
 ## Quick start
 
 Configure your connection using the [installation guide](https://libfinance.readthedocs.io/en/latest/getting_started/installation.html), then query:
