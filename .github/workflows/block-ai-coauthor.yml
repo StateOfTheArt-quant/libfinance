@@ -1,0 +1,27 @@
+name: Block AI Co-Author
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  check-trailer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 必须设为 0 才能获取完整提交历史
+
+      - name: Check for AI co-author trailers
+        run: |
+          # 获取本 PR 相对于 base 分支的所有 commit message
+          COMMITS=$(git log origin/${{ github.base_ref }}..HEAD --pretty=format:%B)
+
+          # 署名为 Claude 或 Codex 的 Co-Authored-By trailer（不区分大小写）
+          FOUND=$(echo "$COMMITS" | grep -iE '^[[:space:]]*Co-Authored-By:.*(claude|codex)' || true)
+          if [ -n "$FOUND" ]; then
+            echo "$FOUND" | while read -r line; do echo "::error::PR 中包含 AI 署名：$line"; done
+            echo "::error::PR 的提交里不能带 Claude / Codex 的 Co-Authored-By，禁止合并。"
+            exit 1
+          fi
+          echo "未发现 Claude / Codex trailer，检查通过。"
