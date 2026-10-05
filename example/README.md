@@ -23,7 +23,7 @@
 同一编号的两个文件逐段对应：段落以 `[函数名]` / `[/函数名]` 标记（文档的 `literalinclude` 引用 Python 的这些片段），
 改一边时同步另一边。市场由代码本身确定（`600000.XSHG`、`AAPL.US`），中美混查不需要 `market` 参数。
 
-运行前应已配置服务连接（`LIBFINANCE_HOST` / `LIBFINANCE_PORT`）；历史日期需落在服务的数据覆盖内。
+历史日期需落在服务的数据覆盖内。
 
 ```bash
 python example/python/03_daybar.py
