@@ -1,0 +1,218 @@
+================
+接收实时行情
+================
+
+**目标**\ ：连上行情网关，订阅几只股票，持续接收推送。
+
+订阅是回调式的：你写一个回调类，行情到了会调用你的方法。
+
+..  note::
+
+    订阅走的是\ **行情网关**\ ，与取历史数据的服务不是同一个。\ **不需要登录、也不需要自己配网关地址**\ ：
+    ``connect()`` 会向 libfinance 服务取一张行情票据，网关地址随票据一起给出；票据到期前 SDK 自动续期。
+    没登录时按 IP 给基础额度，登录后按账号等级。
+
+完整可运行示例
+==============
+
+..  code-block:: python
+
+    import signal
+    import threading
+
+    from libfinance.subscribe.quote_api import QuoteApi, QuoteSpi
+
+    ORDER_BOOK_IDS = ["600519.XSHG", "000001.XSHE"]   # 与 get_price 等函数同一种代码，可混合交易所
+
+    stop = threading.Event()
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        signal.signal(sig, lambda *_: stop.set())
+
+
+    class DemoSpi(QuoteSpi):
+        def __init__(self, api):
+            self.api = api
+            self.count = 0
+
+        def on_connected(self):
+            print("[client] connected")
+
+        def on_disconnected(self, reason):
+            print("[client] disconnected reason=%s，等待自动重连…" % reason)
+
+        def on_rsp_login(self, rsp, request_id):
+            if rsp.error_id != 0:
+                print("[client] login FAIL:", rsp.error_msg)
+                stop.set()
+                return
+            print("[client] login OK")
+            # 订阅必须写在这里 —— 断线重连后会再次触发，订阅随之重放
+            self.api.subscribe(ORDER_BOOK_IDS)
+
+        def on_rsp_subscribe(self, rsp, request_id):
+            if rsp.error_id != 0:
+                print("[client] subscribe FAIL:", rsp.error_msg)
+            else:
+                print("[client] subscribed, source=%s" % rsp.source)
+
+        def on_depth_market_data(self, quote, envelope):
+            self.count += 1
+            print("%s  last=%.2f  volume=%s" % (
+                quote.order_book_id, quote.last_price, quote.volume))
+
+
+    api = QuoteApi()
+    api.register_spi(DemoSpi(api))
+    api.connect()     # 不必 login；也可 api.connect("host:port") 指定网关
+
+    stop.wait()
+    api.disconnect()
+
+三个必须知道的点
+================
+
+订阅写在 ``on_rsp_login`` 里
+----------------------------
+
+..  important::
+
+    这不是风格问题。网关断线后客户端会自动重连并重新登录，登录成功再次触发
+    ``on_rsp_login``——订阅写在这里才会被重放。
+
+    写在主流程里的话，断线重连之后订阅就没了：**程序还在跑，日志也正常，就是再也收不到
+    行情**。这是最难发现的一类故障。
+
+代码是 order_book_id
+--------------------
+
+``subscribe()`` 接受与 libfinance 其余函数相同的代码，一只或一组，可混合交易所：
+
+..  code-block:: python
+
+    api.subscribe(["600519.XSHG", "000001.XSHE"])
+    api.subscribe("600519.XSHG", source="sim")
+
+行情、订阅回执（\ ``rsp.order_book_id``\ ）与缺口通知都带同样的代码。网关承接的是 A 股与国内期货交易所
+（XSHG、XSHE、XBSE、CCFX、XSGE、XDCE、XZCE、XINE），其他后缀在发出任何请求之前就报 ``ValueError``\ 。
+``source`` 只能按关键字传。
+
+回调里不要做重活
+----------------
+
+..  warning::
+
+    回调在后台接收线程里执行。在回调里落库、画图、跑模型会阻塞整条行情流。
+    把数据扔进 ``queue.Queue``\ ，交给另一个线程处理。
+
+选源
+====
+
+..  list-table::
+    :header-rows: 1
+    :widths: 30 70
+
+    *   - 写法
+        - 行为
+    *   - ``api.subscribe(ids)``
+        - 网关自动选源，源掉线自动切到备用源
+    *   - ``api.subscribe(ids, source="sim")``
+        - 只收这个源，不自动切换；该源不可用时明确失败
+
+同一个合约在网关侧只有一条路由，\ **不能两种混用**\ ，冲突请求会在 ``on_rsp_subscribe``
+里失败（\ ``error_id=5``\ ）。
+
+想知道有哪些源：
+
+..  code-block:: python
+
+    def on_rsp_query_sources(self, sources, request_id):
+        for s in sources:
+            print(s.source, "健康" if s.health else "掉线",
+                  "整市场" if s.whole_market else "部分")
+
+    api.query_sources()
+
+常见错误码
+==========
+
+..  list-table::
+    :header-rows: 1
+    :widths: 16 84
+
+    *   - ``error_id``
+        - 含义
+    *   - 4
+        - 没有可用的源
+    *   - 5
+        - 路由冲突，或指定的源不可用
+    *   - 6
+        - 订阅数达到上限（不登录按 IP 额度，登录后按账号等级）
+    *   - 7
+        - 该市场不在授权内
+    *   - 8
+        - 没有整市场订阅授权
+    *   - 9
+        - 票据续期后授权收缩，这条订阅被撤销（在 ``on_rsp_unsubscribe`` 里收到）
+    *   - 20 ~ 24
+        - 票据无效 / 过期 / 密钥未知 / 已吊销 / 连接数超限。SDK 会自动换票重试 21、22，其余不再自动重试
+
+整市场订阅
+==========
+
+一次订下"市场 × 品种 × 数据类型"命中的全部合约：
+
+..  code-block:: python
+
+    from libfinance.subscribe.md_protocol import (
+        MarketType, SubscribeInstrumentType, SubscribeDataType)
+
+    api.subscribe_all(market=MarketType.SSE,
+                      instrument_type=SubscribeInstrumentType.Stock,
+                      data_type=SubscribeDataType.Snapshot)
+
+任一维度传 ``All`` 表示不限。这需要额度里包含整市场订阅（不登录的基础额度不含），否则返回 ``error_id=8``\ 。
+
+只想问一次当前价
+================
+
+不需要持续推送的话，用快照查询更简单：
+
+..  code-block:: python
+
+    >>> from libfinance import get_last_quotes
+    >>> get_last_quotes(["600000.XSHG"])
+    {'600000.XSHG': None}
+
+值为 ``None`` 表示当前没有可用快照（非交易时段，或这个部署没接实时源），
+用之前先判空。
+
+字段说明见 :doc:`../data/realtime`\ 。
+
+C++
+===
+
+C++ 客户端有同样的 ``QuoteApi`` / ``QuoteSpi``\ （\ ``#include <libfinance/libfinance.hpp>``\ ）：方法、回调、
+自动取票据、断线重连与续传都相同，代码同样是 order_book_id。
+
+..  code-block:: cpp
+
+    namespace lf = libfinance;
+
+    struct DemoSpi : lf::QuoteSpi {
+      lf::QuoteApi* api = nullptr;
+      void on_rsp_login(const lf::LoginRsp& rsp, int) override {
+        if (rsp.error_id == 0) api->subscribe({"600519.XSHG", "000001.XSHE"});   // 重连后重放
+      }
+      void on_depth_market_data(const lf::Quote& q, const lf::RecordEnvelope&) override {
+        std::cout << q.order_book_id() << " " << q.last_price << "\n";
+      }
+    };
+
+    lf::QuoteApi api;
+    DemoSpi spi;
+    spi.api = &api;
+    api.register_spi(&spi);
+    api.connect();          // 不必 login
+
+完整示例：\ ``example/cpp/12_live_subscription.cpp``\ 。
+

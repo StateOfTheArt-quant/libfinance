@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "libfinance"
+# The repository's one version (../VERSION, linked as python/VERSION): the C++ client reads the same file.
+dynamic = ["version"]
+
+dependencies = ["lz4", "msgpack", "pandas", "numpy", "pyarrow", "six", "python-dateutil"]
+description = "libfinance is a modern finance API"
+readme = "README.md"
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
