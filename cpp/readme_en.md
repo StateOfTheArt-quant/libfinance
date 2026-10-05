@@ -110,16 +110,6 @@ cmake --build build -j
 build/my_strategy
 ```
 
-The client connects on its first call, to `LIBFINANCE_HOST` and `LIBFINANCE_PORT` from the environment; with
-neither set it connects to the production service `libfinance.tech:8080`. For your own server:
-
-```bash
-LIBFINANCE_HOST=<server address> LIBFINANCE_PORT=8080 build/my_strategy
-```
-
-When building against conda's Arrow, run with `LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6` (conda's
-libstdc++ lacks `GLIBCXX_3.4.30`).
-
 ### Installing once and using find_package
 
 To avoid recompiling libfinance in every project, install it once and find it as a package:
@@ -162,7 +152,8 @@ cmake -S cpp -B cpp/build -DCMAKE_PREFIX_PATH=$CONDA_PREFIX -DENABLE_UNITTEST=ON
 cmake --build cpp/build -j && (cd cpp/build && ctest)
 ```
 
-The build fetches nlohmann/json and googletest into `third_party/`.
+The build fetches nlohmann/json and googletest into `third_party/`. When building against conda's Arrow, run
+with `LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6` (conda's libstdc++ lacks `GLIBCXX_3.4.30`).
 
 ## Layout
 
