@@ -1,0 +1,42 @@
+# Read the Docs 配置 —— **中文文档**（父项目）
+#
+# 中英文是两棵独立的源码树，而 Read the Docs 要求一个语言一个项目，所以有两份配置：
+#
+#   .readthedocs.yaml                   中文，项目语言设为 zh-cn
+#   docs/source/en/.readthedocs.yaml    英文，项目语言设为 en
+#
+# 中文的语言码是 zh-cn，不是 zh —— 站点 URL 因此是 /zh-cn/latest/。RTD 的
+# projects/constants.py 里只有 ("zh-cn", "Simplified Chinese") 与
+# ("zh-tw", "Traditional Chinese")，纯 zh 已被移除（注释原话："This is an
+# invalid language code"），只在 URL 正则里保留以便历史项目继续可访问。
+# 写外链时别写成 /zh/latest/，那是 404。
+#
+# **文件名必须正好是 `.readthedocs.yaml`**，只能换目录。RTD 的表单校验
+# （projects/validators.py 的 validate_build_config_file）里
+# valid_filenames = [".readthedocs.yaml"]，路径要么等于它、要么以 /.readthedocs.yaml
+# 结尾，其余一律拒绝。所以第二份配置是靠**放在英文树目录下**来区分的，
+# 不能叫 .readthedocs.en.yaml。
+#
+# 英文项目要在它的 Admin → Settings → "Build configuration file" 里把路径填成
+# docs/source/en/.readthedocs.yaml，再到中文项目的 Admin → Translations 里把它挂为
+# 翻译项目；挂上之后 flyout 菜单里就有语言切换。
+#
+# 注意：配置文件里的路径**一律相对于仓库根目录**，与配置文件本身放在哪无关——
+# 所以英文那份里的 sphinx.configuration 同样写 docs/source/en/conf.py。
+version: 2
+
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.12"
+    # KaTeX prerendering runs during the Sphinx build.
+    nodejs: "22"
+
+sphinx:
+  configuration: docs/source/zh/conf.py
+
+python:
+  install:
+    - requirements: docs/requirements.txt
+    - method: pip
+      path: python

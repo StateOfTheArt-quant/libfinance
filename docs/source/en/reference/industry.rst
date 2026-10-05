@@ -1,0 +1,76 @@
+=======================
+Industry classification
+=======================
+
+.. currentmodule:: libfinance
+
+An industry is named by an ``order_book_id`` (``<classification code>.<classification>``, e.g. ``480000.SW``,
+``10.GICS``), with the same rules as a security; ``source`` is the classification (``SW``, ``GICS``, ...) and
+``level`` its depth. All three functions answer with the facts of ``as_of``; a historical universe should
+use one ``as_of`` for industry membership, constituents and weights.
+
+.. list-table::
+    :header-rows: 1
+    :widths: 40 60
+
+    * - Function / class
+      - Purpose
+    * - :func:`~libfinance.get_instrument_industry`
+      - Map securities to their industries at a date
+    * - :func:`~libfinance.get_industry_constituents`
+      - Find the securities in an industry at a date
+    * - :func:`~libfinance.get_industry_weights`
+      - Read an industry's constituent weights, with their methodology
+
+Semantics are covered in :doc:`../data/universe`.
+
+.. py:function:: get_instrument_industry(order_book_ids, source=None, level=None, as_of=None)
+
+    Which industries each security belongs to.
+
+    :param order_book_ids: Security codes (one code is fine); each code names its market
+    :param source: Classification, e.g. ``"SW"`` (Shenwan) or ``"GICS"``; omit for every classification
+    :param level: Depth (Shenwan 1/2/3); omit for every level
+    :param as_of: The facts of that day; omit for the latest confirmed date.
+        **Pass this for historical work** — memberships change.
+    :returns: ``DataFrame`` with ``order_book_id``, ``related_order_book_id`` (the industry code, e.g.
+        ``480000.SW``), ``source``, ``market`` and ``level``
+
+    **Examples**
+
+    .. lf-examples:: get_instrument_industry
+
+    Reading the result: ``related_order_book_id`` is the industry code and can be passed straight to
+    :func:`~libfinance.get_industry_constituents`; the second example omits ``source`` and ``level`` and answers
+    every classification at every level.
+
+.. py:function:: get_industry_constituents(order_book_id, as_of=None)
+
+    Every security in an industry on a day.
+
+    :param order_book_id: Industry code, e.g. ``"480000.SW"`` (Shenwan banks) or ``"10.GICS"``
+    :param as_of: The facts of that day; omit for the latest confirmed date
+    :returns: List of member ``order_book_id``; ``None`` when the industry did not exist that day
+
+    **Examples**
+
+    .. lf-examples:: get_industry_constituents
+
+    Reading the result: a list of member codes; the example prints how many and the first five. Membership changes over time; without ``as_of`` it is the latest confirmed day.
+
+.. py:function:: get_industry_weights(order_book_id, as_of=None)
+
+    The weights of an industry's constituents on a day.
+
+    :param order_book_id: Industry code, e.g. ``"480000.SW"``
+    :param as_of: The facts of that day; omit for the latest confirmed date
+    :returns: ``DataFrame`` with ``order_book_id`` (the member), ``weight``, ``methodology``, ``source``,
+        ``effective_from`` and ``effective_to``. No weights are made up: without a vendor weight and an
+        explicit methodology there is no row.
+
+    **Examples**
+
+    .. lf-examples:: get_industry_weights
+
+    Reading the result: One row per member; ``methodology`` says where the weight comes from.
+

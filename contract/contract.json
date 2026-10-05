@@ -1,0 +1,87 @@
+{
+  "contract": "libfinance",
+  "version": "2.0.0",
+  "notes": [
+    "functions: what users call, the same name, parameters (order and defaults) and meaning in every client language.",
+    "wire: the RPC functions a libfinance server serves; clients call only these. `returns` is how the answer is encoded.",
+    "target: the data family capability (<namespace>.<method>) that serves a wire function; the server gives the function the target's parameters and exposure policy. null: served by the server itself (ping, describe_capabilities, live quotes) or by nothing yet.",
+    "types: str | int | bool | date (an ISO day; clients also accept their language's date types) | T? (optional) | list[T] | str_or_list (one string or a list of them).",
+    "returns: dataframe = a table (wire: {type: arrow, data: <Arrow IPC>}, or {type: pandas, data: <orient=table JSON>} from the Python service); datetime_index = a list of days; raw = JSON."
+  ],
+  "wire": {
+    "ping": {"target": null, "params": [], "returns": "raw", "note": "{version, data_version, ...}; data_version keys the clients' versioned caches"},
+    "describe_capabilities": {"target": null, "params": [], "returns": "raw", "note": "per function: name, api, limits (e.g. clamp_date_window) for the caller's level"},
+
+    "get_trading_calendar": {"target": "calendar.get_trading_calendar", "params": ["market"], "returns": "datetime_index"},
+    "get_calendar_coverage": {"target": "calendar.coverage", "params": ["market"], "returns": "raw", "note": "{history_start, confirmed_through, exchanges}"},
+
+    "all_instruments": {"target": "instrument.all_instruments", "params": ["type", "market", "source", "as_of"], "returns": "dataframe"},
+    "instruments": {"target": "instrument.instruments", "params": ["order_book_ids", "as_of", "last_known"], "returns": "raw", "note": "one code: an instrument dict or null; a list: a list in input order, the codes that name nothing left out"},
+
+    "get_price": {"target": "daybar.get_price", "params": ["order_book_ids", "start_date", "end_date", "frequency", "fields", "skip_suspended", "include_now", "adjust_type", "adjust_orig"], "returns": "dataframe", "note": "columns order_book_id, permanent_id, session_date, fields..."},
+    "daybar.coverage": {"target": "daybar.coverage", "params": ["type"], "returns": "raw", "note": "{type: {market: {venue: {coverage_start, coverage_end, ...}}}}: what get_price_coverage reads"},
+    "exfactor.coverage": {"target": "exfactor.coverage", "params": ["market"], "returns": "raw", "note": "{market, cutoff, ...}: adjusted prices end at the cutoff"},
+    "get_ex_factor": {"target": "exfactor.get_ex_factor", "params": ["order_book_ids", "start_date", "end_date"], "returns": "dataframe", "note": "indexed by ex_date: order_book_id, permanent_id, ex_factor, ex_cum_factor"},
+
+    "get_dividends": {"target": "dividend.get_dividends", "params": ["order_book_ids", "start_date", "end_date", "fields", "as_of"], "returns": "dataframe"},
+    "get_splits": {"target": "split.get_splits", "params": ["order_book_ids", "start_date", "end_date", "fields", "as_of"], "returns": "dataframe"},
+    "get_allotments": {"target": "allotment.get_allotments", "params": ["order_book_ids", "start_date", "end_date", "fields", "as_of"], "returns": "dataframe"},
+    "get_spinoffs": {"target": "spinoff.get_spinoffs", "params": ["order_book_ids", "start_date", "end_date", "fields", "as_of"], "returns": "dataframe"},
+
+    "get_pit_financials_ex": {"target": "financialstatement.get_pit_financials_ex", "params": ["order_book_ids", "fields", "start_quarter", "end_quarter", "as_of", "statements"], "returns": "dataframe", "note": "columns order_book_id, quarter, info_date, then one per field, if_adjusted"},
+    "get_financial_metrics": {"target": "financialmetrics.get_financial_metrics", "params": ["order_book_ids", "fields", "start_date", "end_date"], "returns": "dataframe", "note": "columns order_book_id, date, then one per field: the value on each trading day from the latest report visible that day"},
+
+    "get_index_constituents": {"target": "indexconstituents.get_index_constituents", "params": ["order_book_id", "as_of"], "returns": "raw"},
+    "get_instrument_indices": {"target": "indexconstituents.get_instrument_indices", "params": ["order_book_ids", "source", "as_of"], "returns": "dataframe"},
+    "get_index_weights": {"target": "indexweight.get_index_weights", "params": ["order_book_id", "as_of"], "returns": "dataframe"},
+    "get_industry_constituents": {"target": "industryconstituents.get_industry_constituents", "params": ["order_book_id", "as_of"], "returns": "raw"},
+    "get_instrument_industry": {"target": "industryconstituents.get_instrument_industry", "params": ["order_book_ids", "source", "level", "as_of"], "returns": "dataframe"},
+    "get_industry_weights": {"target": "industryweight.get_industry_weights", "params": ["order_book_id", "as_of"], "returns": "dataframe"},
+    "get_theme_constituents": {"target": "themeconstituents.get_theme_constituents", "params": ["order_book_id", "as_of"], "returns": "raw"},
+    "get_instrument_themes": {"target": "themeconstituents.get_instrument_themes", "params": ["order_book_ids", "source", "as_of"], "returns": "dataframe"},
+    "get_theme_weights": {"target": "themeweight.get_theme_weights", "params": ["order_book_id", "as_of"], "returns": "dataframe"},
+
+    "get_shares": {"target": "shares.get_shares_panel", "params": ["order_book_ids", "start_date", "end_date", "fields", "as_of"], "returns": "dataframe", "note": "columns order_book_id, date, then one per unified share field"},
+    "get_last_quotes": {"target": null, "params": ["order_book_ids"], "returns": "raw", "note": "{order_book_id: quote dict or null}"}
+  },
+  "functions": [
+    {"name": "get_all_trading_dates", "module": "calendar", "params": [{"name": "market", "type": "str", "default": "cn"}], "returns": "list[date]", "wire": ["get_trading_calendar", "get_calendar_coverage"], "client": "calendar: sessions + coverage fetched together, cached a day"},
+    {"name": "get_calendar_coverage", "module": "calendar", "params": [{"name": "market", "type": "str", "default": "cn"}], "returns": "{history_start: date, confirmed_through: date}", "wire": ["get_trading_calendar", "get_calendar_coverage"]},
+    {"name": "get_trading_dates", "module": "calendar", "params": [{"name": "start_date", "type": "date"}, {"name": "end_date", "type": "date"}, {"name": "market", "type": "str", "default": "cn"}], "returns": "list[date]", "wire": ["get_trading_calendar", "get_calendar_coverage"], "client": "sessions within [start, end]; CalendarCoverageError outside coverage"},
+    {"name": "get_previous_trading_date", "module": "calendar", "params": [{"name": "date", "type": "date"}, {"name": "n", "type": "int", "default": 1}, {"name": "market", "type": "str", "default": "cn"}], "returns": "date", "wire": ["get_trading_calendar", "get_calendar_coverage"]},
+    {"name": "get_next_trading_date", "module": "calendar", "params": [{"name": "date", "type": "date"}, {"name": "n", "type": "int", "default": 1}, {"name": "market", "type": "str", "default": "cn"}], "returns": "date", "wire": ["get_trading_calendar", "get_calendar_coverage"]},
+    {"name": "is_trading_date", "module": "calendar", "params": [{"name": "date", "type": "date"}, {"name": "market", "type": "str", "default": "cn"}], "returns": "bool", "wire": ["get_trading_calendar", "get_calendar_coverage"]},
+    {"name": "get_n_trading_dates_until", "module": "calendar", "params": [{"name": "date", "type": "date"}, {"name": "n", "type": "int"}, {"name": "market", "type": "str", "default": "cn"}], "returns": "list[date]", "wire": ["get_trading_calendar", "get_calendar_coverage"]},
+    {"name": "count_trading_dates", "module": "calendar", "params": [{"name": "start_date", "type": "date"}, {"name": "end_date", "type": "date"}, {"name": "market", "type": "str", "default": "cn"}], "returns": "int", "wire": ["get_trading_calendar", "get_calendar_coverage"]},
+
+    {"name": "all_instruments", "module": "instrument", "params": [{"name": "type", "type": "str_or_list?", "default": null}, {"name": "market", "type": "str?", "default": null}, {"name": "source", "type": "str_or_list?", "default": null}, {"name": "as_of", "type": "date?", "default": null}, {"name": "cached", "type": "bool", "default": true}], "returns": "dataframe (order_book_id, permanent_id, type, market, name, exchange, source)", "wire": ["all_instruments"], "client": "type in stock / index / industry / theme (case-insensitive); order_book_id first; cached by data_version when market is omitted"},
+    {"name": "instruments", "module": "instrument", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "as_of", "type": "date?", "default": null}, {"name": "last_known", "type": "bool", "default": false}], "returns": "Instrument? (one code) | list[Instrument] (a list; unknown codes skipped, input order); fields are all_instruments' columns", "wire": ["instruments"]},
+
+    {"name": "get_price", "module": "price", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "start_date", "type": "date"}, {"name": "end_date", "type": "date"}, {"name": "frequency", "type": "str", "default": "1d"}, {"name": "fields", "type": "str_or_list?", "default": null}, {"name": "skip_suspended", "type": "bool", "default": false}, {"name": "include_now", "type": "bool", "default": true}, {"name": "adjust_type", "type": "str", "default": "pre"}, {"name": "adjust_orig", "type": "date?", "default": null}], "returns": "dataframe indexed (order_book_id, datetime): permanent_id and the fields", "wire": ["get_price"], "client": "frequency 1d only; adjust_type in pre/post/none; codes sent as given (once each): the server routes stocks and indexes by instrument as of end_date, adjusts stocks and checks the fields; datetime = session_date"},
+    {"name": "get_price_coverage", "module": "price", "params": [{"name": "market", "type": "str", "default": "cn"}], "returns": "{type: {venue: {start, end, raw_end, adjust_cutoff?}}}", "wire": ["daybar.coverage", "exfactor.coverage"], "client": "stock end = min(coverage_end, exfactor cutoff), index end = coverage_end; cached by data_version"},
+
+    {"name": "get_dividends", "module": "corporate_actions", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}, {"name": "fields", "type": "str_or_list?", "default": null}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe", "wire": ["get_dividends"]},
+    {"name": "get_splits", "module": "corporate_actions", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}, {"name": "fields", "type": "str_or_list?", "default": null}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe", "wire": ["get_splits"]},
+    {"name": "get_allotments", "module": "corporate_actions", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}, {"name": "fields", "type": "str_or_list?", "default": null}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe", "wire": ["get_allotments"]},
+    {"name": "get_spinoffs", "module": "corporate_actions", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}, {"name": "fields", "type": "str_or_list?", "default": null}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe", "wire": ["get_spinoffs"]},
+
+    {"name": "get_ex_factor", "module": "exfactor", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}], "returns": "dataframe indexed by ex_date: order_book_id, permanent_id, ex_factor, ex_cum_factor", "wire": ["get_ex_factor"]},
+
+    {"name": "get_pit_financials_ex", "module": "financials", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "fields", "type": "str_or_list"}, {"name": "start_quarter", "type": "str"}, {"name": "end_quarter", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}, {"name": "statements", "type": "str", "default": "latest"}], "returns": "dataframe indexed (order_book_id, quarter): info_date, one column per field, if_adjusted", "wire": ["get_pit_financials_ex"], "client": "quarters like 2026q1 (dashes dropped, lower-cased); statements in latest/all"},
+    {"name": "get_financial_metrics", "module": "financials", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "fields", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}], "returns": "dataframe indexed (order_book_id, date): one column per field", "wire": ["get_financial_metrics"], "client": "fields from financialmetrics' catalog (roe_lf, revenue_ttm, net_profit_growth_lyr, ...); no dates: the latest trading day"},
+
+    {"name": "get_index_constituents", "module": "index_components", "params": [{"name": "order_book_id", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}], "returns": "list[str]? (the members' order_book_ids; null when the index did not exist that day)", "wire": ["get_index_constituents"]},
+    {"name": "get_instrument_indices", "module": "index_components", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "source", "type": "str?", "default": null}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe: order_book_id, related_order_book_id (the index), source, market, level", "wire": ["get_instrument_indices"]},
+    {"name": "get_index_weights", "module": "index_components", "params": [{"name": "order_book_id", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe: order_book_id (the member), permanent_id, weight, methodology, source (the index publisher), basis (origin / reconstructed), date (the snapshot day, or as_of when drifted), quality_flags", "wire": ["get_index_weights"], "client": "monthly snapshots; on any other day the latest one before it drifted by each member's adjusted return (quality_flags has DRIFTED)"},
+    {"name": "get_industry_constituents", "module": "industry", "params": [{"name": "order_book_id", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}], "returns": "list[str]? (the members' order_book_ids; null when the industry did not exist that day)", "wire": ["get_industry_constituents"]},
+    {"name": "get_instrument_industry", "module": "industry", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "source", "type": "str?", "default": null}, {"name": "level", "type": "int?", "default": null}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe: order_book_id, related_order_book_id (the industry), source, market, level", "wire": ["get_instrument_industry"]},
+    {"name": "get_industry_weights", "module": "industry", "params": [{"name": "order_book_id", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe: order_book_id (the member), weight, methodology, source, effective_from, effective_to", "wire": ["get_industry_weights"]},
+    {"name": "get_theme_constituents", "module": "theme", "params": [{"name": "order_book_id", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}], "returns": "list[str]? (the members' order_book_ids; null when the theme did not exist that day)", "wire": ["get_theme_constituents"]},
+    {"name": "get_instrument_themes", "module": "theme", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "source", "type": "str?", "default": null}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe: order_book_id, related_order_book_id (the theme), source, market, level", "wire": ["get_instrument_themes"]},
+    {"name": "get_theme_weights", "module": "theme", "params": [{"name": "order_book_id", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe: order_book_id (the member), weight, methodology, source, effective_from, effective_to", "wire": ["get_theme_weights"]},
+
+    {"name": "get_shares", "module": "shares", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}, {"name": "fields", "type": "str_or_list?", "default": null}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe indexed (order_book_id, date): one column per unified share field", "wire": ["get_shares"], "client": "fields within free_float_shares, issued_shares, preferred_shares, restricted_shares, shares_outstanding, tradable_shares (the unified fields, every market)"},
+
+    {"name": "get_last_quotes", "module": "live_quote", "params": [{"name": "order_book_ids", "type": "list[str]"}], "returns": "{order_book_id: Quote?}", "wire": ["get_last_quotes"]}
+  ]
+}
