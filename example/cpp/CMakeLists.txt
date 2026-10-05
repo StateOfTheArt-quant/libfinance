@@ -4,7 +4,7 @@
 #
 #   cmake -S . -B build -DCMAKE_PREFIX_PATH=<Arrow 的安装前缀>
 #   cmake --build build -j
-#   LIBFINANCE_HOST=<服务地址> build/libfinance_03_daybar
+#   build/libfinance_03_daybar
 #
 # libfinance 由 FetchContent 下载并一起编译（LIBFINANCE_GIT_TAG 选版本；本地已有源码时传
 # -DFETCHCONTENT_SOURCE_DIR_LIBFINANCE=<libfinance 仓库>）。在 libfinance 仓库里以
