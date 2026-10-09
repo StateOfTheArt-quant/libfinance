@@ -1,4 +1,4 @@
-"""主题：证券所属主题、主题成分与主题权重（同花顺 THS）。"""
+"""主题：证券所属主题、主题成分与主题权重（THS 主题）。"""
 import libfinance as lf
 
 # [get_instrument_themes.1] 证券当前所属的主题

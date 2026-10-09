@@ -13,7 +13,7 @@ prices comparable over time.
 
 The C++ client mirrors the Python client (`../python`) **one to one**: the same 30 functions, with the same
 names, argument order and defaults, the same validation and errors, and the same answers. The function list is
-`../contract/contract.json`; `../conformance/` checks that both languages agree. Use it where you want data
+`../contract/contract.json`; `../contract/conformance/` checks that both languages agree. Use it where you want data
 directly in C++ — a backtesting engine, factor computation, a trading system — without going through Python.
 Both clients carry the repository's one version (`../VERSION`).
 
@@ -161,6 +161,6 @@ with `LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6` (conda's libstdc++ la
 |---|---|
 | `libfinance/include/libfinance/` | public headers, split as Python's `libfinance/api/*.py`: `calendar.hpp`, `instrument.hpp`, `price.hpp`, ... |
 | `libfinance/src/` | implementation; `client.cpp` connects and decodes, `internal.hpp` validates arguments and caches (Python's `utils/`) |
-| `tools/libfinance_call.cpp` | `libfinance-call <function> '<JSON arguments>'`: calls any function by name; used by `conformance/` |
+| `tools/libfinance_call.cpp` | `libfinance-call <function> '<JSON arguments>'`: calls any function by name; used by `contract/conformance/` |
 | `test/` | offline unit tests: date parsing, `Codes`, decoding both table encodings |
 | `../example/cpp/` | examples, one per `../example/python/` script (`-DBUILD_EXAMPLES=ON`); the directory also builds on its own with FetchContent |

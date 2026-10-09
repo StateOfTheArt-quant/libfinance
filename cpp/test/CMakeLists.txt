@@ -2,7 +2,7 @@ project(unittest)
 
 set(GTEST_LIB gtest gtest_main)
 
-# Offline tests; the answers of a live server are compared with the Python client by conformance/.
+# Offline tests; the answers of a live server are compared with the Python client by contract/conformance/.
 function(libfinance_test name source)
   add_executable(${name} ${source})
   target_link_libraries(${name} PRIVATE libfinance::libfinance ${GTEST_LIB})

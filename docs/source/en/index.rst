@@ -64,7 +64,7 @@ the market, and one list may mix the two.
     get_trading_dates("2024-01-01", "2024-01-31", market="us")   # no security named
 
 What is shared is the vocabulary and the calling convention; the differences in the data remain.
-Allotments are China only, spin-offs US only, and the theme catalogue (Tonghuashun) China only; US
+Allotments are China only, spin-offs US only, and the theme catalogue (THS) China only; US
 bars have no price limits, and turnover is not provided for them. See :doc:`howto/us_market` for the picture function by
 function.
 

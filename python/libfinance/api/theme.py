@@ -48,7 +48,7 @@ def get_instrument_themes(order_book_ids, source: Optional[str] = None, as_of=No
 def get_theme_weights(order_book_id: str, as_of=None) -> pd.DataFrame:
     r"""获取主题在指定日期的成分权重。
 
-    每一行都带 ``methodology``\ ：同花顺主题的 ``derived_equal_weight`` 是由成分名单推出的等权，
+    每一行都带 ``methodology``\ ：THS 主题的 ``derived_equal_weight`` 是由成分名单推出的等权，
     不是供应商权重。
 
     :param order_book_id: 主题代码，如 ``"885311.THS"``
