@@ -199,6 +199,46 @@
   "server_version": "0.1.3",
   "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
  },
+ "get_factor_exposure.1": {
+  "title": "Barra CNE5 风格因子：库名展开为 42 列（10 个风格、31 个行业、COUNTRY）",
+  "code": "const auto f = lf::get_factor_exposure({\"600000.XSHG\", \"000001.XSHE\"}, \"system/barra-cne5\", \"2026-09-07\", \"2026-09-10\");\nstd::cout << f->num_rows() << \" rows x \" << f->num_columns() - 2 << \" factors\\n\";\nshow(f->SelectColumns({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}).ValueOrDie(), 0);  // order_book_id, date, 10 styles",
+  "output": "8 rows x 42 factors\norder_book_id  date        system/barra-cne5/SIZE  system/barra-cne5/BETA  system/barra-cne5/MOMENTUM  system/barra-cne5/RESVOL  system/barra-cne5/NLSIZE  system/barra-cne5/BTOP  system/barra-cne5/LIQUIDITY  system/barra-cne5/EARNYILD  system/barra-cne5/GROWTH  system/barra-cne5/LEVERAGE\n600000.XSHG    2026-09-07  1.466282                -2.157793               -0.891617                   0.270285                  -1.476277                 3.679871                -2.495109                    4.224588                    -0.684836                 3.894874\n600000.XSHG    2026-09-08  1.473904                -2.150934               -0.875787                   0.260453                  -1.474581                 3.672298                -2.502964                    4.215625                    -0.678987                 3.896418\n600000.XSHG    2026-09-09  1.469355                -2.153597               -0.896680                   0.269552                  -1.481582                 3.684458                -2.495817                    4.222175                    -0.679277                 3.904802\n600000.XSHG    2026-09-10  1.463998                -2.152061               -0.953517                   0.254907                  -1.484850                 3.682087                -2.478461                    4.172697                    -0.679655                 3.895869\n000001.XSHE    2026-09-07  1.420016                -1.936313               -0.438099                   -0.761788                 -1.468745                 3.679871                -1.709550                    4.352623                    -0.846074                 3.085660\n000001.XSHE    2026-09-08  1.436537                -1.931869               -0.417630                   -0.737101                 -1.469791                 3.672298                -1.714808                    4.342318                    -0.840224                 3.097376\n000001.XSHE    2026-09-09  1.419413                -1.934573               -0.409014                   -0.730437                 -1.473595                 3.684458                -1.711973                    4.350358                    -0.840513                 3.105194\n000001.XSHE    2026-09-10  1.429442                -1.933636               -0.456308                   -0.722677                 -1.479236                 3.682087                -1.698563                    4.298957                    -0.840890                 3.067905\n[8 rows x 12 columns]",
+  "script": "docs/examples/cpp/11_factors.cpp",
+  "generated": "2026-10-09",
+  "server": "127.0.0.1:18080",
+  "server_version": "0.1.4",
+  "data_version": null
+ },
+ "get_factor_exposure.2": {
+  "title": "原始描述符与标准化后的风格因子混在一次请求里",
+  "code": "show(lf::get_factor_exposure({\"600000.XSHG\", \"600519.XSHG\"},\n                             {\"system/barra-cne5-descriptor/LNCAP\", \"system/barra-cne5/SIZE\", \"system/barra-cne5/BANKS\"},\n                             \"2026-09-10\", \"2026-09-10\"), 0);",
+  "output": "order_book_id  date        system/barra-cne5-descriptor/LNCAP  system/barra-cne5/SIZE  system/barra-cne5/BANKS\n600000.XSHG    2026-09-10  26.464375                           1.463998                1\n600519.XSHG    2026-09-10  28.105089                           1.463998                0\n[2 rows x 5 columns]",
+  "script": "docs/examples/cpp/11_factors.cpp",
+  "generated": "2026-10-09",
+  "server": "127.0.0.1:18080",
+  "server_version": "0.1.4",
+  "data_version": null
+ },
+ "get_factor_exposure.3": {
+  "title": "universe：截面因子在给定的代码上重新标准化，时序因子不变",
+  "code": "const lf::Codes banks = {\"600000.XSHG\", \"000001.XSHE\", \"601398.XSHG\", \"601288.XSHG\", \"600036.XSHG\"};\nshow(lf::get_factor_exposure({\"600000.XSHG\", \"000001.XSHE\"},\n                             {\"system/barra-cne5/SIZE\", \"system/barra-cne5-descriptor/LNCAP\"}, \"2026-09-10\",\n                             \"2026-09-10\", banks), 0);",
+  "output": "order_book_id  date        system/barra-cne5/SIZE  system/barra-cne5-descriptor/LNCAP\n600000.XSHG    2026-09-10  -1.061550               26.464375\n000001.XSHE    2026-09-10  -1.323651               26.161171\n[2 rows x 4 columns]",
+  "script": "docs/examples/cpp/11_factors.cpp",
+  "generated": "2026-10-09",
+  "server": "127.0.0.1:18080",
+  "server_version": "0.1.4",
+  "data_version": null
+ },
+ "get_factor_exposure.4": {
+  "title": "alpha158：当天的截面",
+  "code": "show(lf::get_factor_exposure({\"600000.XSHG\", \"000001.XSHE\", \"600519.XSHG\"},\n                             {\"system/alpha158/KMID\", \"system/alpha158/ROC5\", \"system/alpha158/STD20\"}, \"2026-09-10\",\n                             \"2026-09-10\"), 0);",
+  "output": "order_book_id  date        system/alpha158/KMID  system/alpha158/ROC5  system/alpha158/STD20\n600000.XSHG    2026-09-10  0.014100              0.991444              0.013712\n000001.XSHE    2026-09-10  0.014555              1.002532              0.023610\n600519.XSHG    2026-09-10  -0.004547             1.010699              0.011705\n[3 rows x 5 columns]",
+  "script": "docs/examples/cpp/11_factors.cpp",
+  "generated": "2026-10-09",
+  "server": "127.0.0.1:18080",
+  "server_version": "0.1.4",
+  "data_version": null
+ },
  "get_financial_metrics.1": {
   "title": "逐交易日的指标：在公告日跳变，其间持平",
   "code": "show(lf::get_financial_metrics(\"600519.XSHG\", {\"roe_lf\", \"revenue_ttm\"}, \"2024-10-28\", \"2024-11-01\"), 0);",
@@ -638,5 +678,25 @@
   "server": "192.220.24.58:8080",
   "server_version": "0.1.3",
   "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+ },
+ "list_factor_libraries.1": {
+  "title": "因子库一览",
+  "code": "show(lf::list_factor_libraries(), 0);",
+  "output": "name                          version  factors  description\nsystem/alpha158               v1.0.0   158      Qlib Alpha158: the 158 fields of qlib/contrib/data/loader.py (commit d5379c5), in Qlib order; each refers to its system/qlib factor.\nsystem/barra-cne5             v2.0.0   42       \nsystem/barra-cne5-descriptor  v1.0.0   17       \nsystem/barra-cne6             v1.0.0   36       \nsystem/barra-cne6-descriptor  v1.0.0   36       \nsystem/qlib                   v1.0.0   158      \n[6 rows x 4 columns]",
+  "script": "docs/examples/cpp/11_factors.cpp",
+  "generated": "2026-10-09",
+  "server": "127.0.0.1:18080",
+  "server_version": "0.1.4",
+  "data_version": null
+ },
+ "list_factors.1": {
+  "title": "一个库里的因子全名",
+  "code": "const auto names = lf::list_factors(\"system/barra-cne5\");\nshow(lf::Json(std::vector<std::string>(names.begin(), names.begin() + std::min<size_t>(12, names.size()))));",
+  "output": "[\n  \"system/barra-cne5/SIZE@v2.0.0\",\n  \"system/barra-cne5/BETA@v2.0.0\",\n  \"system/barra-cne5/MOMENTUM@v2.0.0\",\n  \"system/barra-cne5/RESVOL@v2.0.0\",\n  \"system/barra-cne5/NLSIZE@v2.0.0\",\n  \"system/barra-cne5/BTOP@v2.0.0\",\n  \"system/barra-cne5/LIQUIDITY@v2.0.0\",\n  \"system/barra-cne5/EARNYILD@v2.0.0\",\n  \"system/barra-cne5/GROWTH@v2.0.0\",\n  \"system/barra-cne5/LEVERAGE@v2.0.0\",\n  \"system/barra-cne5/AGRICULTURE@v2.0.0\",\n  \"system/barra-cne5/BASIC_CHEMICALS@v2.0.0\"\n]",
+  "script": "docs/examples/cpp/11_factors.cpp",
+  "generated": "2026-10-09",
+  "server": "127.0.0.1:18080",
+  "server_version": "0.1.4",
+  "data_version": null
  }
 }

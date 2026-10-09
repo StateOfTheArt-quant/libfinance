@@ -187,6 +187,14 @@ const std::map<std::string, Function>& functions() {
          return table(lf::get_financial_metrics(codes(a, "order_book_ids"), codes(a, "fields"),
                                                 optional_date(a, "start_date"), optional_date(a, "end_date")));
        }},
+      // factors
+      {"get_factor_exposure",
+       [](const Json& a) {
+         return table(lf::get_factor_exposure(codes(a, "order_book_ids"), codes(a, "factor_names"), date(a, "start_date"),
+                                              date(a, "end_date"), codes(a, "universe")));
+       }},
+      {"list_factor_libraries", [](const Json&) { return table(lf::list_factor_libraries()); }},
+      {"list_factors", [](const Json& a) { return Json(lf::list_factors(optional_text(a, "library"))); }},
       // index, industry, theme: members and weights
       {"get_index_constituents",
        [](const Json& a) { return lf::get_index_constituents(required_text(a, "order_book_id"), optional_date(a, "as_of")); }},
