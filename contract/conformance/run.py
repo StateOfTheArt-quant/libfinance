@@ -1,7 +1,7 @@
 """Conformance: the Python and C++ clients give the same answers, against the same server.
 
     LIBFINANCE_HOST=127.0.0.1 LIBFINANCE_PORT=8080 \
-        python conformance/run.py --call cpp/build/tools/libfinance-call [--only get_price]
+        python contract/conformance/run.py --call cpp/build/tools/libfinance-call [--only get_price]
 
 Every case calls one contract function through both clients -- python/ in-process, cpp/ through
 libfinance-call -- and compares the answers after putting both in one form: tables as columns +
@@ -21,7 +21,7 @@ import subprocess
 import sys
 import warnings
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
 CN = ["600000.XSHG", "000001.XSHE", "300750.XSHE"]

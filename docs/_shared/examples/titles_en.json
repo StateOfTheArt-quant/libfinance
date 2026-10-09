@@ -3,7 +3,7 @@
  "all_instruments.2": "China A-share stocks: source is the listing exchange",
  "all_instruments.3": "Indices published by China Securities Index (CSI)",
  "all_instruments.4": "Shenwan (SW) industries: source is the classification",
- "all_instruments.5": "Tonghuashun (THS) themes, China only",
+ "all_instruments.5": "THS themes, China only",
  "all_instruments.6": "Several types at once: a list for type",
  "all_instruments.7": "A past day: SW industries before and after the 2021 revision",
  "count_trading_dates.1": "Count trading days when only the number matters",

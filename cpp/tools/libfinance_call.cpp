@@ -4,7 +4,7 @@
 //   libfinance-call --list
 //
 // Each name goes to the typed C++ function of the same name (so the table below is also the list of
-// what the C++ client implements -- conformance/ checks it against contract/contract.json). Tables
+// what the C++ client implements -- contract/conformance/ checks it against contract/contract.json). Tables
 // print as {"columns": [...], "rows": [[...], ...]}, dates as ISO days. A failure prints
 // "<Kind>: <message>" on stderr and exits 1: the server's error kind, or ValueError /
 // CalendarCoverageError / RuntimeError for what the client itself refused.

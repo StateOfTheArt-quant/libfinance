@@ -14,7 +14,7 @@ print(lf.all_instruments(type="index", source="CSI").head())
 # 申万（SW）行业：source 是分类体系
 print(lf.all_instruments(type="industry", source="SW").head())
 
-# 同花顺（THS）主题，仅 A 股
+# THS 主题，仅 A 股
 print(lf.all_instruments(type="theme").head())
 
 # 一次取几种类型：type 给列表

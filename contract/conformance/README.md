@@ -6,7 +6,7 @@
 
 ```bash
 LIBFINANCE_HOST=127.0.0.1 LIBFINANCE_PORT=8080 \
-    python conformance/run.py --call cpp/build/tools/libfinance-call [--only get_price]
+    python contract/conformance/run.py --call cpp/build/tools/libfinance-call [--only get_price]
 ```
 
 最近一次：57 个用例（27 个函数，含参数错误、越界、未知代码等）全部一致。
