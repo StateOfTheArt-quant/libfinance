@@ -19,6 +19,10 @@
  "get_ex_factor.1": "A stock's ex-dates and factors",
  "get_ex_factor.2": "A window (both ends included): the cumulative factor does not restart at its start",
  "get_ex_factor.3": "Mixed markets: the code carries the market",
+ "get_factor_exposure.1": "Barra CNE5 styles: a library name expands to 42 columns (10 styles, 31 industries, COUNTRY)",
+ "get_factor_exposure.2": "Raw descriptors and standardized styles in one request",
+ "get_factor_exposure.3": "universe: cross-sectional factors are re-standardized over the given codes; time-series factors are unchanged",
+ "get_factor_exposure.4": "alpha158: one day's cross section",
  "get_financial_metrics.1": "Daily metrics: they step on announcement days and hold in between",
  "get_financial_metrics.2": "China and US on the same formulas; no dates means the latest trading day",
  "get_index_constituents.1": "CSI 300 constituents on 2024-06-28",
@@ -62,5 +66,7 @@
  "instruments.3": "as_of: the identity valid that day (Meta was still FB.US in 2022)",
  "instruments.4": "last_known: a delisted code resolves to its last identity",
  "is_trading_date.1": "Open on a Monday",
- "is_trading_date.2": "Closed on a Sunday"
+ "is_trading_date.2": "Closed on a Sunday",
+ "list_factor_libraries.1": "The factor libraries",
+ "list_factors.1": "The full names of one library's factors"
 }

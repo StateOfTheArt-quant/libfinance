@@ -146,6 +146,25 @@ Example dates must fall within the coverage of your service.
 
     :doc:`realtime`
 
+.. dropdown:: 7 Factors
+    :color: primary
+    :icon: book
+
+    .. list-table::
+        :header-rows: 1
+        :widths: 40 60
+
+        * - Function / class
+          - Purpose
+        * - :func:`~libfinance.get_factor_exposure`
+          - Read factor exposures (qlib, alpha158, Barra CNE5)
+        * - :func:`~libfinance.list_factor_libraries`
+          - The factor libraries, their versions and factor counts
+        * - :func:`~libfinance.list_factors`
+          - The factors of one library
+
+    :doc:`factors`
+
 Lookup and troubleshooting
 ----------------------------------------
 
