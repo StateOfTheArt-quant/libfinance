@@ -159,3 +159,19 @@ def warn_if_clamped(api_name, start_date):
         stacklevel=3,
     )
     return boundary
+
+
+def warn_if_truncated(api_name, count):
+    """当前权限一次只查前 max_count 个代码时给一句警告（服务端截断，不报错）。返回上限，没有限制则返回 None。"""
+    import warnings
+
+    limit = (limits_for(api_name) or {}).get("clamp_instrument_count") or {}
+    max_count = limit.get("max_count")
+    if not isinstance(max_count, int) or max_count <= 0 or count <= max_count:
+        return None
+    warnings.warn(
+        "{}: 当前权限一次最多 {} 个代码，传入的 {} 个只有前 {} 个会被查询；请分批调用。"
+        .format(api_name, max_count, count, max_count),
+        stacklevel=3,
+    )
+    return max_count

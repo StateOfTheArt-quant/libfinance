@@ -111,6 +111,7 @@ What is shared is the vocabulary and the calling convention; the differences in 
 | Spinoffs | US | `get_spinoffs` | A-shares do not produce these events |
 | Financial statements (PIT) | CN | `get_pit_financials_ex` | By quarter, with restatement history |
 | Financial metrics | CN, US | `get_financial_metrics` | Derived financial metrics per trading day (RQData get_factor shape) |
+| Factors | CN | `get_factor_exposure`, `list_factor_libraries`, `list_factors` | qlib, alpha158, Barra CNE5 styles / industries and descriptors (as RQData get_factor_exposure) |
 | Industry classification | CN / US | `get_instrument_industry`, `get_industry_constituents`, `get_industry_weights` | Shenwan, GICS and more |
 | Index constituents and weights | CN | `get_index_weights` | Constituent weights on any session |
 | Concept board constituents | CN | `get_concept_weights` | THS concept taxonomy |

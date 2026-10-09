@@ -146,6 +146,25 @@ API 参考
 
     :doc:`realtime`
 
+.. dropdown:: 7 因子
+    :color: primary
+    :icon: book
+
+    .. list-table::
+        :header-rows: 1
+        :widths: 40 60
+
+        * - 函数 / 类
+          - 解决的问题
+        * - :func:`~libfinance.get_factor_exposure`
+          - 按代码、日期区间读取因子暴露（qlib、alpha158、Barra CNE5）
+        * - :func:`~libfinance.list_factor_libraries`
+          - 有哪些因子库、各自的版本和因子数
+        * - :func:`~libfinance.list_factors`
+          - 一个库里有哪些因子
+
+    :doc:`factors`
+
 字段与使用支持
 ----------------------------------------
 

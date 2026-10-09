@@ -232,6 +232,7 @@ code runs fine and your numbers are wrong.
     reference/classification
     5 Corporate actions <reference/corporate_actions>
     6 Real-time quotes <reference/realtime>
+    7 Factors <reference/factors>
 
 .. toctree::
     :maxdepth: 1

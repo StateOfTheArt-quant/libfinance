@@ -2,7 +2,6 @@
 #include "libfinance/price.hpp"
 
 #include <algorithm>
-#include <ctime>
 
 #include <arrow/api.h>
 #include <arrow/compute/api.h>
@@ -39,43 +38,6 @@ Json fields_argument(const Codes& fields) {
 }
 
 // ---------------------------------------------------------------- warnings before the call
-
-//: today minus years / months / days, the month-end clipped (dateutil's relativedelta).
-Date months_back(int years, int months, int days) {
-  const std::time_t now = std::time(nullptr);
-  std::tm local{};
-  localtime_r(&now, &local);
-  int month_index = (local.tm_year + 1900) * 12 + local.tm_mon - years * 12 - months;
-  const int year = month_index / 12;
-  const unsigned month = static_cast<unsigned>(month_index % 12) + 1;
-  unsigned day = static_cast<unsigned>(local.tm_mday);
-  while (day > 28 && Date::ymd(year, month, day).month() != month) --day;
-  return Date::from_days(Date::ymd(year, month, day).days_since_epoch() - days);
-}
-
-//: `limits_for`: this caller's limits on a function (describe_capabilities); {} when unknown.
-Json limits_for(const std::string& api_name) {
-  static detail::VersionedCache<Json> cache;
-  try {
-    const Json described = cache.get("", [] { return detail::call("describe_capabilities", Json::object()); });
-    for (const Json& item : described.value("capabilities", Json::array()))
-      if (item.value("api", Json()) == api_name || item.value("name", Json()) == api_name)
-        return item.value("limits", Json::object());
-  } catch (const std::exception&) {
-  }
-  return Json::object();
-}
-
-//: `warn_if_clamped`: say so when the caller's tier will pull start_date up to its boundary.
-void warn_if_clamped(const std::string& api_name, const std::string& start_date) {
-  const Json window = limits_for(api_name).value("clamp_date_window", Json());
-  if (!window.is_object()) return;
-  const std::string boundary =
-      months_back(window.value("years", 0), window.value("months", 0), window.value("days", 0)).iso();
-  if (start_date >= boundary) return;
-  detail::warn(api_name + ": 可查区间的起点是 " + boundary + "，比它更早的 start_date=" + start_date +
-               " 会被服务端夹到边界（end_date 早于边界时也会一起上拉，结果可能是空表）。");
-}
 
 //: `_warn_beyond_coverage`: an end_date past the bars is refused by the server; say why first.
 void warn_beyond_coverage(const std::string& end_date) {
@@ -136,7 +98,7 @@ Table get_price(const Codes& order_book_ids, const DateLike& start_date, const D
   detail::check_items_in({adjust_type}, kAdjustTypes, "adjust_type");
   const std::string start = start_date.iso(), end = end_date.iso();
   if (start > end) throw std::invalid_argument("start_date must not be after end_date");
-  warn_if_clamped("get_price", start);
+  detail::warn_if_clamped("get_price", start);
   warn_beyond_coverage(end);
 
   // daybar routes the codes (stocks and indexes alike) by instrument as of end_date

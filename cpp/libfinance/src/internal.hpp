@@ -24,6 +24,12 @@ Json call(const std::string& function, const Json& args);
 Table call_table(const std::string& function, const Json& args);
 //: warnings.warn(message).
 void warn(const std::string& message);
+//: `limits_for`: this caller's limits on a function (describe_capabilities); {} when unknown.
+Json limits_for(const std::string& api_name);
+//: `warn_if_clamped`: say so when the caller's tier will pull start_date up to its boundary.
+void warn_if_clamped(const std::string& api_name, const std::string& start_date);
+//: `warn_if_truncated`: say so when the caller's tier keeps only the first max_count codes.
+void warn_if_truncated(const std::string& api_name, std::size_t count);
 
 // ---------------------------------------------------------------- arguments
 

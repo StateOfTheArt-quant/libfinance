@@ -199,6 +199,46 @@
   "server_version": "0.1.3",
   "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
  },
+ "get_factor_exposure.1": {
+  "title": "Barra CNE5 风格因子：库名展开为 42 列（10 个风格、31 个行业、COUNTRY）",
+  "code": "f = lf.get_factor_exposure([\"600000.XSHG\", \"000001.XSHE\"], \"system/barra-cne5\", \"2026-09-07\", \"2026-09-10\")\nprint(f.shape)\nprint(f.iloc[:, :10].rename(columns=lambda c: c.rsplit(\"/\", 1)[1]).round(3))",
+  "output": "(8, 42)\n                           SIZE   BETA  MOMENTUM  RESVOL  NLSIZE   BTOP  LIQUIDITY  EARNYILD  GROWTH  LEVERAGE\norder_book_id date                                                                                            \n600000.XSHG   2026-09-07  1.466 -2.158    -0.892   0.270  -1.476  3.680     -2.495     4.225  -0.685     3.895\n              2026-09-08  1.474 -2.151    -0.876   0.260  -1.475  3.672     -2.503     4.216  -0.679     3.896\n              2026-09-09  1.469 -2.154    -0.897   0.270  -1.482  3.684     -2.496     4.222  -0.679     3.905\n              2026-09-10  1.464 -2.152    -0.954   0.255  -1.485  3.682     -2.478     4.173  -0.680     3.896\n000001.XSHE   2026-09-07  1.420 -1.936    -0.438  -0.762  -1.469  3.680     -1.710     4.353  -0.846     3.086\n              2026-09-08  1.437 -1.932    -0.418  -0.737  -1.470  3.672     -1.715     4.342  -0.840     3.097\n              2026-09-09  1.419 -1.935    -0.409  -0.730  -1.474  3.684     -1.712     4.350  -0.841     3.105\n              2026-09-10  1.429 -1.934    -0.456  -0.723  -1.479  3.682     -1.699     4.299  -0.841     3.068",
+  "script": "docs/examples/python/11_factors.py",
+  "generated": "2026-10-09",
+  "server": "127.0.0.1:18080",
+  "server_version": "0.1.4",
+  "data_version": null
+ },
+ "get_factor_exposure.2": {
+  "title": "原始描述符与标准化后的风格因子混在一次请求里",
+  "code": "print(lf.get_factor_exposure([\"600000.XSHG\", \"600519.XSHG\"],\n                             [\"system/barra-cne5-descriptor/LNCAP\", \"system/barra-cne5/SIZE\", \"system/barra-cne5/BANKS\"],\n                             \"2026-09-10\", \"2026-09-10\"))",
+  "output": "                          system/barra-cne5-descriptor/LNCAP  system/barra-cne5/SIZE  system/barra-cne5/BANKS\norder_book_id date                                                                                           \n600000.XSHG   2026-09-10                           26.464375                1.463998                      1.0\n600519.XSHG   2026-09-10                           28.105089                1.463998                      0.0",
+  "script": "docs/examples/python/11_factors.py",
+  "generated": "2026-10-09",
+  "server": "127.0.0.1:18080",
+  "server_version": "0.1.4",
+  "data_version": null
+ },
+ "get_factor_exposure.3": {
+  "title": "universe：截面因子在给定的代码上重新标准化，时序因子不变",
+  "code": "banks = [\"600000.XSHG\", \"000001.XSHE\", \"601398.XSHG\", \"601288.XSHG\", \"600036.XSHG\"]\nprint(lf.get_factor_exposure([\"600000.XSHG\", \"000001.XSHE\"], [\"system/barra-cne5/SIZE\", \"system/barra-cne5-descriptor/LNCAP\"],\n                             \"2026-09-10\", \"2026-09-10\", universe=banks))",
+  "output": "                          system/barra-cne5/SIZE  system/barra-cne5-descriptor/LNCAP\norder_book_id date                                                                  \n600000.XSHG   2026-09-10               -1.061550                           26.464375\n000001.XSHE   2026-09-10               -1.323651                           26.161171",
+  "script": "docs/examples/python/11_factors.py",
+  "generated": "2026-10-09",
+  "server": "127.0.0.1:18080",
+  "server_version": "0.1.4",
+  "data_version": null
+ },
+ "get_factor_exposure.4": {
+  "title": "alpha158：当天的截面",
+  "code": "print(lf.get_factor_exposure([\"600000.XSHG\", \"000001.XSHE\", \"600519.XSHG\"],\n                             [\"system/alpha158/KMID\", \"system/alpha158/ROC5\", \"system/alpha158/STD20\"], \"2026-09-10\", \"2026-09-10\"))",
+  "output": "                          system/alpha158/KMID  system/alpha158/ROC5  system/alpha158/STD20\norder_book_id date                                                                         \n600000.XSHG   2026-09-10              0.014100              0.991444               0.013712\n000001.XSHE   2026-09-10              0.014555              1.002532               0.023610\n600519.XSHG   2026-09-10             -0.004547              1.010699               0.011705",
+  "script": "docs/examples/python/11_factors.py",
+  "generated": "2026-10-09",
+  "server": "127.0.0.1:18080",
+  "server_version": "0.1.4",
+  "data_version": null
+ },
  "get_financial_metrics.1": {
   "title": "逐交易日的指标：在公告日跳变，其间持平",
   "code": "print(lf.get_financial_metrics(\"600519.XSHG\", [\"roe_lf\", \"revenue_ttm\"], \"2024-10-28\", \"2024-11-01\"))",
@@ -638,5 +678,25 @@
   "server": "192.220.24.58:8080",
   "server_version": "0.1.3",
   "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+ },
+ "list_factor_libraries.1": {
+  "title": "因子库一览",
+  "code": "print(lf.list_factor_libraries())",
+  "output": "                           name version  factors                                        description\n0               system/alpha158  v1.0.0      158  Qlib Alpha158: the 158 fields of qlib/contrib/...\n1             system/barra-cne5  v2.0.0       42                                                   \n2  system/barra-cne5-descriptor  v1.0.0       17                                                   \n3             system/barra-cne6  v1.0.0       36                                                   \n4  system/barra-cne6-descriptor  v1.0.0       36                                                   \n5                   system/qlib  v1.0.0      158                                                   ",
+  "script": "docs/examples/python/11_factors.py",
+  "generated": "2026-10-09",
+  "server": "127.0.0.1:18080",
+  "server_version": "0.1.4",
+  "data_version": null
+ },
+ "list_factors.1": {
+  "title": "一个库里的因子全名",
+  "code": "print(lf.list_factors(\"system/barra-cne5\")[:12])",
+  "output": "['system/barra-cne5/SIZE@v2.0.0', 'system/barra-cne5/BETA@v2.0.0', 'system/barra-cne5/MOMENTUM@v2.0.0', 'system/barra-cne5/RESVOL@v2.0.0', 'system/barra-cne5/NLSIZE@v2.0.0', 'system/barra-cne5/BTOP@v2.0.0', 'system/barra-cne5/LIQUIDITY@v2.0.0', 'system/barra-cne5/EARNYILD@v2.0.0', 'system/barra-cne5/GROWTH@v2.0.0', 'system/barra-cne5/LEVERAGE@v2.0.0', 'system/barra-cne5/AGRICULTURE@v2.0.0', 'system/barra-cne5/BASIC_CHEMICALS@v2.0.0']",
+  "script": "docs/examples/python/11_factors.py",
+  "generated": "2026-10-09",
+  "server": "127.0.0.1:18080",
+  "server_version": "0.1.4",
+  "data_version": null
  }
 }
