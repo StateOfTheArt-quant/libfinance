@@ -124,14 +124,14 @@ def get_price(
         字段由服务端核对。
     :param skip_suspended: 是否去掉无成交的日子（成交量为 0），默认 False。只发布收盘点位、没有成交量
         的指数日不算停牌。
-    :param include_now: 对日线没有影响，保留与 rqdata 的 ``get_price`` 对齐
+    :param include_now: 对日线没有影响，保留以兼容常见的 ``get_price`` 签名
     :param adjust_type: 股票的复权方式：\ ``"pre"`` 前复权（默认）、\ ``"post"`` 后复权或 ``"none"`` 原始价；
         指数原样返回
     :param adjust_orig: 前复权的基准日；省略时为 ``end_date``\ ：价格换算到查询区间最后一天的口径，
         区间之后的除权不影响结果（point-in-time）
     :returns: 以 ``(order_book_id, datetime)`` 为索引的 DataFrame，列为 ``permanent_id`` 与所选字段。
 
-    规则同 rqalpha：成交量随复权反向缩放，成交额 ``turnover`` 不受复权影响。
+    复权规则：成交量随复权反向缩放，成交额 ``turnover`` 不受复权影响。
     """
     ids = ensure_list_of_string(order_book_ids, "order_book_ids")
     if not ids:

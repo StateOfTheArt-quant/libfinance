@@ -33,8 +33,7 @@ freely in one request; there are no short names. ``start_date == end_date`` is t
     * - ``system/barra-cne5``
       - 10 styles (SIZE, BETA, MOMENTUM, RESVOL, NLSIZE, BTOP, LIQUIDITY, EARNYILD, GROWTH, LEVERAGE), 31
         Shenwan level-1 industry dummies and COUNTRY. The styles are cross-sectionally standardized
-        exposures (float-cap-weighted mean 0, equal-weighted std 1), as RQData's ``get_factor_exposure``,
-        computed when read over ``universe``
+        exposures (float-cap-weighted mean 0, equal-weighted std 1), computed when read over ``universe``
     * - ``system/barra-cne5-descriptor``, ``system/barra-cne6-descriptor``
       - Raw Barra descriptors (LNCAP, BETA, STOM, ...): each security's own time series, independent of any universe
 

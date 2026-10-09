@@ -1,4 +1,4 @@
-// 主题：证券所属主题、主题成分与主题权重，同花顺 THS（与 docs/examples/python/10_theme.py 一一对应）。
+// 主题：证券所属主题、主题成分与主题权重，THS 主题（与 docs/examples/python/10_theme.py 一一对应）。
 #include "show.hpp"
 
 int main() {

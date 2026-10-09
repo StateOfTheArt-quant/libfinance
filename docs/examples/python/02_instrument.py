@@ -18,7 +18,7 @@ print(lf.all_instruments(type="index", source="CSI").head())
 print(lf.all_instruments(type="industry", source="SW").head())
 # [/all_instruments.4]
 
-# [all_instruments.5] 同花顺（THS）主题，仅 A 股
+# [all_instruments.5] THS 主题，仅 A 股
 print(lf.all_instruments(type="theme").head())
 # [/all_instruments.5]
 

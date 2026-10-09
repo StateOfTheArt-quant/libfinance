@@ -40,7 +40,7 @@
   "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
  },
  "all_instruments.5": {
-  "title": "同花顺（THS）主题，仅 A 股",
+  "title": "THS 主题，仅 A 股",
   "code": "print(lf.all_instruments(type=\"theme\").head())",
   "output": "  order_book_id                          permanent_id   type market        name exchange source\n0    300008.THS  00ce7f9a-8770-5157-b433-585ea1b2e28b  theme     CN  新能源汽车     None    THS\n1    300013.THS  635f9f8c-3aa7-536f-8f55-99acb3bd3dde  theme     CN      大飞机     None    THS\n2    300018.THS  be225af3-1ad3-59d8-a172-8e0ef449b1e6  theme     CN    参股保险     None    THS\n3    300019.THS  43682444-905b-528b-bd34-74dcf70513ef  theme     CN    网络游戏     None    THS\n4    300023.THS  91e715bd-c80d-5ceb-8547-cf140fe374a4  theme     CN    食品安全     None    THS",
   "script": "docs/examples/python/02_instrument.py",

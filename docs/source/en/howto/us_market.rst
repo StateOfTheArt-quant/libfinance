@@ -66,7 +66,7 @@ What has US data
       - e.g. ``SPX.US``
     * - Themes: :func:`~libfinance.get_instrument_themes` ...
       - ❌
-      - The theme catalogue (Tonghuashun THS) is China only; a US code answers an empty table
+      - The theme catalogue (THS) is China only; a US code answers an empty table
 
 For data only one market has, a code of the other market is **refused explicitly**, naming where that data
 is published; it never answers an empty table that would read as "no events":
