@@ -20,7 +20,7 @@ quote_api.py — dynamics 实时行情订阅（纯 Python，XTP 风格，协议 
 也可以 `login(token)` / `login(provider)` 自己提供票据，或 `connect("host:port,host:port")` 指定网关地址。
 
 代码是 libfinance 统一的 order_book_id（``600519.XSHG``），与 get_price、instruments 等函数同一种写法；
-一次订阅可混合交易所。后缀即交易所（rqdata 风格）：XSHG(上交所) / XSHE(深交所) / XBSE(北交所) 及期货交易所，
+一次订阅可混合交易所。后缀即交易所（order_book_id 的后缀）：XSHG(上交所) / XSHE(深交所) / XBSE(北交所) 及期货交易所，
 如 000001.XSHG 是上证指数、000001.XSHE 是平安银行。行情、回执与缺口通知都带 ``order_book_id``。
 
 断线自愈（7×24）：连接断开后自动重连（多个网关地址时立即切到下一个），自动重新登录，并按 seq

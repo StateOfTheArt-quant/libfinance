@@ -33,7 +33,7 @@
     * - ``system/barra-cne5``
       - 10 个风格因子（SIZE、BETA、MOMENTUM、RESVOL、NLSIZE、BTOP、LIQUIDITY、EARNYILD、GROWTH、LEVERAGE）、
         31 个申万一级行业哑变量、COUNTRY。风格因子是截面标准化后的暴露（流通市值加权均值 0、等权标准差 1），
-        与 RQData ``get_factor_exposure`` 同口径，读取时在 ``universe`` 上计算
+        读取时在 ``universe`` 上计算
     * - ``system/barra-cne5-descriptor``\ 、\ ``system/barra-cne6-descriptor``
       - Barra 原始描述符（LNCAP、BETA、STOM……），个股自身的时间序列，与 universe 无关
 
@@ -51,7 +51,7 @@ get_factor_exposure — 按代码、日期区间读取因子暴露
 
 结果解读：两只都是大盘银行股，SIZE 约 +1.45、BETA 约 −2、BTOP 与 LEVERAGE 很高，行业只有 BANKS 为 1。
 600000.XSHG 与 600519.XSHG 的 SIZE 相同：两者的 LNCAP 都超过全市场 3 倍标准差，缩尾到同一个上界后再标准化——
-RQData 同样把最大的几只股票的 size 给成同一个值。传入 ``universe`` 后 SIZE 在这几只银行股里重新标准化
+这是 Barra 的缩尾处理，最大的几只股票的 SIZE 相同。传入 ``universe`` 后 SIZE 在这几只银行股里重新标准化
 （于是变成负值），LNCAP 是时序因子，不变。
 
 list_factor_libraries — 有哪些因子库

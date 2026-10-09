@@ -44,7 +44,7 @@ Semantics are covered in :doc:`../data/fundamentals`; ``as_of`` in
 
 .. py:function:: get_financial_metrics(order_book_ids, fields, start_date=None, end_date=None)
 
-    Derived financial metrics (RQData ``get_factor``'s shape), one formula set for CN and US. A
+    Derived financial metrics, one formula set for CN and US. A
     trading day's value comes from the latest report visible after that day's close: values jump on
     announcement days and stay flat in between; one the latest report cannot give is NaN.
 

@@ -74,7 +74,7 @@ def get_financial_metrics(
     start_date=None,
     end_date=None,
 ) -> pd.DataFrame:
-    r"""获取财务衍生指标（RQData ``get_factor`` 同形），CN 与 US 同一套公式。
+    r"""获取财务衍生指标，CN 与 US 同一套公式。
 
     每个交易日的值来自那一天收盘后能看到的最新报告：数值在公告日跳变、其间持平；最新报告算不出的为 NaN，
     不退回更早的报告。

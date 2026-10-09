@@ -63,7 +63,7 @@ A 股与美股共用一套术语
     instruments(["000001.XSHE", "AAPL.US"])            # 命名空间已给出市场
     get_trading_dates("2024-01-01", "2024-01-31", market="us")   # 不涉及具体证券
 
-统一的是术语和调用约定，数据本身的差异依然存在：配股只有 A 股，分拆只有美股，主题目录（同花顺）只有
+统一的是术语和调用约定，数据本身的差异依然存在：配股只有 A 股，分拆只有美股，主题目录（THS）只有
 A 股；美股没有涨跌停，也没有提供成交额。
 逐个接口的情况见 :doc:`howto/us_market`\ 。
 
@@ -126,7 +126,7 @@ A 股；美股没有涨跌停，也没有提供成交额。
     *   - 主题成分与权重
         - CN
         - :func:`~libfinance.get_theme_constituents`
-        - 同花顺主题；权重见 :func:`~libfinance.get_theme_weights`
+        - THS 主题；权重见 :func:`~libfinance.get_theme_weights`
     *   - 实时行情
         - CN
         - :class:`~libfinance.subscribe.quote_api.QuoteApi`

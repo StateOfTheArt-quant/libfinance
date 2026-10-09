@@ -19,7 +19,7 @@ int main() {
       show(lf::all_instruments("industry", std::nullopt, "SW"));
     }  // [/all_instruments.4]
 
-    {  // [all_instruments.5] 同花顺（THS）主题，仅 A 股
+    {  // [all_instruments.5] THS 主题，仅 A 股
       show(lf::all_instruments("theme"));
     }  // [/all_instruments.5]
 

@@ -354,8 +354,8 @@ def test_as_of_keeps_a_timestamp(monkeypatch):
 
 
 
-def test_financial_frames_get_rqdatas_index_whichever_server_answers(monkeypatch):
-    """The C++ server answers flat tables; the client indexes them as RQData does."""
+def test_financial_frames_are_indexed_whichever_server_answers(monkeypatch):
+    """The C++ server answers flat tables; the client indexes them by (order_book_id, date | quarter)."""
     import pandas as pd
     from libfinance.api import financials
 

@@ -147,7 +147,7 @@ class InstrumentType(IntEnum):
     CryptoUFuture = 11
 
 
-# 交易所标识：全系统统一 rqdata 风格（order_book_id 后缀）。
+# 交易所标识：全系统统一用 order_book_id 的后缀。
 EXCHANGE_OF_MARKET = {
     MarketType.SSE: "XSHG",
     MarketType.SZE: "XSHE",
@@ -185,7 +185,7 @@ class _Coded:
 
     @property
     def order_book_id(self) -> str:
-        """rqdata 风格标识，如 600519.XSHG。"""
+        """order_book_id，如 600519.XSHG。"""
         return "{}.{}".format(self.instrument_id, self.exchange_id) if self.instrument_id else ""
 
 

@@ -109,11 +109,11 @@ get_trading_dates("2024-01-01", "2024-01-31", market="us")   # 不涉及具体�
 | 分红 / 拆股 / 配股 | CN · US | `get_dividends` | 除权事件，价格跳空的来源 |
 | 分拆 | US | `get_spinoffs` | A 股不产生这类事件 |
 | 财务报表（PIT） | CN | `get_pit_financials_ex` | 按季度取，带修订历史 |
-| 财务衍生指标 | CN、US | `get_financial_metrics` | 按交易日的财务衍生指标（RQData get_factor 同形） |
-| 因子 | CN | `get_factor_exposure`、`list_factor_libraries`、`list_factors` | qlib、alpha158、Barra CNE5 风格 / 行业因子与描述符（RQData get_factor_exposure 同口径） |
+| 财务衍生指标 | CN、US | `get_financial_metrics` | 按交易日的财务衍生指标 |
+| 因子 | CN | `get_factor_exposure`、`list_factor_libraries`、`list_factors` | qlib、alpha158、Barra CNE5 风格 / 行业因子与描述符 |
 | 行业分类 | CN / US | `get_instrument_industry`、`get_industry_constituents`、`get_industry_weights` | 申万、GICS 等分类体系 |
 | 指数成分与权重 | CN | `get_index_weights` | 任意交易日的成分权重 |
-| 概念板块成分 | CN | `get_concept_weights` | 同花顺概念分类 |
+| 概念板块成分 | CN | `get_concept_weights` | THS 概念分类 |
 | 实时行情 | CN | `QuoteApi` | 订阅推送 |
 
 覆盖到哪一年、更新到哪一天，取决于你连的那个服务。**不要照抄文档里的日期**，用[数据新鲜度](https://libfinance.readthedocs.io/zh-cn/latest/data/freshness.html)里的两个函数自己查。
@@ -151,7 +151,7 @@ API 参考按合约信息和交易日历、行情信息、基本面信息、行�
 | 目录 | 内容 |
 | --- | --- |
 | `contract/` | 各语言客户端共同遵守的契约：公开函数（名称、参数顺序与默认值、返回）与它们调用的服务端函数 |
+| `contract/conformance/` | 同一组调用分别经 Python 与 C++ 客户端发给同一个服务端，逐项比对答案 |
 | `python/` | Python 客户端（PyPI 上的 `libfinance`） |
 | `cpp/` | C++ 客户端 |
-| `conformance/` | 同一组调用分别经 Python 与 C++ 客户端发给同一个服务端，逐项比对答案 |
 | `docs/` | 文档（中英双语） |

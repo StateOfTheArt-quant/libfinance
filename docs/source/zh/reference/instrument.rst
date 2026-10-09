@@ -4,7 +4,7 @@
 .. currentmodule:: libfinance
 
 先用 ``all_instruments`` 确定研究范围，再用 ``instruments`` 解析具体代码。
-``order_book_id`` 是代码，\ ``name`` 是名称。目录里有四种类型——股票（stock）、指数（index）、行业（industry）、主题（theme），\ ``type`` 选类型，\ ``source`` 是编号机构：股票是交易所，指数是发布机构，行业是分类体系（申万 SW；GICS、ICB、NAICS、SIC），主题是主题目录（同花顺 THS）。历史查询用 ``as_of`` 指定时点；股票、指数与申万行业有历史，美国行业分类与主题目前只有当前快照。
+``order_book_id`` 是代码，\ ``name`` 是名称。目录里有四种类型——股票（stock）、指数（index）、行业（industry）、主题（theme），\ ``type`` 选类型，\ ``source`` 是编号机构：股票是交易所，指数是发布机构，行业是分类体系（申万 SW；GICS、ICB、NAICS、SIC），主题是主题目录（THS）。历史查询用 ``as_of`` 指定时点；股票、指数与申万行业有历史，美国行业分类与主题目前只有当前快照。
 
 .. list-table::
     :header-rows: 1

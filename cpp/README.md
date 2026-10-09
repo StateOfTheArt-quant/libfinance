@@ -11,7 +11,7 @@
 
 C++ 客户端与 Python 客户端（`../python`）**逐一对应**：同样的 30 个函数、同样的函数名、参数顺序与
 默认值、同样的校验与报错、同样的答案。函数清单见 `../contract/contract.json`，两种语言的一致性由
-`../conformance/` 核对。它适合需要在 C++ 里直接取数的场景——回测引擎、因子计算、实盘系统——不必经过
+`../contract/conformance/` 核对。它适合需要在 C++ 里直接取数的场景——回测引擎、因子计算、实盘系统——不必经过
 Python。两种客户端共用仓库的版本号（`../VERSION`）。
 
 客户端自己实现线上协议（`libfinance/src/wire.cpp`：帧、msgpack、LZ4 帧，与 Python 的
@@ -157,6 +157,6 @@ nlohmann/json、googletest 由构建取到 `third_party/`。用 conda 的 Arrow 
 |---|---|
 | `libfinance/include/libfinance/` | 公开头文件，按 Python 的 `libfinance/api/*.py` 分：`calendar.hpp`、`instrument.hpp`、`price.hpp`…… |
 | `libfinance/src/` | 实现；`client.cpp` 连接与解码，`internal.hpp` 参数校验与缓存（Python 的 `utils/`） |
-| `tools/libfinance_call.cpp` | `libfinance-call <函数> '<JSON 参数>'`：按名调用任一函数，`conformance/` 用它 |
+| `tools/libfinance_call.cpp` | `libfinance-call <函数> '<JSON 参数>'`：按名调用任一函数，`contract/conformance/` 用它 |
 | `test/` | 离线单测：日期解析、`Codes`、两种表格编码的解码 |
 | `../example/cpp/` | 示例，与 `../example/python/` 一一对应（`-DBUILD_EXAMPLES=ON`）；该目录也可单独用 FetchContent 构建 |

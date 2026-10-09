@@ -8,7 +8,7 @@ from libfinance.subscribe.md_protocol import Quote
 Quote 的字段集与订阅路径统一（定义见 libfinance/subscribe/md_protocol.py，对齐 dynamics）：
 
     data_time: int
-    instrument_id: str            exchange_id: str        # rqdata 风格，如 600000 / XSHG
+    instrument_id: str            exchange_id: str        # 代码与交易所后缀，如 600000 / XSHG
     instrument_type: int          # InstrumentType 枚举
     pre_close_price / pre_settlement_price / last_price / volume / turnover
     pre_open_interest / open_interest
