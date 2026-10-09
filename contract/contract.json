@@ -1,6 +1,6 @@
 {
   "contract": "libfinance",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "notes": [
     "functions: what users call, the same name, parameters (order and defaults) and meaning in every client language.",
     "wire: the RPC functions a libfinance server serves; clients call only these. `returns` is how the answer is encoded.",
@@ -30,6 +30,10 @@
 
     "get_pit_financials_ex": {"target": "financialstatement.get_pit_financials_ex", "params": ["order_book_ids", "fields", "start_quarter", "end_quarter", "as_of", "statements"], "returns": "dataframe", "note": "columns order_book_id, quarter, info_date, then one per field, if_adjusted"},
     "get_financial_metrics": {"target": "financialmetrics.get_financial_metrics", "params": ["order_book_ids", "fields", "start_date", "end_date"], "returns": "dataframe", "note": "columns order_book_id, date, then one per field: the value on each trading day from the latest report visible that day"},
+
+    "get_factor_exposure": {"target": "factorsdaybar.get_factor_exposure", "params": ["order_book_ids", "factor_names", "start_date", "end_date", "universe"], "returns": "dataframe", "note": "columns order_book_id, date, then one float32 column per factor (full names); cross-sectional factors are computed over universe on the server"},
+    "list_factor_libraries": {"target": "factorsdaybar.list_libraries", "params": [], "returns": "raw", "note": "[{name, version, factors, description}]"},
+    "list_factors": {"target": "factorsdaybar.list_factors", "params": ["library"], "returns": "raw", "note": "full factor names"},
 
     "get_index_constituents": {"target": "indexconstituents.get_index_constituents", "params": ["order_book_id", "as_of"], "returns": "raw"},
     "get_instrument_indices": {"target": "indexconstituents.get_instrument_indices", "params": ["order_book_ids", "source", "as_of"], "returns": "dataframe"},
@@ -69,6 +73,10 @@
 
     {"name": "get_pit_financials_ex", "module": "financials", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "fields", "type": "str_or_list"}, {"name": "start_quarter", "type": "str"}, {"name": "end_quarter", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}, {"name": "statements", "type": "str", "default": "latest"}], "returns": "dataframe indexed (order_book_id, quarter): info_date, one column per field, if_adjusted", "wire": ["get_pit_financials_ex"], "client": "quarters like 2026q1 (dashes dropped, lower-cased); statements in latest/all"},
     {"name": "get_financial_metrics", "module": "financials", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "fields", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}], "returns": "dataframe indexed (order_book_id, date): one column per field", "wire": ["get_financial_metrics"], "client": "fields from financialmetrics' catalog (roe_lf, revenue_ttm, net_profit_growth_lyr, ...); no dates: the latest trading day"},
+
+    {"name": "get_factor_exposure", "module": "factors", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "factor_names", "type": "str_or_list"}, {"name": "start_date", "type": "date"}, {"name": "end_date", "type": "date"}, {"name": "universe", "type": "str_or_list?", "default": null}], "returns": "dataframe indexed (order_book_id, date): one float32 column per factor, named in full", "wire": ["get_factor_exposure"], "client": "factor names in full: a library owner/library[@rev] (all its factors) or owner/library/factor[@rev]; universe: the codes cross-sectional factors are computed over (default: each day's A-share market)"},
+    {"name": "list_factor_libraries", "module": "factors", "params": [], "returns": "dataframe: name, version, factors, description", "wire": ["list_factor_libraries"]},
+    {"name": "list_factors", "module": "factors", "params": [{"name": "library", "type": "str?", "default": null}], "returns": "list[str] (full factor names with their revision: owner/library/factor@vX.Y.Z)", "wire": ["list_factors"]},
 
     {"name": "get_index_constituents", "module": "index_components", "params": [{"name": "order_book_id", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}], "returns": "list[str]? (the members' order_book_ids; null when the index did not exist that day)", "wire": ["get_index_constituents"]},
     {"name": "get_instrument_indices", "module": "index_components", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "source", "type": "str?", "default": null}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe: order_book_id, related_order_book_id (the index), source, market, level", "wire": ["get_instrument_indices"]},

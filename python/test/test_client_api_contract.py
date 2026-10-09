@@ -213,6 +213,10 @@ def test_all_instruments_takes_the_backend_types_and_sources(monkeypatch):
     ("get_financial_metrics", {"order_book_ids": "600000.XSHG", "fields": "roe_lf",
       "start_date": "2024-11-01", "end_date": 20241105},
      {"order_book_ids": ["600000.XSHG"], "fields": ["roe_lf"], "start_date": "2024-11-01", "end_date": "2024-11-05"}),
+    ("get_factor_exposure", {"order_book_ids": "600000.XSHG", "factor_names": "system/barra-cne5",
+      "start_date": "2026-09-01", "end_date": 20260910},
+     {"order_book_ids": ["600000.XSHG"], "factor_names": ["system/barra-cne5"], "start_date": "2026-09-01",
+      "end_date": "2026-09-10", "universe": None}),
     ("get_instrument_industry", {"order_book_ids": ["600000.XSHG"], "level": 3, "as_of": "2024-06-28"},
      {"order_book_ids": ["600000.XSHG"], "level": 3, "as_of": "2024-06-28"}),
     ("get_instrument_indices", {"order_book_ids": "600000.XSHG", "source": "CSI"},
@@ -369,3 +373,53 @@ def test_financial_frames_get_rqdatas_index_whichever_server_answers(monkeypatch
     assert metrics.index.names == ["order_book_id", "date"] and list(metrics.roe_lf) == [0.1, 0.2]
     pit = financials.get_pit_financials_ex("A", "assets", "2024q1", "2024q1")
     assert pit.index.names == ["order_book_id", "quarter"] and list(pit.columns) == ["info_date", "assets", "if_adjusted"]
+
+
+def test_factor_exposure_is_indexed_and_says_when_the_tier_cuts_it(monkeypatch):
+    """服务端回扁平表；客户端按 (order_book_id, date) 建索引、保持服务端的行序。免费层夹日期窗口、截断代码数时
+    服务端不报错，客户端各给一句警告——否则"没数据"和"档位不够"分不出来。"""
+    import pandas as pd
+    from libfinance.api import factors
+    from libfinance.utils import cache
+
+    calls = []
+
+    class Client:
+        def get_factor_exposure(self, **kwargs):
+            calls.append(kwargs)
+            return pd.DataFrame([{"order_book_id": "B", "date": "2026-09-10", "system/barra-cne5/SIZE": 1.4},
+                                 {"order_book_id": "A", "date": "2026-09-10", "system/barra-cne5/SIZE": 1.5}])
+
+    monkeypatch.setattr(factors, "get_client", lambda: Client())
+    monkeypatch.setattr(cache, "limits_for", lambda api: {"clamp_date_window": {"years": 1},
+                                                          "clamp_instrument_count": {"max_count": 2}})
+    with pytest.warns(UserWarning) as caught:
+        frame = factors.get_factor_exposure(["B", "A", "C"], ["system/barra-cne5"], "2000-01-04", "2026-09-10",
+                                            universe=["A", "B", "C"])
+    messages = [str(w.message) for w in caught]
+    assert any("可查区间的起点" in m for m in messages) and any("最多 2 个代码" in m for m in messages)
+    assert calls[0]["universe"] == ["A", "B", "C"]
+    assert frame.index.names == ["order_book_id", "date"]
+    assert list(frame.index.get_level_values(0)) == ["B", "A"]
+    assert list(frame.columns) == ["system/barra-cne5/SIZE"]
+    with pytest.raises(ValueError, match="after end_date"):
+        factors.get_factor_exposure("A", "system/qlib", "2026-09-10", "2026-09-01")
+    with pytest.raises(ValueError, match="factor_names"):
+        factors.get_factor_exposure("A", [], "2026-09-10", "2026-09-10")
+
+
+def test_factor_listings(monkeypatch):
+    from libfinance.api import factors
+
+    class Client:
+        def list_factor_libraries(self):
+            return [{"name": "system/barra-cne5", "version": "v2.0.0", "factors": 42, "description": ""}]
+
+        def list_factors(self, library=None):
+            return ["system/barra-cne5/SIZE"] if library == "system/barra-cne5" else []
+
+    monkeypatch.setattr(factors, "get_client", lambda: Client())
+    libraries = factors.list_factor_libraries()
+    assert list(libraries.columns) == ["name", "version", "factors", "description"]
+    assert libraries.factors.tolist() == [42]
+    assert factors.list_factors("system/barra-cne5") == ["system/barra-cne5/SIZE"]

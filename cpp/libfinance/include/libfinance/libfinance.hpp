@@ -7,6 +7,7 @@
 #include "libfinance/corporate_actions.hpp"
 #include "libfinance/errors.hpp"
 #include "libfinance/exfactor.hpp"
+#include "libfinance/factors.hpp"
 #include "libfinance/financials.hpp"
 #include "libfinance/index_components.hpp"
 #include "libfinance/industry.hpp"
