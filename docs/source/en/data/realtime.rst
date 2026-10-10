@@ -121,7 +121,7 @@ read ``rsp.source`` on the subscription acknowledgement, or call
     *   - Field
         - Meaning
     *   - ``order_book_id``
-        - Code (read-only property built from ``instrument_id`` and ``exchange_id``)
+        - The security, e.g. ``600519.XSHG``: the only identity field of a record; the suffix is the exchange
     *   - ``data_time``
         - Quote timestamp
     *   - ``last_price``

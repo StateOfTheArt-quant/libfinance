@@ -110,7 +110,7 @@
     *   - 字段
         - 含义
     *   - ``order_book_id``
-        - 代码（只读属性，由 ``instrument_id`` 和 ``exchange_id`` 拼成）
+        - 证券代码，如 ``600519.XSHG``\ ：行情记录里唯一的标的字段，交易所即后缀
     *   - ``data_time``
         - 行情时间戳
     *   - ``last_price``

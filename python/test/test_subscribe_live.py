@@ -59,9 +59,11 @@ class Recorder(QuoteSpi):
         self.gaps.append(gap)
 
 
-def test_protocol_version_and_hash_are_v3():
-    assert mp.VERSION == 3
-    assert mp.instrument_hash("XSHG", "600000") != mp.instrument_hash("XSHE", "600000")
+def test_protocol_version_and_hash_are_v4():
+    assert mp.VERSION == 4
+    assert mp.instrument_hash("600000.XSHG") != mp.instrument_hash("600000.XSHE")
+    # FNV-1a 64 over the order_book_id, as dynamics::instrument_hash
+    assert mp.instrument_hash("") == 14695981039346656037
 
 
 def _sent(monkeypatch):
@@ -73,10 +75,11 @@ def _sent(monkeypatch):
 def test_subscribe_takes_order_book_ids_across_exchanges(monkeypatch):
     api, frames = _sent(monkeypatch)
     assert api.subscribe(["600519.XSHG", "000001.XSHE", "600519.XSHG"], source="sim") == 2   # duplicates once
-    assert frames == [(mp.MsgType.REQ_SUBSCRIBE, mp.pack_sub_req("XSHG", "600519", "sim")),
-                      (mp.MsgType.REQ_SUBSCRIBE, mp.pack_sub_req("XSHE", "000001", "sim"))]
+    assert frames == [(mp.MsgType.REQ_SUBSCRIBE, mp.pack_sub_req("600519.XSHG", "sim")),
+                      (mp.MsgType.REQ_SUBSCRIBE, mp.pack_sub_req("000001.XSHE", "sim"))]
+    assert frames[0][1] == b"sim".ljust(16, b"\0") + b"600519.XSHG".ljust(48, b"\0")   # 线上就是这串
     api.unsubscribe("000001.XSHE")
-    assert frames[-1] == (mp.MsgType.REQ_UNSUBSCRIBE, mp.pack_sub_req("XSHE", "000001"))
+    assert frames[-1] == (mp.MsgType.REQ_UNSUBSCRIBE, mp.pack_sub_req("000001.XSHE"))
 
 
 def test_a_bad_code_sends_nothing(monkeypatch):
@@ -93,11 +96,18 @@ def test_a_bad_code_sends_nothing(monkeypatch):
 
 
 def test_records_and_receipts_carry_the_order_book_id():
-    rsp = mp.unpack_sub_rsp(mp.struct.pack(mp.SUB_RSP_FMT, b"sim", b"XSHE", b"000001", 0, b"", 1, 10))
+    rsp = mp.unpack_sub_rsp(mp.struct.pack(mp.SUB_RSP_FMT, b"sim", b"000001.XSHE", 0, b"", 1, 10))
     assert rsp.order_book_id == "000001.XSHE"
-    tick = mp.unpack_tick(mp.struct.pack(mp.TICK_FMT, 1, b"600519", b"XSHG", 1, 1.0, 2.0, 3.0, 4.0))
-    assert tick.order_book_id == "600519.XSHG"
-    gap = qa.SequenceGap(1, mp.RecordTag.QUOTE, "XSHG", "600519", 3, 5)
+    tick = mp.unpack_tick(mp.struct.pack(mp.TICK_FMT, 1, b"600519.XSHG", 1.0, 2.0, 3.0, 4.0))
+    assert tick.order_book_id == "600519.XSHG" and tick.ask_volume == 4.0
+    quote = mp.unpack_quote(mp.struct.pack(mp.QUOTE_FMT, 1, b"600519.XSHG", *range(17), 7, *range(40), b"T0"))
+    assert quote.order_book_id == "600519.XSHG" and quote.pre_close_price == 0 and quote.total_ask_volume == 16
+    assert quote.total_trade_num == 7 and quote.bid_price == list(range(10)) and quote.ask_volume == list(range(30, 40))
+    assert quote.trading_phase_code == "T0"
+    for record in (rsp, tick, quote):
+        assert not hasattr(record, "instrument_id") and not hasattr(record, "exchange_id")
+        assert not hasattr(record, "instrument_type")
+    gap = qa.SequenceGap(1, mp.RecordTag.QUOTE, "600519.XSHG", 3, 5)
     assert gap.order_book_id == "600519.XSHG"
     assert mp.unpack_sub_all_rsp(mp.struct.pack(mp.SUB_ALL_RSP_FMT, b"", 0, b"")).source == ""
 
@@ -114,7 +124,7 @@ def test_ticket_login_envelopes_and_resume_after_reconnect():
     assert wait(lambda: spi.subs) and spi.subs[0].error_id == 0
     assert wait(lambda: len(spi.quotes) >= 5, timeout=15)
     quote, env = spi.quotes[-1]
-    assert env.instrument_key == mp.instrument_hash("XSHG", "600000")   # 与服务端 FNV 一致
+    assert env.instrument_key == mp.instrument_hash("600000.XSHG")   # 与服务端 FNV 一致
     assert env.seq > 0 and quote.order_book_id == "600000.XSHG"
 
     # 强制断线：SDK 自动重连、重新登录、按 seq 续传，不报缺口
@@ -241,10 +251,10 @@ class FakeGateway:
                             mp.LOGIN_RSP_FMT, error, b"revoked" if error else b"ok", 1, 4102444800000,
                             5, 2, 200, 0, 0x180, 1))
                     elif msg_type == mp.MsgType.REQ_SUBSCRIBE:
-                        _src, exchange, code = struct.unpack(mp.SUB_REQ_FMT, body)
-                        self.subscribed.append((self.connections, code.rstrip(b"\0").decode()))
+                        _src, order_book_id = struct.unpack(mp.SUB_REQ_FMT, body)
+                        self.subscribed.append((self.connections, order_book_id.rstrip(b"\0").decode()))
                         self._send(mp.MsgType.RSP_SUBSCRIBE, struct.pack(
-                            mp.SUB_RSP_FMT, b"sim", exchange, code, 0, b"", 1, 5))
+                            mp.SUB_RSP_FMT, b"sim", order_book_id, 0, b"", 1, 5))
             except (ConnectionError, OSError):
                 sock.close()
 
@@ -276,7 +286,7 @@ def test_a_revoked_ticket_is_replaced_and_subscriptions_come_back():
     # 重连、换新票据登录、在 on_rsp_login 里重放订阅
     assert wait(lambda: len(gateway.subscribed) >= 2)
     assert gateway.logins == ["t0", "t1"]
-    assert gateway.subscribed == [(1, "600519"), (2, "600519")]
+    assert gateway.subscribed == [(1, "600519.XSHG"), (2, "600519.XSHG")]
     assert [rsp.error_id for rsp in spi.logins] == [0, 0]
     api.disconnect()
     gateway.close()
