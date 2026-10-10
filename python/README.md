@@ -170,7 +170,7 @@ get_trading_dates("2024-01-01", "2024-01-31", market="us")   # 不涉及具体�
 | 行业分类 | CN · US | `get_instrument_industry`、`get_industry_constituents`、`get_industry_weights` | 申万、GICS 等分类体系 |
 | 指数成分与权重 | CN · US | `get_index_constituents`、`get_index_weights` | 中证、标普等 |
 | 主题成分与权重 | CN | `get_theme_constituents`、`get_theme_weights` | THS 主题 |
-| 日频因子 | CN | `get_factor_exposure`、`list_factor_libraries`、`list_factors` | alpha158、qlib、Barra CNE5 / CNE6 |
+| 日频因子 | CN | `get_factor_exposure`、`list_factor_libraries`、`list_factors` | alpha158、qlib，Barra CNE5 风格 / 行业因子，CNE5 与 CNE6 描述符；见[因子数据](https://libfinance.readthedocs.io/zh-cn/latest/data/factors.html)与[因子字典](https://libfinance.readthedocs.io/zh-cn/latest/reference/factor_dictionary.html) |
 | 实时行情 | CN | `get_last_quotes`、`QuoteApi` | 最新快照与订阅推送 |
 
 覆盖到哪一年、更新到哪一天，取决于你连的那个服务。**不要照抄文档里的日期**，用[数据新鲜度](https://libfinance.readthedocs.io/zh-cn/latest/data/freshness.html)里的两个函数自己查。

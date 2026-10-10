@@ -136,7 +136,7 @@ What data is here
     *   - Daily factors
         - CN
         - :func:`~libfinance.get_factor_exposure`
-        - alpha158, qlib, Barra CNE5 / CNE6; libraries and names via :func:`~libfinance.list_factor_libraries`
+        - alpha158, qlib, Barra CNE5 style / industry factors, CNE5 and CNE6 descriptors; see :doc:`data/factors` and :doc:`reference/factor_dictionary`
     *   - Live quotes
         - CN
         - :class:`~libfinance.subscribe.quote_api.QuoteApi`
@@ -250,6 +250,7 @@ code runs fine and your numbers are wrong.
     :hidden:
 
     reference/fields
+    reference/factor_dictionary
     reference/errors
 
 .. toctree::

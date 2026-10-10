@@ -132,7 +132,7 @@ A 股；美股没有涨跌停，也没有提供成交额。
     *   - 日频因子
         - CN
         - :func:`~libfinance.get_factor_exposure`
-        - alpha158、qlib、Barra CNE5 / CNE6；库与因子名见 :func:`~libfinance.list_factor_libraries`
+        - alpha158、qlib，Barra CNE5 风格 / 行业因子，CNE5 与 CNE6 描述符；见 :doc:`data/factors` 与 :doc:`reference/factor_dictionary`
     *   - 实时行情
         - CN
         - :class:`~libfinance.subscribe.quote_api.QuoteApi`
@@ -238,6 +238,7 @@ A 股；美股没有涨跌停，也没有提供成交额。
     :hidden:
 
     reference/fields
+    reference/factor_dictionary
     reference/errors
 
 ..  toctree::
