@@ -22,13 +22,11 @@
 
 ---
 
-`libfinance` is a financial data client for quantitative research and backtesting, implemented in Python and in C++, covering Chinese A-shares and US equities.
+Conclusions in quantitative research rest on historical data, and historical data is distorted in three common ways: security codes are renamed, reused, and collide across markets; financial statements are revised after release, so a backtest that reads the latest version uses information nobody had at the time; and corporate actions such as dividends and splits break price comparability, so inconsistent adjustment distorts returns. Research and production also tend to run in different languages, Python and C++, and small differences between two interfaces make the same strategy produce different results once it is ported.
 
-A code carries its market (`600000.XSHG`, `AAPL.US`), so one call can mix both markets. Functions, arguments and returned tables are the same for the two markets; they differ only in their data — US stocks have no price limits, so their `limit_up` column is `NaN`.
+`libfinance` is a financial data client for quantitative research and backtesting, covering Chinese A-shares and US equities, with implementations in Python and C++. It organizes prices, the security catalog, trading calendars, corporate actions, shares, financials, industry / index / theme constituents and daily factors around unified security identifiers, point-in-time data versions and event-by-event adjustment factors. Both markets and both languages follow one interface contract: queries are written the same way, and differences come only from the data.
 
-The data covers daily bars and adjustment factors, the security catalog, trading calendars, corporate actions such as dividends and splits, shares outstanding, financial statements and derived metrics, industry / index / theme constituents and weights, daily factors (alpha158, qlib, Barra), and live A-share quotes. Tables are `pandas.DataFrame` in Python and `arrow::Table` in C++, with the same column names.
-
-A backtest can be trusted only if each security is identified correctly, each input was available at the time, and prices are adjusted consistently. The data design follows four conventions:
+The data design rests on four conventions:
 
 - **Unified security identifiers** — `<trading_code>.<namespace>`, such as `600000.XSHG`, `000001.XSHE` and `AAPL.US`. The namespace separates equal codes in different markets, and codes resolve at a point in time, so renames and reused codes never land on another security.
 - **Point-in-time queries with `as_of`** — rebuild the security universe of a past date and select the financial statements disclosed by then, avoiding look-ahead and survivorship bias.
