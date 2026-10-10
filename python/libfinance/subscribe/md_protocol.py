@@ -1,5 +1,5 @@
 """
-md_protocol.py — dynamics 行情分发系统的二进制帧协议（纯 Python 实现，协议 v3）
+md_protocol.py — dynamics 行情分发系统的二进制帧协议（纯 Python 实现，协议 v4）
 
 libfinance 的订阅模块是 dynamics 的独立客户端，只依赖标准库，不依赖 libdynamics。
 本文件严格对齐服务端 `#pragma pack(1)` 的结构体布局（dynamics/framework/core/src/include/dynamics/proto）。
@@ -11,6 +11,8 @@ libfinance 的订阅模块是 dynamics 的独立客户端，只依赖标准库�
 
 v3（相对 v1）：登录只接受 PDP（libfinance 服务端）签发的票据；数据只走批量帧；心跳双向强制
 （5 s 一帧，15 s 没收到对端任何帧即判定连接失效）；断线后按 seq 续传。
+v4：标的只用 order_book_id（``600519.XSHG``）一个字段——行情记录、订阅请求与回执都不再带
+instrument_id / exchange_id / instrument_type。
 
 每个结构体都带 `assert struct.calcsize(...) == <服务端 sizeof>`，一旦服务端改了线格式，
 import 时立刻报错，而不是解包出乱码才发现。
@@ -23,15 +25,14 @@ from typing import Iterator, List, Tuple
 
 # ── 常量 ──────────────────────────────────────────────────────────
 MAGIC = 0x44594E31   # "DYN1"
-VERSION = 3
+VERSION = 4
 HEADER_SIZE = 16
 MAX_BODY_LEN = 16 * 1024 * 1024   # 与服务端一致：拒绝异常帧诱导的超大分配
 HEARTBEAT_INTERVAL = 5.0          # 秒：至少这么久发一帧
 HEARTBEAT_TIMEOUT = 15.0          # 秒：这么久没收到对端任何帧即判定连接失效
 
 SOURCE_LEN = 16
-EXCHANGE_ID_LEN = 16
-INSTRUMENT_ID_LEN = 32
+ORDER_BOOK_ID_LEN = 48   # <代码>.<交易所>，含结尾 '\0'（协议 v4 起标的只用这一个字段）
 TRADING_PHASE_CODE_LEN = 8
 MAX_TOKEN_BYTES = 2048
 
@@ -131,22 +132,6 @@ class SubscribeDataType(IntEnum):
     Depth = 0x32
 
 
-class InstrumentType(IntEnum):
-    """行情记录里的 instrument_type 字段（服务端按 交易所+代码 推导）。"""
-    Unknown = 0
-    Stock = 1
-    StockOption = 2
-    TechStock = 3        # 科创板，订阅过滤时归入 Stock 品种位
-    Future = 4
-    Bond = 5
-    Fund = 6
-    Index = 7
-    Repo = 8
-    Crypto = 9
-    CryptoFuture = 10
-    CryptoUFuture = 11
-
-
 # 交易所标识：全系统统一用 order_book_id 的后缀。
 EXCHANGE_OF_MARKET = {
     MarketType.SSE: "XSHG",
@@ -164,10 +149,10 @@ EXCHANGE_OF_MARKET = {
 EXCHANGES = frozenset(EXCHANGE_OF_MARKET.values())
 
 
-def split_order_book_id(order_book_id: str) -> Tuple[str, str]:
-    """``600519.XSHG`` -> (``XSHG``, ``600519``)：线上的 (exchange_id, instrument_id)。
+def check_order_book_id(order_book_id: str) -> str:
+    """校验一个 order_book_id（如 ``600519.XSHG``）可以发给网关：<代码>.<交易所>，交易所在 EXCHANGES 内。
 
-    与 libfinance 其余函数同一种代码；后缀必须是网关承接的交易所（EXCHANGES）。"""
+    与 libfinance 其余函数同一种代码；线上就是这个字符串本身。"""
     if not isinstance(order_book_id, str):
         raise TypeError("order_book_id must be a string, got {!r}".format(order_book_id))
     code, dot, exchange = order_book_id.rpartition(".")
@@ -175,24 +160,15 @@ def split_order_book_id(order_book_id: str) -> Tuple[str, str]:
         raise ValueError("{!r} is not <code>.<exchange>, e.g. 600519.XSHG".format(order_book_id))
     if exchange not in EXCHANGES:
         raise ValueError("{!r}: the quote gateway serves {} only".format(order_book_id, sorted(EXCHANGES)))
-    if len(code.encode()) >= INSTRUMENT_ID_LEN:
-        raise ValueError("{!r}: the code is longer than the gateway takes".format(order_book_id))
-    return exchange, code
+    if len(order_book_id.encode()) >= ORDER_BOOK_ID_LEN:
+        raise ValueError("{!r}: longer than the gateway takes".format(order_book_id))
+    return order_book_id
 
 
-class _Coded:
-    """行情记录、回执与缺口通知共有的 order_book_id（由 instrument_id 与 exchange_id 拼成）。"""
-
-    @property
-    def order_book_id(self) -> str:
-        """order_book_id，如 600519.XSHG。"""
-        return "{}.{}".format(self.instrument_id, self.exchange_id) if self.instrument_id else ""
-
-
-def instrument_hash(exchange_id: str, instrument_id: str) -> int:
-    """与服务端 instrument_hash 一致（FNV-1a 64，交易所与代码之间以 0x1f 分隔）= RecordEnvelope.instrument_key。"""
+def instrument_hash(order_book_id: str) -> int:
+    """与服务端 instrument_hash(order_book_id) 一致（FNV-1a 64）= RecordEnvelope.instrument_key。"""
     h = 14695981039346656037
-    for b in exchange_id.encode() + b"\x1f" + instrument_id.encode():
+    for b in order_book_id.encode():
         h ^= b
         h = (h * 1099511628211) & 0xFFFFFFFFFFFFFFFF
     return h
@@ -286,29 +262,23 @@ def unpack_session_closed(data: bytes) -> SessionClosed:
 # ── SubReq / SubRsp ───────────────────────────────────────────────
 # source 为空 = 无源订阅（网关按健康+优先级自动选源，支持灾备重路由）；
 # source 非空 = 定向订阅（只推该源数据，不自动切源）。
-SUB_REQ_FMT = "<16s16s32s"
+SUB_REQ_FMT = "<16s48s"
 SUB_REQ_SIZE = struct.calcsize(SUB_REQ_FMT)
 assert SUB_REQ_SIZE == 64
 
-SUB_RSP_FMT = "<16s16s32si64sii"
+SUB_RSP_FMT = "<16s48si64sii"
 SUB_RSP_SIZE = struct.calcsize(SUB_RSP_FMT)
 assert SUB_RSP_SIZE == 140
 
 
-def pack_sub_req(exchange_id: str, instrument_id: str, source: str = "") -> bytes:
-    return struct.pack(
-        SUB_REQ_FMT,
-        _fix(source, SOURCE_LEN),
-        _fix(exchange_id, EXCHANGE_ID_LEN),
-        _fix(instrument_id, INSTRUMENT_ID_LEN),
-    )
+def pack_sub_req(order_book_id: str, source: str = "") -> bytes:
+    return struct.pack(SUB_REQ_FMT, _fix(source, SOURCE_LEN), _fix(order_book_id, ORDER_BOOK_ID_LEN))
 
 
 @dataclass
-class SubRsp(_Coded):
+class SubRsp:
     source: str          # 回显：无源订阅时是网关实际选中的源
-    exchange_id: str
-    instrument_id: str
+    order_book_id: str
     error_id: int        # ErrorCode
     error_msg: str
     current_subs: int
@@ -316,8 +286,8 @@ class SubRsp(_Coded):
 
 
 def unpack_sub_rsp(data: bytes) -> SubRsp:
-    src, exch, inst, err, msg, cur, mx = struct.unpack(SUB_RSP_FMT, data[:SUB_RSP_SIZE])
-    return SubRsp(_s(src), _s(exch), _s(inst), err, _s(msg), cur, mx)
+    src, obid, err, msg, cur, mx = struct.unpack(SUB_RSP_FMT, data[:SUB_RSP_SIZE])
+    return SubRsp(_s(src), _s(obid), err, _s(msg), cur, mx)
 
 
 # ── SubAllReq / SubAllRsp（整市场订阅）─────────────────────────────
@@ -460,9 +430,7 @@ def iter_batch(body: bytes) -> Iterator[Tuple[RecordEnvelope, bytes]]:
 QUOTE_FMT = (
     "<"
     "q"      # data_time
-    "32s"    # instrument_id
-    "16s"    # exchange_id
-    "b"      # instrument_type (int8)
+    "48s"    # order_book_id
     "17d"    # pre_close, pre_settlement, last, volume, turnover,
              # pre_open_interest, open_interest, open, high, low,
              # upper_limit, lower_limit, close, settlement, iopv,
@@ -472,15 +440,13 @@ QUOTE_FMT = (
     "8s"     # trading_phase_code
 )
 QUOTE_SIZE = struct.calcsize(QUOTE_FMT)
-assert QUOTE_SIZE == 529
+assert QUOTE_SIZE == 528
 
 
 @dataclass
-class Quote(_Coded):
+class Quote:
     data_time: int
-    instrument_id: str
-    exchange_id: str
-    instrument_type: int
+    order_book_id: str                                      # 如 600519.XSHG
     pre_close_price: float
     pre_settlement_price: float
     last_price: float
@@ -510,52 +476,48 @@ def unpack_quote(data: bytes) -> Quote:
     f = struct.unpack(QUOTE_FMT, data[:QUOTE_SIZE])
     return Quote(
         data_time=f[0],
-        instrument_id=_s(f[1]),
-        exchange_id=_s(f[2]),
-        instrument_type=f[3],
-        pre_close_price=f[4],
-        pre_settlement_price=f[5],
-        last_price=f[6],
-        volume=f[7],
-        turnover=f[8],
-        pre_open_interest=f[9],
-        open_interest=f[10],
-        open_price=f[11],
-        high_price=f[12],
-        low_price=f[13],
-        upper_limit_price=f[14],
-        lower_limit_price=f[15],
-        close_price=f[16],
-        settlement_price=f[17],
-        iopv=f[18],
-        total_bid_volume=f[19],
-        total_ask_volume=f[20],
-        total_trade_num=f[21],
-        bid_price=list(f[22:32]),
-        ask_price=list(f[32:42]),
-        bid_volume=list(f[42:52]),
-        ask_volume=list(f[52:62]),
-        trading_phase_code=_s(f[62]),
+        order_book_id=_s(f[1]),
+        pre_close_price=f[2],
+        pre_settlement_price=f[3],
+        last_price=f[4],
+        volume=f[5],
+        turnover=f[6],
+        pre_open_interest=f[7],
+        open_interest=f[8],
+        open_price=f[9],
+        high_price=f[10],
+        low_price=f[11],
+        upper_limit_price=f[12],
+        lower_limit_price=f[13],
+        close_price=f[14],
+        settlement_price=f[15],
+        iopv=f[16],
+        total_bid_volume=f[17],
+        total_ask_volume=f[18],
+        total_trade_num=f[19],
+        bid_price=list(f[20:30]),
+        ask_price=list(f[30:40]),
+        bid_volume=list(f[40:50]),
+        ask_volume=list(f[50:60]),
+        trading_phase_code=_s(f[60]),
     )
 
 
 # ── 逐笔委托 / 逐笔成交 / 盘口 / 深度 ──────────────────────────────
-ENTRUST_FMT = "<q32s16sbddbbqqqq"
-assert struct.calcsize(ENTRUST_FMT) == 107
-TRANSACTION_FMT = "<q32s16sbddqqbbqqq"
-assert struct.calcsize(TRANSACTION_FMT) == 115
-TICK_FMT = "<q32s16sbdddd"
-assert struct.calcsize(TICK_FMT) == 89
-DEPTH_FMT = "<q32s16sbddb"
-assert struct.calcsize(DEPTH_FMT) == 74
+ENTRUST_FMT = "<q48sddbbqqqq"
+assert struct.calcsize(ENTRUST_FMT) == 106
+TRANSACTION_FMT = "<q48sddqqbbqqq"
+assert struct.calcsize(TRANSACTION_FMT) == 114
+TICK_FMT = "<q48sdddd"
+assert struct.calcsize(TICK_FMT) == 88
+DEPTH_FMT = "<q48sddb"
+assert struct.calcsize(DEPTH_FMT) == 73
 
 
 @dataclass
-class Entrust(_Coded):
+class Entrust:
     data_time: int
-    instrument_id: str
-    exchange_id: str
-    instrument_type: int
+    order_book_id: str
     price: float
     volume: float
     side: int
@@ -567,11 +529,9 @@ class Entrust(_Coded):
 
 
 @dataclass
-class Transaction(_Coded):
+class Transaction:
     data_time: int
-    instrument_id: str
-    exchange_id: str
-    instrument_type: int
+    order_book_id: str
     price: float
     volume: float
     bid_no: int
@@ -584,11 +544,9 @@ class Transaction(_Coded):
 
 
 @dataclass
-class Tick(_Coded):
+class Tick:
     data_time: int
-    instrument_id: str
-    exchange_id: str
-    instrument_type: int
+    order_book_id: str
     bid_price: float
     bid_volume: float
     ask_price: float
@@ -596,11 +554,9 @@ class Tick(_Coded):
 
 
 @dataclass
-class Depth(_Coded):
+class Depth:
     data_time: int
-    instrument_id: str
-    exchange_id: str
-    instrument_type: int
+    order_book_id: str
     price: float
     volume: float
     side: int
@@ -608,7 +564,7 @@ class Depth(_Coded):
 
 def _unpack(cls, fmt, data):
     f = list(struct.unpack(fmt, data[:struct.calcsize(fmt)]))
-    f[1], f[2] = _s(f[1]), _s(f[2])
+    f[1] = _s(f[1])
     return cls(*f)
 
 
@@ -630,10 +586,10 @@ def unpack_depth(data: bytes) -> Depth:
 
 RECORD_UNPACKERS = {
     RecordTag.QUOTE: (unpack_quote, QUOTE_SIZE),
-    RecordTag.ENTRUST: (unpack_entrust, 107),
-    RecordTag.TRANSACTION: (unpack_transaction, 115),
-    RecordTag.TICK: (unpack_tick, 89),
-    RecordTag.DEPTH: (unpack_depth, 74),
+    RecordTag.ENTRUST: (unpack_entrust, 106),
+    RecordTag.TRANSACTION: (unpack_transaction, 114),
+    RecordTag.TICK: (unpack_tick, 88),
+    RecordTag.DEPTH: (unpack_depth, 73),
 }
 
 

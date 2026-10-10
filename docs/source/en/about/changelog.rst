@@ -19,6 +19,17 @@ Only changes that alter the behaviour of **existing code** are listed.
       C++ removes ``Instrument::permanent_id()``.
     - Code that joined or deduplicated on these columns uses ``order_book_id``; ``as_of`` resolves historical identity.
 
+.. danger::
+
+    **Live quotes name a security by order_book_id only:** the quote gateway protocol is now v4,
+    incompatible with older gateways (dynamics protocol v4).
+
+    - ``Quote`` and the trade / order / tick / depth records, subscription receipts (``SubRsp``) and gap
+      notices (``SequenceGap``) carry one identity field, ``order_book_id``; ``instrument_id``,
+      ``exchange_id`` and ``instrument_type`` are gone. ``get_last_quotes`` snapshots likewise.
+    - In C++, ``order_book_id`` is a field instead of the method ``order_book_id()``.
+    - For the kind of security, look up ``type`` with :func:`~libfinance.instruments`.
+
 0.1.2 (2026-10-10)
 ==================
 

@@ -8,8 +8,7 @@ from libfinance.subscribe.md_protocol import Quote
 Quote 的字段集与订阅路径统一（定义见 libfinance/subscribe/md_protocol.py，对齐 dynamics）：
 
     data_time: int
-    instrument_id: str            exchange_id: str        # 代码与交易所后缀，如 600000 / XSHG
-    instrument_type: int          # InstrumentType 枚举
+    order_book_id: str            # 如 600000.XSHG（协议 v4 起唯一的标的字段）
     pre_close_price / pre_settlement_price / last_price / volume / turnover
     pre_open_interest / open_interest
     open_price / high_price / low_price / upper_limit_price / lower_limit_price
@@ -17,12 +16,15 @@ Quote 的字段集与订阅路径统一（定义见 libfinance/subscribe/md_prot
     total_bid_volume / total_ask_volume / total_trade_num
     bid_price / ask_price / bid_volume / ask_volume    # 均为 list[float]，10 档
     trading_phase_code: str
-    order_book_id: str            # 只读属性 = f"{instrument_id}.{exchange_id}"
 
 注意：本函数走 RPC（8080），与行情网关是两条独立通路，只是复用同一个 Quote 类型。
 服务端返回体的字段名须与上面一致；下面用 __dict__ 注入，多余的键会原样带上，
 缺失的键则在访问时才报 AttributeError。
 """
+
+#: 协议 v4 之前的标的字段：order_book_id 已包含全部信息，旧服务端送来也丢掉。
+_RETIRED = frozenset(("instrument_id", "exchange_id", "instrument_type"))
+
 
 def dict_to_quotes_ultrafast(raw_data) -> dict[str, Quote]:
     result = {}
@@ -39,7 +41,8 @@ def dict_to_quotes_ultrafast(raw_data) -> dict[str, Quote]:
             
         # 🧹 3. 是 dict 时快速清洗内部 None 值，防止下游量价计算报 TypeError
         # 字典推导式在 CPython 底层由 C 循环驱动，性能损耗 < 5%
-        clean_v = {fk: fv for fk, fv in v.items() if fv is not None}
+        clean_v = {fk: fv for fk, fv in v.items() if fv is not None and fk not in _RETIRED}
+        clean_v.setdefault("order_book_id", k)   # 键就是 order_book_id；旧服务端不带这个字段
         
         # 🚀 4. 绕过 __init__ 参数绑定，直接注入对象内存
         q = object.__new__(Quote)

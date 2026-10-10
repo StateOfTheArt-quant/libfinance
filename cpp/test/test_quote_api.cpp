@@ -62,11 +62,10 @@ std::string login_rsp(int32_t error) {
   return body;
 }
 
-std::string sub_rsp(const std::string& request) {  // echoes the SubReq: source, exchange, code
+std::string sub_rsp(const std::string& request) {  // echoes the SubReq: source, order_book_id
   std::string body;
   fixed(body, cut(request, 0, 16).empty() ? "auto" : cut(request, 0, 16), 16);
-  fixed(body, cut(request, 16, 16), 16);
-  fixed(body, cut(request, 32, 32), 32);
+  fixed(body, cut(request, 16, 48), 48);
   put<int32_t>(body, 0);
   fixed(body, "", 64);
   put<int32_t>(body, 1);
@@ -74,13 +73,11 @@ std::string sub_rsp(const std::string& request) {  // echoes the SubReq: source,
   return body;
 }
 
-//: One quote record (envelope + 529-byte quote + padding) of 600519.XSHG with this inst_seq.
+//: One quote record (envelope + 528-byte quote + padding) of 600519.XSHG with this inst_seq.
 std::string quote_record(uint64_t seq, uint64_t inst_seq, double last) {
   std::string quote;
   put<int64_t>(quote, 1700000000000);
-  fixed(quote, "600519", 32);
-  fixed(quote, "XSHG", 16);
-  put<int8_t>(quote, 1);
+  fixed(quote, "600519.XSHG", 48);
   for (int i = 0; i < 17; ++i) put<double>(quote, i == 2 ? last : 0.0);
   put<int64_t>(quote, 0);
   for (int i = 0; i < 40; ++i) put<double>(quote, 0.0);
@@ -93,7 +90,7 @@ std::string quote_record(uint64_t seq, uint64_t inst_seq, double last) {
   put<uint32_t>(record, 0);
   put<uint64_t>(record, seq);
   put<uint64_t>(record, inst_seq);
-  put<uint64_t>(record, lf::instrument_hash("XSHG", "600519"));
+  put<uint64_t>(record, lf::instrument_hash("600519.XSHG"));
   put<int64_t>(record, 0);
   put<int64_t>(record, 0);
   record += quote;
@@ -125,7 +122,7 @@ class FakeGateway {
 
   std::mutex lock;
   std::string token, client_id;
-  std::vector<std::string> subscribed;  // "source|exchange|code"
+  std::vector<std::string> subscribed;  // "source|order_book_id"
 
  private:
   bool read(std::string& out, size_t n) {
@@ -159,7 +156,7 @@ class FakeGateway {
         size_t count;
         {
           std::lock_guard<std::mutex> guard(lock);
-          subscribed.push_back(cut(body, 0, 16) + "|" + cut(body, 16, 16) + "|" + cut(body, 32, 32));
+          subscribed.push_back(cut(body, 0, 16) + "|" + cut(body, 16, 48));
           count = subscribed.size();
         }
         send(qp::RSP_SUBSCRIBE, sub_rsp(body));
@@ -238,19 +235,19 @@ TEST(QuoteApi, LogsInSubscribesByOrderBookIdAndReportsGaps) {
     std::lock_guard<std::mutex> guard(gateway.lock);
     EXPECT_EQ(gateway.token, "tok");
     EXPECT_EQ(gateway.client_id, "tester");
-    // duplicates once, in order; the wire carries code and exchange apart
-    EXPECT_EQ(gateway.subscribed, (std::vector<std::string>{"|XSHG|600519", "|XSHE|000001"}));
+    // duplicates once, in order; the wire carries the order_book_id as it is (protocol v4)
+    EXPECT_EQ(gateway.subscribed, (std::vector<std::string>{"|600519.XSHG", "|000001.XSHE"}));
   }
   std::lock_guard<std::mutex> guard(spi.lock);
   ASSERT_EQ(spi.logins.size(), 1u);
   EXPECT_EQ(spi.logins[0].max_subscriptions, 50);
-  EXPECT_EQ(spi.subs[0].order_book_id(), "600519.XSHG");
-  EXPECT_EQ(spi.subs[1].order_book_id(), "000001.XSHE");
+  EXPECT_EQ(spi.subs[0].order_book_id, "600519.XSHG");
+  EXPECT_EQ(spi.subs[1].order_book_id, "000001.XSHE");
   EXPECT_EQ(spi.subs[0].source, "auto");
-  EXPECT_EQ(spi.quotes[0].order_book_id(), "600519.XSHG");
+  EXPECT_EQ(spi.quotes[0].order_book_id, "600519.XSHG");
   EXPECT_DOUBLE_EQ(spi.quotes[1].last_price, 1690.5);
   ASSERT_EQ(spi.gaps.size(), 1u);
-  EXPECT_EQ(spi.gaps[0].order_book_id(), "600519.XSHG");
+  EXPECT_EQ(spi.gaps[0].order_book_id, "600519.XSHG");
   EXPECT_EQ(spi.gaps[0].expected_inst_seq, 2u);
   EXPECT_EQ(spi.gaps[0].received_inst_seq, 3u);
   api.disconnect();
@@ -352,7 +349,7 @@ class RevokingGateway {
         } else if (header.msg_type == qp::REQ_SUBSCRIBE) {
           {
             std::lock_guard<std::mutex> guard(lock);
-            subscribed.push_back(std::to_string(connection) + "|" + cut(body, 32, 32));
+            subscribed.push_back(std::to_string(connection) + "|" + cut(body, 16, 48));
           }
           send(qp::RSP_SUBSCRIBE, sub_rsp(body));
         }
@@ -417,7 +414,7 @@ TEST(QuoteApi, ARevokedTicketIsReplacedAndSubscriptionsComeBack) {
   }));
   std::lock_guard<std::mutex> guard(gateway.lock);
   EXPECT_EQ(gateway.tokens, (std::vector<std::string>{"t0", "t1"}));
-  EXPECT_EQ(gateway.subscribed, (std::vector<std::string>{"1|600519", "2|600519"}));
+  EXPECT_EQ(gateway.subscribed, (std::vector<std::string>{"1|600519.XSHG", "2|600519.XSHG"}));
   api.disconnect();
 }
 
