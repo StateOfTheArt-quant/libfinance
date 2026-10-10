@@ -4,7 +4,7 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
-0.1.3 (unreleased)
+0.1.3 (2026-10-10)
 ==================
 
 .. danger::
