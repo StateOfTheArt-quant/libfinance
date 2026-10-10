@@ -4,8 +4,8 @@
 
 .. currentmodule:: libfinance
 
-Daily factors come from factors-daybar: qlib and alpha158 price-volume factors, and the Barra CNE5
-style, industry and country factors with their raw descriptors. Factor names are written **in full**:
+Daily factors comprise the qlib and alpha158 price-volume factors, the Barra CNE5 style, industry and
+country factors, and the raw CNE5 and CNE6 descriptors. Factor names are written **in full**:
 a library ``owner/library[@rev]`` (all its factors) or a factor ``owner/library/factor[@rev]``, mixed
 freely in one request; there are no short names. ``start_date == end_date`` is that day's cross section.
 Conventions and computation per library: :doc:`../data/factors`; each factor's formula and meaning:

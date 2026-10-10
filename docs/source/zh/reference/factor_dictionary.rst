@@ -2,9 +2,7 @@
 因子字典
 ========
 
-每个因子的分组、公式、含义、回看窗口（lookback，交易日）与存储方式。表格由因子注册表生成，与
-`factors-daybar 的 libraries/ <https://github.com/StateOfTheArt-quant/factors-daybar/tree/main/libraries>`_
-保持一致；数据口径与计算方式见 :doc:`../data/factors`\ 。
+每个因子的分组、公式、含义、回看窗口（lookback，交易日）与存储方式。表格由因子注册表生成；数据口径与计算方式见 :doc:`../data/factors`\ 。
 
 读取时写全名：\ ``system/<库>/<因子>``\ ，如 ``system/qlib/KMID``\ 、\ ``system/barra-cne5/SIZE``\ 。
 存储方式：\ **稠密**\ 为每个交易日一个值；\ **阶梯**\ 为只在变化时存储（财报、行业调整），读取时每个交易日都有值；

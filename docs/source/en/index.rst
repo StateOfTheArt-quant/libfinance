@@ -180,8 +180,8 @@ Already using it and something looks wrong? Go straight to
 :doc:`howto/troubleshooting` — it is organised by **symptom**.
 
 
-Three things worth knowing up front
-===================================
+Two things worth knowing up front
+=================================
 
 These are not advanced topics. They are **defaults**. Not knowing them means your
 code runs fine and your numbers are wrong.
@@ -193,15 +193,6 @@ code runs fine and your numbers are wrong.
     Same stock, same day: forward-adjusted close 8.81, unadjusted 10.49 — a 16%
     difference. Use ``adjust_type`` to select the price convention explicitly.
     See :doc:`data/price`.
-
-.. dropdown:: ``end_date`` cannot be today
-    :color: warning
-    :icon: alert
-
-    The calendar is published ahead of time (it reaches the end of the year);
-    price data only reaches the **last closed session**. Passing today is
-    rejected outright rather than silently returning a shorter table.
-    See :doc:`data/freshness`.
 
 .. dropdown:: Financial statements get restated
     :color: warning

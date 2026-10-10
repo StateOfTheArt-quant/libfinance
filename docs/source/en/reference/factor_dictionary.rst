@@ -3,9 +3,7 @@ Factor dictionary
 =================
 
 Each factor's group, formula, meaning, lookback (sessions) and storage. The tables are generated from
-the factor registry and match
-`factors-daybar's libraries/ <https://github.com/StateOfTheArt-quant/factors-daybar/tree/main/libraries>`_;
-the meanings are maintained in Chinese there. Conventions and computation: :doc:`../data/factors`.
+the factor registry, with the meanings in Chinese. Conventions and computation: :doc:`../data/factors`.
 
 Read a factor by its full name, ``system/<library>/<factor>``, e.g. ``system/qlib/KMID`` or
 ``system/barra-cne5/SIZE``. Storage: **dense** is one value per session; **step** is stored only when it
