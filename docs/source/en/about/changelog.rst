@@ -4,6 +4,12 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
+0.1.2 (2026-10-10)
+==================
+
+No change to existing behaviour. Adds the daily factor functions ``get_factor_exposure``, ``list_factor_libraries``
+and ``list_factors`` (qlib, alpha158, Barra CNE5 / CNE6); they need libfinanceserver v0.1.9 or later.
+
 0.1.1 (2026-10-05)
 ==================
 
