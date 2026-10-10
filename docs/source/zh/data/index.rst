@@ -31,6 +31,8 @@
         - 季度口径与单位理解错
     *   - :doc:`universe`
         - 股票池带了未来信息，或权重不归一
+    *   - :doc:`factors`
+        - 截面因子换了 universe 却以为值不变；读了超出覆盖范围的日期
     *   - :doc:`realtime`
         - 断线重连后订阅悄悄丢失
 
@@ -45,4 +47,5 @@
     corporate_actions
     fundamentals
     universe
+    factors
     realtime
