@@ -2,10 +2,15 @@
 Installation
 ============
 
-``libfinance`` is a pure Python client — the data lives on a server, so installing
-is light.
+The data lives on a server; the client only sends requests and decodes answers, so installing is
+light. This page installs the Python client; its dependencies -- ``pandas``, ``numpy``, ``pyarrow``,
+``lz4``, ``msgpack`` -- come with pip.
 
-Requires Python 3.7 or newer.
+.. tip::
+
+    **Using C++?** The C++ client matches the Python functions one for one, is added to a project
+    with CMake ``FetchContent`` and needs Apache Arrow C++. Installing, building and examples:
+    `the C++ client guide <https://github.com/StateOfTheArt-quant/libfinance/blob/main/cpp/readme_en.md>`_.
 
 With pip
 ========
@@ -35,8 +40,6 @@ First confirm the package **imports**. This step needs no server:
     >>> import libfinance
     >>> libfinance.__version__        # the repository's version, shared by the C++ and Python clients
 
-A ``ModuleNotFoundError`` here means a dependency is missing; reinstall.
-``libfinance`` requires ``pandas``, ``numpy``, ``lz4``, ``msgpack``, ``six`` and
-``python-dateutil``, all pulled in automatically by pip.
+A ``ModuleNotFoundError`` here means a dependency is missing; run the install again.
 
 Next: :doc:`quickstart`.

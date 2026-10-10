@@ -33,6 +33,8 @@ warn you. So even if you only want data quickly, skim the summary boxes in
         - Misreading quarterly semantics and units
     *   - :doc:`universe`
         - A stock universe that leaks future information
+    *   - :doc:`factors`
+        - Expecting cross-sectional factors not to change with ``universe``; asking past the coverage
     *   - :doc:`realtime`
         - Subscriptions quietly lost after a reconnect
 
@@ -47,4 +49,5 @@ warn you. So even if you only want data quickly, skim the summary boxes in
     corporate_actions
     fundamentals
     universe
+    factors
     realtime

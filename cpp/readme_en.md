@@ -11,7 +11,7 @@ prices, security information, trading calendars, corporate actions, share counts
 indices and themes; `as_of` reconstructs what was visible at a historical date, and adjustment factors keep
 prices comparable over time.
 
-The C++ client mirrors the Python client (`../python`) **one to one**: the same 30 functions, with the same
+The C++ client mirrors the Python client (`../python`) **one to one**: the same 33 functions, with the same
 names, argument order and defaults, the same validation and errors, and the same answers. The function list is
 `../contract/contract.json`; `../contract/conformance/` checks that both languages agree. Use it where you want data
 directly in C++ — a backtesting engine, factor computation, a trading system — without going through Python.

@@ -155,3 +155,8 @@
 ========
 
 ``Quote`` 的字段见 :doc:`../data/realtime`\ 。
+
+因子
+====
+
+:func:`~libfinance.get_factor_exposure` 的列是因子全名，每个因子的公式与含义见 :doc:`factor_dictionary`\ 。

@@ -157,3 +157,9 @@ Live quotes
 ===========
 
 ``Quote`` fields are listed in :doc:`../data/realtime`.
+
+Factors
+=======
+
+The columns of :func:`~libfinance.get_factor_exposure` are full factor names; each factor's formula and
+meaning are in :doc:`factor_dictionary`.
