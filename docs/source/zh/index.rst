@@ -6,29 +6,37 @@ libfinance
 
 \[ `English <https://libfinance.readthedocs.io/en/latest/>`_ | 中文 \]
 
-``libfinance`` 是面向量化研究与回测的 Python 金融数据接口。A 股与美股在这里使用同一套术语：
-证券标识的写法相同，查询函数与参数名相同，返回的表结构也相同。两个市场的差别落在数据上，
-不落在调用方式上。
+``libfinance`` 是面向量化研究与回测的金融数据客户端，有 Python 与 C++ 两种实现，覆盖 A 股与美股。
 
-覆盖行情、证券信息、交易日历、公司行动、财务数据及行业、指数与概念数据，并支持实时行情订阅。查询结果便于直接用于 pandas 分析。
+代码本身带着市场（\ ``600000.XSHG``\ 、\ ``AAPL.US``\ ），同一次调用可以混查两个市场。函数、参数和返回的
+表结构在两个市场之间完全相同，差别只在数据里：例如美股没有涨跌停价，\ ``limit_up`` 一列为 ``NaN``\ 。
 
-研究需要的不只是历史数字，还包括明确的证券身份、当时有效的信息，以及一致的价格口径。\ ``libfinance`` 将这些要求融入数据设计：
+数据包括日线行情与复权因子、证券目录、交易日历、分红拆股等公司行动、股本、财务报表与衍生指标、
+行业 / 指数 / 主题的成分与权重、日频因子（alpha158、qlib、Barra），以及 A 股实时行情。
+表格结果在 Python 中是 ``pandas.DataFrame``\ ，在 C++ 中是 ``arrow::Table``\ ，列名相同。
 
-* **统一的证券标识符**\ ：使用 ``<trading_code>.<namespace>`` 表达证券，例如 ``600000.XSHG``\ 、\ ``000001.XSHE`` 和 ``AAPL.US``\ ，区分不同市场的同名代码；结合历史时点解析代码，减少更名与代码复用带来的歧义。
-* **point-in-time 机制 as_of**\ ：按历史时点还原证券池，并选择当时已披露的财务版本，帮助避免未来信息和幸存者偏差。
-* **高质量的复权因子 exfactor**\ ：结合公司行动处理价格可比性，提供不复权、前复权和后复权行情；通过 ``get_ex_factor`` 查看单次及累计因子，让价格变化有据可查。
+回测结果是否可信，取决于证券身份是否准确、所用信息当时是否已经可得、价格口径是否一致。
+libfinance 的数据设计有四条约定：
 
-深入了解 :doc:`concepts/security_identifiers`\ 、\ :doc:`concepts/point_in_time` 与 :doc:`concepts/exfactor`\ 。
+* **统一的证券标识符**\ ：\ ``<trading_code>.<namespace>``\ ，如 ``600000.XSHG``\ 、\ ``000001.XSHE``\ 、\ ``AAPL.US``\ 。
+  命名空间区分不同市场的同号代码，代码按历史时点解析，更名与代码复用不会串到别的证券。
+* **point-in-time 机制 as_of**\ ：按历史时点还原证券池、选取当时已披露的财务版本，避免未来信息与幸存者偏差。
+* **高质量的复权因子 exfactor**\ ：由公司行动逐事件计算，提供不复权、前复权、后复权三种口径；
+  ``get_ex_factor`` 给出单次与累计因子，价格的每一次调整都可追溯。
+* **Python 与 C++ 统一的函数设计**\ ：两种客户端按同一份契约实现，函数名、参数顺序与默认值、校验与报错、
+  返回的列一一对应；同一组调用经两种客户端发给同一服务端逐项比对。
+
+详见 :doc:`concepts/security_identifiers`\ 、\ :doc:`concepts/point_in_time`\ 、\ :doc:`concepts/exfactor` 与
+:doc:`concepts/python_cpp`\ 。
 
 .. code-block:: python
 
     from libfinance import get_price
 
-    # 两个市场用同一个函数，参数相同。
-    cn = get_price(["000001.XSHE", "600000.XSHG"], "2024-03-01", "2024-03-06")
-    us = get_price(["AAPL.US", "NVDA.US"], "2024-03-01", "2024-03-06")
+    # 一次调用混查两个市场：代码自带市场
+    bars = get_price(["600000.XSHG", "AAPL.US"], "2024-03-01", "2024-03-05", adjust_type="none")
 
-一分钟看懂这两行代码取到了什么，见 :doc:`getting_started/quickstart`\ 。
+这次调用返回什么、怎样读，见 :doc:`getting_started/quickstart`\ 。
 
 
 A 股与美股共用一套术语
@@ -127,6 +135,10 @@ A 股；美股没有涨跌停，也没有提供成交额。
         - CN
         - :func:`~libfinance.get_theme_constituents`
         - THS 主题；权重见 :func:`~libfinance.get_theme_weights`
+    *   - 日频因子
+        - CN
+        - :func:`~libfinance.get_factor_exposure`
+        - alpha158、qlib、Barra CNE5 / CNE6；库与因子名见 :func:`~libfinance.list_factor_libraries`
     *   - 实时行情
         - CN
         - :class:`~libfinance.subscribe.quote_api.QuoteApi`
@@ -211,6 +223,7 @@ A 股；美股没有涨跌停，也没有提供成交额。
     concepts/security_identifiers
     concepts/point_in_time
     concepts/exfactor
+    concepts/python_cpp
 
 ..  toctree::
     :maxdepth: 2

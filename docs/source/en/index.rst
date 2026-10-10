@@ -4,30 +4,45 @@ libfinance
 
 \[ English | `中文 <https://libfinance.readthedocs.io/zh-cn/latest/>`_ \]
 
-``libfinance`` is a Python financial data interface for quantitative research and backtesting.
-Chinese A-shares and US equities use the same vocabulary here: identifiers are written the same
-way, queries go through the same functions with the same argument names, and results come back in
-the same table structure. The two markets differ in their data, not in how you ask for it.
+``libfinance`` is a financial data client for quantitative research and backtesting, implemented in
+Python and in C++, covering Chinese A-shares and US equities.
 
-It provides prices, security information, trading calendars, corporate actions, financials, industry classifications, index and concept data, and live market data subscriptions. Query results fit naturally into pandas workflows.
+A code carries its market (``600000.XSHG``, ``AAPL.US``), so one call can mix both markets. Functions,
+arguments and returned tables are the same for the two markets; they differ only in their data -- US
+stocks have no price limits, so their ``limit_up`` column is ``NaN``.
 
-Historical research needs clear security identities, information valid at the decision time, and consistent price conventions. These requirements shape the data design:
+The data covers daily bars and adjustment factors, the security catalog, trading calendars, corporate
+actions such as dividends and splits, shares outstanding, financial statements and derived metrics,
+industry / index / theme constituents and weights, daily factors (alpha158, qlib, Barra), and live
+A-share quotes. Tables are ``pandas.DataFrame`` in Python and ``arrow::Table`` in C++, with the same
+column names.
 
-* **Unified security identifiers**: ``<trading_code>.<namespace>``, such as ``600000.XSHG``, ``000001.XSHE``, and ``AAPL.US``, distinguishes codes across markets. Historical code resolution helps handle renaming and code reuse.
-* **Point-in-time queries with as_of**: reconstruct historical security universes and select financial statement versions disclosed by the observation date, helping avoid look-ahead and survivorship bias.
-* **High-quality adjustment factors, exfactor**: account for corporate actions when comparing prices, with unadjusted, forward-adjusted, and backward-adjusted series. Inspect event and cumulative factors through ``get_ex_factor`` to understand price adjustments.
+A backtest can be trusted only if each security is identified correctly, each input was available at
+the time, and prices are adjusted consistently. The data design follows four conventions:
 
-Explore :doc:`concepts/security_identifiers`, :doc:`concepts/point_in_time`, and :doc:`concepts/exfactor`.
+* **Unified security identifiers**: ``<trading_code>.<namespace>``, such as ``600000.XSHG``,
+  ``000001.XSHE`` and ``AAPL.US``. The namespace separates equal codes in different markets, and codes
+  resolve at a point in time, so renames and reused codes never land on another security.
+* **Point-in-time queries with as_of**: rebuild the security universe of a past date and select the
+  financial statements disclosed by then, avoiding look-ahead and survivorship bias.
+* **High-quality adjustment factors, exfactor**: computed event by event from corporate actions, with
+  unadjusted, forward-adjusted and backward-adjusted prices; ``get_ex_factor`` returns each event's
+  factor and the cumulative factor, so every adjustment can be traced.
+* **One function design for Python and C++**: both clients implement one contract -- function names,
+  parameter order and defaults, validation and errors, returned columns; the same calls are sent
+  through both clients to one server and compared item by item.
+
+See :doc:`concepts/security_identifiers`, :doc:`concepts/point_in_time`, :doc:`concepts/exfactor` and
+:doc:`concepts/python_cpp`.
 
 .. code-block:: python
 
     from libfinance import get_price
 
-    # Both markets go through the same function, with the same arguments.
-    cn = get_price(["000001.XSHE", "600000.XSHG"], "2024-03-01", "2024-03-06")
-    us = get_price(["AAPL.US", "NVDA.US"], "2024-03-01", "2024-03-06")
+    # One call, both markets: each code carries its market
+    bars = get_price(["600000.XSHG", "AAPL.US"], "2024-03-01", "2024-03-05", adjust_type="none")
 
-To understand what these calls return, see :doc:`getting_started/quickstart`.
+What this returns and how to read it: :doc:`getting_started/quickstart`.
 
 
 A-shares and US equities share one vocabulary
@@ -128,6 +143,10 @@ What data is here
         - CN
         - :func:`~libfinance.get_theme_constituents`
         - THS themes; weights via :func:`~libfinance.get_theme_weights`
+    *   - Daily factors
+        - CN
+        - :func:`~libfinance.get_factor_exposure`
+        - alpha158, qlib, Barra CNE5 / CNE6; libraries and names via :func:`~libfinance.list_factor_libraries`
     *   - Live quotes
         - CN
         - :class:`~libfinance.subscribe.quote_api.QuoteApi`
@@ -220,6 +239,7 @@ code runs fine and your numbers are wrong.
     concepts/security_identifiers
     concepts/point_in_time
     concepts/exfactor
+    concepts/python_cpp
 
 .. toctree::
     :maxdepth: 2

@@ -18,7 +18,7 @@ and update cadence:
     *   - Industry
         - :func:`~libfinance.get_industry_constituents` / :func:`~libfinance.get_instrument_industry`
         - Full market coverage, several levels and classifications
-    *   - Concept sectors
+    *   - Themes
         - :func:`~libfinance.get_theme_constituents`, :func:`~libfinance.get_theme_weights`
         - Theme-driven, numerous, fuzzy boundaries
 
@@ -99,45 +99,49 @@ To go the other way and list an industry's members, and their weights:
     are slicing the past with **today's** classification — another form of
     look-ahead bias.
 
-Concept sectors
-===============
+Themes
+======
 
-Currently one source only, THS (``source="THS"``). First list the concepts:
-
-.. code-block:: python
-
-    >>> from libfinance import get_concept_meta
-    >>> get_concept_meta(source="THS").head(3)
-      source concept_id concept_name established_date  component_number
-    0    THS     300008        新能源汽车              NaN               NaN
-    1    THS     300013          大飞机              NaN               NaN
-    2    THS     300018         参股保险              NaN               NaN
-
-Then fetch members by ``concept_id``:
+A theme is one kind of object in the security catalog (``type="theme"``), with codes such as
+``300008.THS``; THS is currently the only source. First list the themes from the catalog:
 
 .. code-block:: python
 
-    >>> from libfinance import get_concept_weights
-    >>> get_concept_weights(concept_ids=["300008"], source="THS").head(3)
-      source concept_id       date order_book_id    weight
-    0    THS     300008 2026-09-15   000009.XSHE  0.000943
-    1    THS     300008 2026-09-15   000021.XSHE  0.000943
-    2    THS     300008 2026-09-15   000062.XSHE  0.000943
+    >>> from libfinance import all_instruments
+    >>> all_instruments(type="theme")[["order_book_id", "source", "name"]].head(3)
+      order_book_id source   name
+    0    300008.THS    THS  新能源汽车
+    1    300013.THS    THS    大飞机
+    2    300018.THS    THS   参股保险
+
+Then fetch members and weights by theme code:
+
+.. code-block:: python
+
+    >>> from libfinance import get_theme_constituents, get_theme_weights
+    >>> members = get_theme_constituents("300008.THS")
+    >>> len(members), members[:3]
+    (1061, ['000009.XSHE', '000021.XSHE', '000030.XSHE'])
+    >>> get_theme_weights("300008.THS")[["order_book_id", "weight", "effective_from"]].head(3)
+      order_book_id    weight effective_from
+    0   000009.XSHE  0.000943     2026-09-22
+    1   000021.XSHE  0.000943     2026-09-22
+    2   000030.XSHE  0.000943     2026-09-22
+
+To find the themes a security belongs to, use :func:`~libfinance.get_instrument_themes`.
 
 .. warning::
 
-    **Concept ids must come from :func:`~libfinance.get_concept_meta`.** An
-    unknown id returns an empty table — and from the caller's side, "this concept
-    has no members today" and "this id does not exist" look identical. The client
-    warns about it:
+    **Look theme codes up in the catalog; do not hard-code them.** For a theme that does not
+    exist on the day, ``get_theme_constituents`` returns ``None`` without an error:
 
     .. code-block:: python
 
-        >>> get_concept_weights(concept_ids=["886074"], source="THS")
-        UserWarning: 未知的 concept_id: 886074（source='THS'）...
-        Empty DataFrame
+        >>> get_theme_constituents("886074.THS") is None
+        True
 
-    Do not hard-code concept ids; look them up from the metadata table.
+    A mistyped code and "no such theme that day" look the same; check against
+    ``all_instruments(type="theme")``.
 
 ``as_of`` applies here too: use the membership **known** at that point. Pass it
 when building historical universes, for the reasons in :doc:`point_in_time`.
