@@ -74,7 +74,7 @@ class DemoSpi : public lf::QuoteSpi {
   void on_rsp_subscribe(const lf::SubRsp& rsp, int) override {
     switch (static_cast<lf::QuoteError>(rsp.error_id)) {
       case lf::QuoteError::Ok:
-        std::cout << "[client] subscribed " << rsp.order_book_id() << " ← 供数源 '" << rsp.source << "'  ("
+        std::cout << "[client] subscribed " << rsp.order_book_id << " ← 供数源 '" << rsp.source << "'  ("
                   << rsp.current_subs << "/" << rsp.max_subs << ")\n";
         break;
       case lf::QuoteError::SubscriptionLimit:
@@ -92,7 +92,7 @@ class DemoSpi : public lf::QuoteSpi {
   }
 
   void on_depth_market_data(const lf::Quote& q, const lf::RecordEnvelope&) override {
-    std::printf("[%5ld] %-14s  last=%9.3f  bid1=%9.3f  ask1=%9.3f  vol=%.0f\n", ++count_, q.order_book_id().c_str(),
+    std::printf("[%5ld] %-14s  last=%9.3f  bid1=%9.3f  ask1=%9.3f  vol=%.0f\n", ++count_, q.order_book_id.c_str(),
                 q.last_price, q.bid_price[0], q.ask_price[0], q.volume);
   }
 

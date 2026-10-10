@@ -8,7 +8,7 @@
 //       if (rsp.error_id == 0) api->subscribe({"600519.XSHG", "000001.XSHE"});  // replayed after a reconnect
 //     }
 //     void on_depth_market_data(const lf::Quote& q, const lf::RecordEnvelope&) override {
-//       std::cout << q.order_book_id() << " " << q.last_price << "\n";
+//       std::cout << q.order_book_id << " " << q.last_price << "\n";
 //     }
 //   };
 //   lf::QuoteApi api;  Spi spi;  spi.api = &api;
