@@ -69,7 +69,7 @@ def test_get_price_sends_the_codes_to_daybar_as_given(monkeypatch):
     class Client:
         def get_price(self, **kwargs):
             calls.append(kwargs)
-            return pd.DataFrame([{"order_book_id": "000300.XSHG", "permanent_id": "p-index",
+            return pd.DataFrame([{"order_book_id": "000300.XSHG",
                                   "session_date": "2026-08-17", "close": 4000.0}])
 
         def __getattr__(self, name):
@@ -84,7 +84,7 @@ def test_get_price_sends_the_codes_to_daybar_as_given(monkeypatch):
                       "end_date": "2026-08-17", "frequency": "1d", "fields": ["close"],
                       "skip_suspended": False, "include_now": True, "adjust_type": "pre",
                       "adjust_orig": "2026-08-17"}]
-    assert list(out.index.names) == ["order_book_id", "datetime"] and list(out.columns) == ["permanent_id", "close"]
+    assert list(out.index.names) == ["order_book_id", "datetime"] and list(out.columns) == ["close"]
 
 
 @pytest.mark.parametrize("kwargs,match", [
@@ -110,9 +110,9 @@ def _panel(rows):
 
 
 def test_daybar_rows_become_the_documented_panel():
-    out = _panel([{"order_book_id": "AAPL.US", "permanent_id": "p1", "session_date": "2026-08-18", "close": 2.0},
-                  {"order_book_id": "000300.XSHG", "permanent_id": "p2", "session_date": "2026-08-17", "close": 1.0},
-                  {"order_book_id": "AAPL.US", "permanent_id": "p1", "session_date": "2026-08-17", "close": 3.0}])
+    out = _panel([{"order_book_id": "AAPL.US", "session_date": "2026-08-18", "close": 2.0},
+                  {"order_book_id": "000300.XSHG", "session_date": "2026-08-17", "close": 1.0},
+                  {"order_book_id": "AAPL.US", "session_date": "2026-08-17", "close": 3.0}])
     assert list(out.index.names) == ["order_book_id", "datetime"]
     assert out.index.tolist()[0][0] == "000300.XSHG" and out.loc["AAPL.US"]["close"].tolist() == [3.0, 2.0]
     assert "session_date" not in out.columns
@@ -167,9 +167,9 @@ def test_instruments_resolve_mixed_codes_in_input_order(monkeypatch):
     class Client:
         def instruments(self, **kwargs):
             calls.append(kwargs)
-            return [{"order_book_id": "600000.XSHG", "permanent_id": "p1", "type": "stock", "market": "CN",
+            return [{"order_book_id": "600000.XSHG", "type": "stock", "market": "CN",
                      "name": "浦发银行", "exchange": "XSHG", "source": "XSHG"},
-                    {"order_book_id": "AAPL.US", "permanent_id": "p2", "type": "stock", "market": "US",
+                    {"order_book_id": "AAPL.US", "type": "stock", "market": "US",
                      "name": "Apple", "exchange": "XNAS", "source": "XNAS"}]
 
     monkeypatch.setattr(instrument, "get_client", lambda: Client())
@@ -177,7 +177,7 @@ def test_instruments_resolve_mixed_codes_in_input_order(monkeypatch):
     ids = ["AAPL.US", "MISSING.US", "600000.XSHG", "AAPL.US"]
     result = instrument.instruments(ids, as_of="2022-04-15", last_known=True)
     assert [item.order_book_id for item in result] == [ids[0], ids[2], ids[3]]
-    assert [item.permanent_id for item in result] == ["p2", "p1", "p2"]
+    assert [item.name for item in result] == ["Apple", "浦发银行", "Apple"]
     assert calls == [{"order_book_ids": ids, "as_of": "2022-04-15", "last_known": True}]
     assert instrument.instruments("600000.XSHG").name == "浦发银行"
 
@@ -301,7 +301,7 @@ def test_exfactor_normalizes_dates_and_preserves_factor_table(monkeypatch):
 
     calls = []
     expected = pd.DataFrame(
-        {"order_book_id": ["AAPL.US"], "permanent_id": ["p1"], "ex_factor": [1.01], "ex_cum_factor": [2.02]},
+        {"order_book_id": ["AAPL.US"], "ex_factor": [1.01], "ex_cum_factor": [2.02]},
         index=pd.DatetimeIndex(["2023-08-11"], name="ex_date"))
 
     class Client:

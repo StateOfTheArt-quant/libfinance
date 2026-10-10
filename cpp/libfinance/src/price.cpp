@@ -59,7 +59,7 @@ void warn_beyond_coverage(const std::string& end_date) {
 
 // ---------------------------------------------------------------- the answer
 
-//: `_to_panel`: daybar's flat table (order_book_id, permanent_id, session_date, fields...) with
+//: `_to_panel`: daybar's flat table (order_book_id, session_date, fields...) with
 //: order_book_id and datetime (session_date) first, sorted by both. A shape it does not know is
 //: returned as it came.
 Table to_panel(const Table& bars) {

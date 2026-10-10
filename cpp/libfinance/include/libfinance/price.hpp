@@ -8,8 +8,8 @@
 
 namespace libfinance {
 
-//: Daily bars of stocks and indexes, mixed in one batch: columns order_book_id, datetime,
-//: permanent_id, then the fields, sorted by (order_book_id, datetime) -- the Python client's
+//: Daily bars of stocks and indexes, mixed in one batch: columns order_book_id, datetime, then the
+//: fields, sorted by (order_book_id, datetime) -- the Python client's
 //: (order_book_id, datetime) index as columns.
 //:
 //: frequency: "1d" only. adjust_type: "pre" (default), "post" or "none" for stocks; indexes are
