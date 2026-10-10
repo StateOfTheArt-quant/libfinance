@@ -3,7 +3,7 @@
 
 .. currentmodule:: libfinance
 
-日频因子由 factors-daybar 提供：qlib 与 alpha158 的价量因子，Barra CNE5 的风格、行业、国家因子与原始描述符。
+日频因子包括 qlib 与 alpha158 的量价因子，Barra CNE5 的风格、行业、国家因子，以及 CNE5、CNE6 的原始描述符。
 因子名写**全名**：库 ``owner/library[@rev]``\ （展开为它的全部因子）或因子 ``owner/library/factor[@rev]``\ ，
 可以混在一次请求里；没有简称。\ ``start_date`` 与 ``end_date`` 相同时就是当天的截面。
 各库的口径与计算方式见 :doc:`../data/factors`\ ，每个因子的公式与含义见 :doc:`factor_dictionary`\ 。
