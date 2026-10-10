@@ -170,7 +170,7 @@ What is shared is the vocabulary and the calling convention; the differences in 
 | Industry classification | CN · US | `get_instrument_industry`, `get_industry_constituents`, `get_industry_weights` | Shenwan, GICS and more |
 | Index constituents and weights | CN · US | `get_index_constituents`, `get_index_weights` | CSI, S&P and more |
 | Theme constituents and weights | CN | `get_theme_constituents`, `get_theme_weights` | THS themes |
-| Daily factors | CN | `get_factor_exposure`, `list_factor_libraries`, `list_factors` | alpha158, qlib, Barra CNE5 / CNE6 |
+| Daily factors | CN | `get_factor_exposure`, `list_factor_libraries`, `list_factors` | alpha158, qlib, Barra CNE5 style / industry factors, CNE5 and CNE6 descriptors; see [factor data](https://libfinance.readthedocs.io/en/latest/data/factors.html) and the [factor dictionary](https://libfinance.readthedocs.io/en/latest/reference/factor_dictionary.html) |
 | Live quotes | CN | `get_last_quotes`, `QuoteApi` | Latest snapshots and streaming subscription |
 
 How far back the history goes and how current it is depend on the service you connect to. **Do not copy the dates from the documentation** — check them yourself with the two functions in [data freshness](https://libfinance.readthedocs.io/en/latest/data/freshness.html).
