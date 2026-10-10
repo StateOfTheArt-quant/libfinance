@@ -39,8 +39,9 @@ Conventions and computation per library: :doc:`../data/factors`; each factor's f
     * - ``system/barra-cne5-descriptor``, ``system/barra-cne6-descriptor``
       - Raw Barra descriptors (LNCAP, BETA, STOM, ...): each security's own time series, independent of any universe
 
-**Free tier**: without login, ``get_factor_exposure`` pulls start_date up to one year before today and
-takes at most 300 codes per call; the client warns when a request will be cut. No limit after login.
+**Traffic quota**: no tier clamps the dates or the number of codes. The answer is estimated before the
+call from codes × sessions × factors; one over the 512 MB per-call cap or over what is left of today's
+quota is refused (``RpcError(code=1401)``), see :doc:`../data/factors`.
 
 .. py:function:: get_factor_exposure(order_book_ids, factor_names, start_date, end_date, universe=None)
 
