@@ -15,6 +15,76 @@ Live market data
 
 Semantics are covered in :doc:`../data/realtime`.
 
+Quote sources
+-------------
+
+Subscriptions are served by two sources:
+
+.. list-table::
+    :header-rows: 1
+    :widths: 16 54 30
+
+    * - Source
+      - What it pushes
+      - How to use it
+    * - ``webquote``
+      - Live A-share quotes (Shanghai and Shenzhen), during trading hours
+      - Subscribe without ``source``; it is chosen automatically
+    * - ``sim``
+      - Simulated quotes, 24×7, for developing and testing outside trading hours; generated, not the
+        real market
+      - Subscribe with ``source="sim"``
+
+``query_sources()`` lists the sources available now and their state.
+
+.. note::
+
+    If you have a free, better real-time quote source to offer the community, please get in touch
+    (`GitHub Issues <https://github.com/StateOfTheArt-quant/libfinance/issues>`_).
+
+A minimal example
+-----------------
+
+Subscribe to one stock and, in the callback, compute the change since subscribing and the bid-ask
+spread:
+
+.. code-block:: python
+
+    from libfinance.subscribe.quote_api import QuoteApi, QuoteSpi
+
+
+    class Monitor(QuoteSpi):
+        def __init__(self, api):
+            self.api = api
+            self.first = {}                                    # first price received per security
+
+        def on_rsp_login(self, rsp, _):                        # subscribe once logged in; fires again after a reconnect
+            if rsp.error_id == 0:
+                self.api.subscribe(["600519.XSHG"], source="sim")   # drop source in trading hours for live quotes
+
+        def on_depth_market_data(self, q, _):                  # called for every quote
+            first = self.first.setdefault(q.order_book_id, q.last_price)
+            change = q.last_price / first - 1
+            spread = q.ask_price[0] - q.bid_price[0]
+            print(f"{q.order_book_id}  last={q.last_price:.2f}  since={change:+.2%}  spread={spread:.2f}")
+
+
+    api = QuoteApi()
+    api.register_spi(Monitor(api))
+    api.connect()                                              # no login needed: tickets are fetched and renewed
+    input("Enter to quit\n")
+    api.disconnect()
+
+.. code-block:: text
+
+    600519.XSHG  last=113.37  since=+0.00%  spread=0.02
+    600519.XSHG  last=113.59  since=+0.20%  spread=0.02
+    600519.XSHG  last=113.42  since=+0.04%  spread=0.02
+    600519.XSHG  last=113.02  since=-0.31%  spread=0.02
+
+Callbacks run on the SDK's receiving thread and should return quickly; move heavy work to your own
+thread or queue.
+
 Snapshots
 =========
 

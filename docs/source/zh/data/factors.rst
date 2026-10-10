@@ -3,8 +3,7 @@
 ========
 
 日频因子覆盖 A 股，按\ **库**\ 组织：qlib / Alpha158 的量价因子，Barra CNE5 的风格、行业与国家因子，
-以及 Barra CNE5、CNE6 的原始描述符。数据由 factors-daybar 计算与发布，经
-:func:`~libfinance.get_factor_exposure` 读取。每个因子的公式与含义见 :doc:`../reference/factor_dictionary`\ 。
+以及 Barra CNE5、CNE6 的原始描述符，经 :func:`~libfinance.get_factor_exposure` 读取。每个因子的公式与含义见 :doc:`../reference/factor_dictionary`\ 。
 
 因子库
 ======

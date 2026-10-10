@@ -4,8 +4,7 @@ Factor data
 
 Daily factors cover Chinese A-shares and are organized in **libraries**: the Qlib / Alpha158
 price-volume factors, the Barra CNE5 style, industry and country factors, and the raw Barra CNE5 and
-CNE6 descriptors. factors-daybar computes and publishes them; :func:`~libfinance.get_factor_exposure`
-reads them. Each factor's formula and meaning are in :doc:`../reference/factor_dictionary`.
+CNE6 descriptors, read with :func:`~libfinance.get_factor_exposure`. Each factor's formula and meaning are in :doc:`../reference/factor_dictionary`.
 
 Libraries
 =========
