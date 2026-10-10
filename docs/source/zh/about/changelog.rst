@@ -4,6 +4,11 @@
 
 只记录会\ **改变已有代码行为**\ 的变更。
 
+0.1.2（2026-10-10）
+===================
+
+不改变已有代码的行为。新增日频因子接口 ``get_factor_exposure``\ 、``list_factor_libraries``\ 、``list_factors``\ （qlib、alpha158、Barra CNE5 / CNE6），需服务端 libfinanceserver v0.1.9 及以上。
+
 0.1.1（2026-10-05）
 ===================
 

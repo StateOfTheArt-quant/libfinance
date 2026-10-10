@@ -68,7 +68,7 @@ set(BUILD_EXAMPLES  OFF CACHE BOOL "" FORCE)
 set(ENABLE_UNITTEST OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
     libfinance
-    URL           https://github.com/StateOfTheArt-quant/libfinance/archive/refs/tags/v0.1.1.tar.gz
+    URL           https://github.com/StateOfTheArt-quant/libfinance/archive/refs/tags/v0.1.2.tar.gz
     SOURCE_SUBDIR cpp               # the C++ client lives in the repository's cpp/ directory
 )
 FetchContent_MakeAvailable(nlohmann_json libfinance)
@@ -78,7 +78,7 @@ target_link_libraries(my_strategy PRIVATE libfinance::libfinance)
 ```
 
 To change version, change the tag in the URL ([releases](https://github.com/StateOfTheArt-quant/libfinance/releases)).
-Git works too (`GIT_REPOSITORY https://github.com/StateOfTheArt-quant/libfinance.git`, `GIT_TAG v0.1.1`,
+Git works too (`GIT_REPOSITORY https://github.com/StateOfTheArt-quant/libfinance.git`, `GIT_TAG v0.1.2`,
 `GIT_SHALLOW TRUE`, `SOURCE_SUBDIR cpp`, without the two nlohmann_json lines above): libfinance then clones
 nlohmann/json itself, which takes considerably longer on a slow network. With a local libfinance checkout,
 configure with `-DFETCHCONTENT_SOURCE_DIR_LIBFINANCE=<libfinance repository>` to skip the download.
