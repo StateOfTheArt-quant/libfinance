@@ -38,8 +38,8 @@
     * - ``system/barra-cne5-descriptor``\ 、\ ``system/barra-cne6-descriptor``
       - Barra 原始描述符（LNCAP、BETA、STOM……），个股自身的时间序列，与 universe 无关
 
-**免费层**：未登录时 ``get_factor_exposure`` 的 start_date 会被夹到"今天往前 1 年"，一次最多 300 个代码；
-客户端在请求会被裁剪时给出警告。登录后不限。
+**流量额度**：不按档位裁剪日期或代码数。调用前按「代码 × 交易日 × 因子」估算应答大小，超过单次上限 512 MB
+或今日剩余额度的请求直接拒绝（\ ``RpcError(code=1401)``\ ），见 :doc:`../data/factors`\ 。
 
 get_factor_exposure — 按代码、日期区间读取因子暴露
 ------------------------------------------------------------

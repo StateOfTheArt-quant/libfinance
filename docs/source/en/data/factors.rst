@@ -127,8 +127,16 @@ data's. A range beyond the coverage is refused rather than answered with a short
 
 The range in the message is that factor's current coverage.
 
-Free tier
-=========
+Traffic quota
+=============
 
-Without login, ``start_date`` is clamped to one year before today and a call takes at most 300 codes;
-the client warns when a request is clamped.
+Factors, like prices, count against the **daily traffic quota** (bytes actually sent, reset at 00:00
+Beijing time); no tier clamps the dates or the number of codes. Before a call the server estimates its
+answer from codes × sessions × factors:
+
+* a request over the **per-call cap of 512 MB** (the table in memory) is refused;
+* a request larger than **what is left of today's quota** is refused, instead of being served and the
+  next call refused.
+
+Both are ``RpcError(code=1401)``; the message gives the estimate and the cap or what is left. Split the
+request: fewer codes, a shorter range or fewer factors.
