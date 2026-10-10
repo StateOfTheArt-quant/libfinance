@@ -2,7 +2,7 @@
 // (Python: libfinance/api/instrument.py). Signatures and columns are the backend's
 // (instrument.all_instruments / instrument.instruments).
 //
-// order_book_id is the code (600000.XSHG), permanent_id the identity that outlives a code, name the name.
+// order_book_id is the code (600000.XSHG) and the only identifier the client sees; name is the name.
 #pragma once
 
 #include <optional>
@@ -19,7 +19,6 @@ class Instrument {
   explicit Instrument(Json fields) : fields_(std::move(fields)) {}
 
   std::string order_book_id() const { return text("order_book_id"); }
-  std::string permanent_id() const { return text("permanent_id"); }
   std::string type() const { return text("type"); }
   std::string market() const { return text("market"); }
   std::string name() const { return text("name"); }
@@ -32,7 +31,7 @@ class Instrument {
   Json fields_;
 };
 
-//: The catalog: columns order_book_id, permanent_id, type, market, name, exchange, source.
+//: The catalog: columns order_book_id, type, market, name, exchange, source.
 //: `type`: "stock" / "index" / "industry" / "theme" (any case), one or a list; none for all.
 //: `market`: "cn" / "us"; `source`: who numbers the instrument (XSHG, CSI, SW, ...), one or a list.
 //: Cached by the server's data version when `market` is omitted and `cached`.

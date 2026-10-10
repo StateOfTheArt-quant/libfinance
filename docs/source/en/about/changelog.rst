@@ -4,6 +4,21 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
+0.1.3 (unreleased)
+==================
+
+.. danger::
+
+    **Results no longer carry the server's internal identities:** a security is named by ``order_book_id``
+    only (contract 3.0.0, libfinanceserver v0.1.10 or later).
+
+    - ``get_price``, ``all_instruments``, ``get_ex_factor`` and ``get_index_weights`` drop the ``permanent_id`` column.
+    - ``get_dividends`` / ``get_splits`` / ``get_allotments`` / ``get_spinoffs`` drop ``permanent_id``, ``event_id`` and
+      ``confirmed_by_revision``; ``get_spinoffs`` also drops ``child_permanent_id`` (``child_symbol`` still names the child).
+    - The ``Instrument`` from ``instruments`` no longer has ``permanent_id``, ``listing_id`` or ``identity_quality``;
+      C++ removes ``Instrument::permanent_id()``.
+    - Code that joined or deduplicated on these columns uses ``order_book_id``; ``as_of`` resolves historical identity.
+
 0.1.2 (2026-10-10)
 ==================
 
