@@ -56,7 +56,7 @@ Indices
 
     :param order_book_id: Index code, e.g. ``"000300.XSHG"``
     :param as_of: The facts of that day; omit for the index's latest confirmed date
-    :returns: ``DataFrame`` with ``order_book_id`` (the member), ``permanent_id``, ``weight``, ``methodology``,
+    :returns: ``DataFrame`` with ``order_book_id`` (the member), ``weight``, ``methodology``,
         ``source`` (the index publisher), ``basis`` (``origin``: published by a data source;
         ``reconstructed``: rebuilt by the index methodology), ``date`` and ``quality_flags``. Weights
         are month-end snapshots; on any other trading day the latest snapshot before it is drifted by

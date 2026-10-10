@@ -4,6 +4,20 @@
 
 只记录会\ **改变已有代码行为**\ 的变更。
 
+0.1.3（未发布）
+===============
+
+..  danger::
+
+    **返回结果不再含服务端内部标识：**\ 证券只以 ``order_book_id`` 标识（契约 3.0.0，服务端 libfinanceserver v0.1.10 起）。
+
+    - ``get_price``\ 、\ ``all_instruments``\ 、\ ``get_ex_factor``\ 、\ ``get_index_weights`` 去掉 ``permanent_id`` 列。
+    - ``get_dividends`` / ``get_splits`` / ``get_allotments`` / ``get_spinoffs`` 去掉 ``permanent_id``\ 、\ ``event_id``\ 、
+      ``confirmed_by_revision``\ ；\ ``get_spinoffs`` 另去掉 ``child_permanent_id``\ （子公司仍由 ``child_symbol`` 给出）。
+    - ``instruments`` 返回的 ``Instrument`` 不再有 ``permanent_id``\ 、\ ``listing_id``\ 、\ ``identity_quality`` 属性；
+      C++ 删除 ``Instrument::permanent_id()``\ 。
+    - 用这些列做连接或去重的代码，改用 ``order_book_id``\ ；历史上的身份由 ``as_of`` 解析。
+
 0.1.2（2026-10-10）
 ===================
 
