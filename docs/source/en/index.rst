@@ -24,6 +24,8 @@ The data design rests on four conventions:
 
 See :doc:`concepts/security_identifiers`, :doc:`concepts/point_in_time`, :doc:`concepts/exfactor` and
 :doc:`concepts/python_cpp`.
+How indices, industries and themes differ is in :doc:`concepts/classification`; what a factor is and how to test
+one is in :doc:`concepts/factors`.
 
 .. code-block:: python
 
@@ -221,6 +223,8 @@ code runs fine and your numbers are wrong.
     concepts/point_in_time
     concepts/exfactor
     concepts/python_cpp
+    concepts/classification
+    concepts/factors
 
 .. toctree::
     :maxdepth: 2

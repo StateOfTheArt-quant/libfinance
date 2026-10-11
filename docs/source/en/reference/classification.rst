@@ -1,6 +1,10 @@
 4 Industries and concepts
 ==================================================
 
+Indices, industries and themes (concepts) are three ways to group stocks, with different rules and uses;
+see :doc:`../concepts/classification`. Every code is listed in :doc:`index_meta`, :doc:`industry_meta` and
+:doc:`theme_meta`.
+
 .. list-table::
     :header-rows: 1
     :widths: 40 60
@@ -31,3 +35,6 @@
 
     industry
     weights
+    index_meta
+    industry_meta
+    theme_meta

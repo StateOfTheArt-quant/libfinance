@@ -6,7 +6,7 @@ Index and theme constituents
 
 Indices (``000300.XSHG``, ``SPX.US``) and themes (``300900.THS``) are named by an ``order_book_id``, with the
 same rules as a security; their catalogues are ``all_instruments(type="index")`` and
-``all_instruments(type="theme")``. Every function answers with the facts of ``as_of``.
+``all_instruments(type="theme")``. Every function answers with the facts of ``as_of``. Every code is listed in :doc:`index_meta` and :doc:`theme_meta`.
 
 .. list-table::
     :header-rows: 1

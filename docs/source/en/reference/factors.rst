@@ -11,6 +11,8 @@ freely in one request; there are no short names. ``start_date == end_date`` is t
 Conventions and computation per library: :doc:`../data/factors`; each factor's formula and meaning:
 :doc:`factor_dictionary`.
 
+What a factor is, exposure versus factor return, and how to test a factor: :doc:`../concepts/factors`.
+
 .. list-table::
     :header-rows: 1
     :widths: 40 60
