@@ -7,7 +7,8 @@ Industry classification
 An industry is named by an ``order_book_id`` (``<classification code>.<classification>``, e.g. ``480000.SW``,
 ``10.GICS``), with the same rules as a security; ``source`` is the classification (``SW``, ``GICS``, ...) and
 ``level`` its depth. All three functions answer with the facts of ``as_of``; a historical universe should
-use one ``as_of`` for industry membership, constituents and weights.
+use one ``as_of`` for industry membership, constituents and weights. Every industry code is listed in
+:doc:`industry_meta`.
 
 .. list-table::
     :header-rows: 1
