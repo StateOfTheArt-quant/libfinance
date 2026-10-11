@@ -21,7 +21,7 @@ docs/
     conf_base.py        Sphinx 设置；两棵树的 conf.py 都 import 它
     _templates/         主题模板覆盖
     _static/            图片与 CSS
-    tables/             代码表（指数、行业、主题）的 CSV，两棵树各引用一次
+    tables/             代码表（指数、行业、主题）的 CSV 与行业树 HTML，两棵树各引用一次
     generate_catalogs.py  从服务重新生成 tables/ 下的代码表，见下
     fix_cjk_markup.py   中文排版修正脚本，见下
   source/zh/          中文树；API 参考用 autodoc，与 docstring 单一来源
@@ -82,3 +82,5 @@ $ python docs/_shared/generate_catalogs.py [--host <服务地址> --port <端口
 ```
 
 不要手改 CSV。CSV 没有表头，列顺序与页面上 `csv-table` 的 `:header:` 一一对应，改列要两棵树一起改。
+行业是可逐级展开的树（`catalog_industry_*.html`，由同名 CSV 渲染）；只改了树的样式时，加 `--render-only`
+从现有 CSV 重新渲染，不需要连服务。

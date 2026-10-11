@@ -157,13 +157,13 @@ MOMENTUM 的 0.475 看起来很高，但这只是\ **一期**——它说明这 
         - 在 libfinance 里怎么避免
     *   - 用了 :math:`t` 时刻还不知道的信息
         - 用报告期对齐财报（2023 年报在 2024 年 4 月才披露）；用了事后修订的财务数字
-        - 财务数据传 ``as_of``\ ，见 :doc:`point_in_time`
+        - 财务数据传 ``as_of``\ ，见 :doc:`../concepts/point_in_time`
     *   - 幸存者偏差
         - 用今天的成分股或今天还在上市的股票回测过去
         - 股票池用 ``all_instruments(as_of=...)`` 或 ``get_index_constituents(..., as_of=...)``
     *   - 收益被除权污染
         - 用未复权价算收益，分红日变成虚假的下跌
-        - 收益用复权价，见 :doc:`exfactor`
+        - 收益用复权价，见 :doc:`../concepts/exfactor`
     *   - 暴露其实是行业或市值
         - 一个"新因子"的收益，大部分来自它偏好某几个行业或小盘股
         - 对行业哑变量与 SIZE 回归取残差（中性化），行业见 :doc:`classification`

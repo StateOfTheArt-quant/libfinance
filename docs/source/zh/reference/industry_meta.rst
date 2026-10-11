@@ -12,30 +12,15 @@
     >>> lf.all_instruments(type="industry", source="SW", as_of="2020-01-02")  # 改版前的申万分类
     >>> lf.instruments("480301.SW")                                           # 层级与上级节点
 
-行业分类是什么、各体系有何不同，见 :doc:`../concepts/classification`\ 。
+行业分类是什么、各体系有何不同，见 :doc:`../tutorials/classification`\ 。
 
-列的含义
-========
+怎么读
+======
 
-..  list-table::
-    :header-rows: 1
-    :widths: 18 30 52
-
-    *   - 列
-        - 对应字段
-        - 含义
-    *   - 代码
-        - ``order_book_id``
-        - 行业代码，写法 ``<分类代码>.<分类体系>``\ ，可直接传给 :func:`~libfinance.get_industry_constituents`
-    *   - 名称
-        - ``name``
-        - 行业名称，按层级缩进，表格自上而下读就是一棵树
-    *   - 层级
-        - ``level``
-        - ``1`` 是最粗的一级行业；与 :func:`~libfinance.get_instrument_industry` 的 ``level`` 参数一致
-    *   - 上级
-        - ``parent_order_book_id``
-        - 上一级节点的代码；一级行业为空
+每个体系是一棵树，默认只展开一级行业；点击一行展开它的下一级，右上角的 ``+`` / ``−`` 一次展开或收起全部。
+每行左边是行业代码（\ ``order_book_id``\ ，写法 ``<分类代码>.<分类体系>``\ ，可直接传给
+:func:`~libfinance.get_industry_constituents`\ ），中间是名称，右边的数字是下一级的节点数。
+缩进的深度就是层级（\ ``level``\ ，\ ``1`` 最粗），与 :func:`~libfinance.get_instrument_industry` 的 ``level`` 参数一致。
 
 体系一览
 ========
@@ -74,48 +59,29 @@
 
 名称为"—"的节点，是当前目录里服务尚未提供名称的节点（多为 2021 年改版前的旧代码），代码本身仍可查询。
 
-..  csv-table::
-    :file: ../../../_shared/tables/catalog_industry_sw.csv
-    :header: 代码, 名称, 层级, 上级
-    :widths: 20, 50, 10, 20
+.. raw:: html
+    :file: ../../../_shared/tables/catalog_industry_sw.html
 
 GICS
 ====
 
-..  csv-table::
-    :file: ../../../_shared/tables/catalog_industry_gics.csv
-    :header: 代码, 名称, 层级, 上级
-    :widths: 20, 50, 10, 20
+.. raw:: html
+    :file: ../../../_shared/tables/catalog_industry_gics.html
 
 ICB
 ===
 
-..  dropdown:: 展开 ICB 全部节点
-    :icon: list-unordered
-
-    ..  csv-table::
-        :file: ../../../_shared/tables/catalog_industry_icb.csv
-        :header: 代码, 名称, 层级, 上级
-        :widths: 20, 50, 10, 20
+.. raw:: html
+    :file: ../../../_shared/tables/catalog_industry_icb.html
 
 NAICS
 =====
 
-..  dropdown:: 展开 NAICS 全部节点（约 1400 个）
-    :icon: list-unordered
-
-    ..  csv-table::
-        :file: ../../../_shared/tables/catalog_industry_naics.csv
-        :header: 代码, 名称, 层级, 上级
-        :widths: 20, 50, 10, 20
+.. raw:: html
+    :file: ../../../_shared/tables/catalog_industry_naics.html
 
 SIC
 ===
 
-..  dropdown:: 展开 SIC 全部节点
-    :icon: list-unordered
-
-    ..  csv-table::
-        :file: ../../../_shared/tables/catalog_industry_sic.csv
-        :header: 代码, 名称, 层级, 上级
-        :widths: 20, 50, 10, 20
+.. raw:: html
+    :file: ../../../_shared/tables/catalog_industry_sic.html

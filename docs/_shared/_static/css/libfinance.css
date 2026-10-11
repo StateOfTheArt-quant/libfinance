@@ -251,3 +251,24 @@ article.pytorch-article .function dt span.pre {
 .lf-examples div.lf-output pre { background: #f6f8fa; }
 .lf-examples .literal-block-wrapper .code-block-caption { font-size: 0.8em; color: #6a737d; text-align: left; padding: 0.2em 0; }
 .lf-examples .lf-example-note { font-size: 0.82em; color: #6a737d; margin-top: 0.8em; }
+
+/* lf-tree: industry classifications as a tree; level 1 shown, deeper levels open on click */
+.lf-tree { margin: 0.6em 0 1.6em; font-size: 0.9rem; border-top: 1px solid #e1e4e8; }
+.lf-tree-tools { text-align: right; padding: 0.3em 0; }
+.lf-tree-tools button { border: 1px solid #d1d5da; background: #fff; color: #6a737d; border-radius: 3px;
+  width: 1.8em; height: 1.8em; margin-left: 0.3em; cursor: pointer; line-height: 1; }
+.lf-tree-tools button:hover { color: #262626; border-color: #6a737d; }
+.lf-tree details > details, .lf-tree details > .lf-tree-leaf { margin-left: 1.6em; }
+.lf-tree summary, .lf-tree-leaf { display: flex; align-items: baseline; padding: 0.35em 0.4em;
+  border-bottom: 1px solid #f0f1f3; }
+.lf-tree summary { cursor: pointer; list-style: none; }
+.lf-tree summary::-webkit-details-marker { display: none; }
+.lf-tree summary::before { content: "\25B8"; width: 1.1em; flex: none; color: #6a737d; }
+.lf-tree details[open] > summary::before { content: "\25BE"; }
+.lf-tree-leaf::before { content: ""; width: 1.1em; flex: none; }
+.lf-tree summary:hover { background: #f6f8fa; }
+.lf-tree code.lf-tree-code { flex: none; width: 9.5em; background: none; padding: 0; color: #6a737d;
+  font-size: 0.85rem; }
+.lf-tree-name { flex: 1; }
+.lf-tree-count { flex: none; color: #6a737d; font-size: 0.8rem; background: #f0f1f3; border-radius: 8px;
+  padding: 0 0.55em; margin-left: 0.6em; }
