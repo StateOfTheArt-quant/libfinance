@@ -4,8 +4,10 @@
 .. currentmodule:: libfinance
 
 日频因子由 factors-daybar 提供：qlib 与 alpha158 的价量因子，Barra CNE5 的风格、行业、国家因子与原始描述符。
-因子名写**全名**：库 ``owner/library[@rev]``\ （展开为它的全部因子）或因子 ``owner/library/factor[@rev]``\ ，
+因子名写\ **全名**\ ：库 ``owner/library[@rev]``\ （展开为它的全部因子）或因子 ``owner/library/factor[@rev]``\ ，
 可以混在一次请求里；没有简称。\ ``start_date`` 与 ``end_date`` 相同时就是当天的截面。
+
+因子是什么、暴露与因子收益有何不同、怎么检验一个因子，见 :doc:`../concepts/factors`\ 。
 
 .. list-table::
     :header-rows: 1
@@ -37,7 +39,7 @@
     * - ``system/barra-cne5-descriptor``\ 、\ ``system/barra-cne6-descriptor``
       - Barra 原始描述符（LNCAP、BETA、STOM……），个股自身的时间序列，与 universe 无关
 
-**免费层**：未登录时 ``get_factor_exposure`` 的 start_date 会被夹到"今天往前 1 年"，一次最多 300 个代码；
+**免费层**\ ：未登录时 ``get_factor_exposure`` 的 start_date 会被夹到"今天往前 1 年"，一次最多 300 个代码；
 客户端在请求会被裁剪时给出警告。登录后不限。
 
 get_factor_exposure — 按代码、日期区间读取因子暴露

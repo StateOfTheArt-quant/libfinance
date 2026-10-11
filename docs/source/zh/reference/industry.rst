@@ -3,9 +3,9 @@
 
 .. currentmodule:: libfinance
 
-行业以 ``order_book_id``\ （\ ``<分类代码>.<分类体系>``\ ，如 ``480000.SW``\ 、``10.GICS``\ ）命名，规则与证券相同；
-``source`` 是分类体系（\ ``SW``\ 、``GICS``\ ……），``level`` 是层级。三个函数都按 ``as_of`` 回答"那一天的事实"，
-历史股票池要让行业归属、成分与权重使用同一个 ``as_of``\ 。
+行业以 ``order_book_id``\ （\ ``<分类代码>.<分类体系>``\ ，如 ``480000.SW``\ 、\ ``10.GICS``\ ）命名，规则与证券相同；
+``source`` 是分类体系（\ ``SW``\ 、\ ``GICS``……），\ ``level`` 是层级。三个函数都按 ``as_of`` 回答"那一天的事实"，
+历史股票池要让行业归属、成分与权重使用同一个 ``as_of``\ 。全部行业代码见 :doc:`industry_meta`\ 。
 
 .. list-table::
     :header-rows: 1
@@ -52,5 +52,5 @@ get_industry_weights — 查询某行业成分的权重
 
 .. lf-examples:: get_industry_weights
 
-结果解读：每行一个成分证券；``methodology`` 说明权重的来源，没有供应商权重和明确方法时不生成。
+结果解读：每行一个成分证券；\ ``methodology`` 说明权重的来源，没有供应商权重和明确方法时不生成。
 

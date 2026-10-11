@@ -9,6 +9,8 @@ style, industry and country factors with their raw descriptors. Factor names are
 a library ``owner/library[@rev]`` (all its factors) or a factor ``owner/library/factor[@rev]``, mixed
 freely in one request; there are no short names. ``start_date == end_date`` is that day's cross section.
 
+What a factor is, exposure versus factor return, and how to test a factor: :doc:`../concepts/factors`.
+
 .. list-table::
     :header-rows: 1
     :widths: 40 60
