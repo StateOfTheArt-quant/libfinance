@@ -142,7 +142,7 @@ Indices, industries and themes
 ==============================
 
 The code tables are :doc:`index_meta`, :doc:`industry_meta` and :doc:`theme_meta`; how the three
-differ is in :doc:`../concepts/classification`.
+differ is in :doc:`../tutorials/classification`.
 
 Object attributes
 -----------------

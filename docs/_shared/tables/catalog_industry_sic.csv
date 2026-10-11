@@ -1,467 +1,467 @@
 B.SIC,Mining,1,
-12.SIC,　Coal Mining,2,B.SIC
-1220.SIC,　　Bituminous Coal and Lignite Mining,3,12.SIC
-1221.SIC,　　　Bituminous Coal and Lignite Surface Mining,4,1220.SIC
-13.SIC,　Oil and Gas Extraction,2,B.SIC
-1310.SIC,　　Crude Petroleum and Natural Gas,3,13.SIC
-1311.SIC,　　　Crude Petroleum and Natural Gas,4,1310.SIC
-1380.SIC,　　Oil and Gas Field Services,3,13.SIC
-1381.SIC,　　　Drilling Oil and Gas Wells,4,1380.SIC
-1382.SIC,　　　Oil and Gas Field Exploration Services,4,1380.SIC
-1389.SIC,"　　　Oil and Gas Field Services, Not Elsewhere Classified",4,1380.SIC
+12.SIC,Coal Mining,2,B.SIC
+1220.SIC,Bituminous Coal and Lignite Mining,3,12.SIC
+1221.SIC,Bituminous Coal and Lignite Surface Mining,4,1220.SIC
+13.SIC,Oil and Gas Extraction,2,B.SIC
+1310.SIC,Crude Petroleum and Natural Gas,3,13.SIC
+1311.SIC,Crude Petroleum and Natural Gas,4,1310.SIC
+1380.SIC,Oil and Gas Field Services,3,13.SIC
+1381.SIC,Drilling Oil and Gas Wells,4,1380.SIC
+1382.SIC,Oil and Gas Field Exploration Services,4,1380.SIC
+1389.SIC,"Oil and Gas Field Services, Not Elsewhere Classified",4,1380.SIC
 C.SIC,Construction,1,
-15.SIC,　Building Construction- Generalcontractors and Operative Builders,2,C.SIC
-1530.SIC,　　Operative Builders,3,15.SIC
-1531.SIC,　　　Operative Builders,4,1530.SIC
-16.SIC,　Heavy Construction Other Than Building Construction- Contractors,2,C.SIC
-1620.SIC,"　　Heavy Construction, Except Highway and Street Construction",3,16.SIC
-1623.SIC,"　　　Water, Sewer, Pipeline, and Communications and Power Line Construction",4,1620.SIC
-17.SIC,　Construction- Specialtrade Contractors,2,C.SIC
-1730.SIC,　　Electrical Work,3,17.SIC
-1731.SIC,　　　Electrical Work,4,1730.SIC
+15.SIC,Building Construction- Generalcontractors and Operative Builders,2,C.SIC
+1530.SIC,Operative Builders,3,15.SIC
+1531.SIC,Operative Builders,4,1530.SIC
+16.SIC,Heavy Construction Other Than Building Construction- Contractors,2,C.SIC
+1620.SIC,"Heavy Construction, Except Highway and Street Construction",3,16.SIC
+1623.SIC,"Water, Sewer, Pipeline, and Communications and Power Line Construction",4,1620.SIC
+17.SIC,Construction- Specialtrade Contractors,2,C.SIC
+1730.SIC,Electrical Work,3,17.SIC
+1731.SIC,Electrical Work,4,1730.SIC
 D.SIC,Manufacturing,1,
-20.SIC,　Food and Kindred Products,2,D.SIC
-2010.SIC,　　Meat Products,3,20.SIC
-2011.SIC,　　　Meat Packing Plants,4,2010.SIC
-2013.SIC,　　　Sausages and Other Prepared Meat Products,4,2010.SIC
-2015.SIC,　　　Poultry Slaughtering and Processing,4,2010.SIC
-2030.SIC,"　　Canned, Frozen, and Preserved Fruits, Vegetables, and Food Specialties",3,20.SIC
-2033.SIC,"　　　Canned Fruits, Vegetables, Preserves, Jams, and Jellies",4,2030.SIC
-2050.SIC,　　Bakery Products,3,20.SIC
-2052.SIC,　　　Cookies and Crackers,4,2050.SIC
-2080.SIC,　　Beverages,3,20.SIC
-2082.SIC,　　　Malt Beverages,4,2080.SIC
-2086.SIC,　　　Bottled and Canned Soft Drinks and Carbonated Waters,4,2080.SIC
-21.SIC,　Tobacco Products,2,D.SIC
-2110.SIC,　　Cigarettes,3,21.SIC
-2111.SIC,　　　Cigarettes,4,2110.SIC
-22.SIC,　Textile Mill Products,2,D.SIC
-2210.SIC,"　　Broadwoven Fabric Mills, Cotton",3,22.SIC
-2211.SIC,"　　　Broadwoven Fabric Mills, Cotton",4,2210.SIC
-2220.SIC,"　　Broadwoven Fabric Mills, Manmade Fiber and Silk",3,22.SIC
-2221.SIC,"　　　Broadwoven Fabric Mills, Manmade Fiber and Silk",4,2220.SIC
-2270.SIC,　　Carpets and Rugs,3,22.SIC
-2273.SIC,　　　Carpets and Rugs,4,2270.SIC
-24.SIC,"　Lumber and Wood Products, Except Furniture",2,D.SIC
-2420.SIC,　　Sawmills and Planing Mills,3,24.SIC
-2421.SIC,"　　　Sawmills and Planing Mills, General",4,2420.SIC
-2450.SIC,　　Wood Buildings and Mobile Homes,3,24.SIC
-2451.SIC,　　　Mobile Homes,4,2450.SIC
-25.SIC,　Furniture and Fixtures,2,D.SIC
-2510.SIC,　　Household Furniture,3,25.SIC
-2511.SIC,"　　　Wood Household Furniture, Except Upholstered",4,2510.SIC
-2520.SIC,　　Office Furniture,3,25.SIC
-2522.SIC,"　　　Office Furniture, Except Wood",4,2520.SIC
-2530.SIC,　　Public Building and Related Furniture,3,25.SIC
-2531.SIC,　　　Public Building and Related Furniture,4,2530.SIC
-26.SIC,　Paper and Allied Products,2,D.SIC
-2610.SIC,　　Pulp Mills,3,26.SIC
-2611.SIC,　　　Pulp Mills,4,2610.SIC
-2620.SIC,　　Paper Mills,3,26.SIC
-2621.SIC,　　　Paper Mills,4,2620.SIC
-2630.SIC,　　Paperboard Mills,3,26.SIC
-2631.SIC,　　　Paperboard Mills,4,2630.SIC
-2670.SIC,"　　Converted Paper and Paperboard Products, Except Containers and Box",3,26.SIC
-2673.SIC,"　　　Plastics, Foil, and Coated Paper Bags",4,2670.SIC
-27.SIC,"　Printing, Publishing, and Allied Industries",2,D.SIC
-2710.SIC,"　　Newspapers: Publishing, Or Publishing and Printing",3,27.SIC
-2711.SIC,"　　　Newspapers: Publishing, Or Publishing and Printing",4,2710.SIC
-2730.SIC,　　Books,3,27.SIC
-2731.SIC,"　　　Books: Publishing, Or Publishing and Printing",4,2730.SIC
-2740.SIC,　　Miscellaneous Publishing,3,27.SIC
-2741.SIC,　　　Miscellaneous Publishing,4,2740.SIC
-2760.SIC,　　Manifold Business Forms,3,27.SIC
-2761.SIC,　　　Manifold Business Forms,4,2760.SIC
-28.SIC,　Chemicals and Allied Products,2,D.SIC
-2820.SIC,"　　Plastics Materials and Synthetic Resins, Synthetic Rubber, Cellulose(no Glass)",3,28.SIC
-2821.SIC,"　　　Plastics Materials, Synthetic Resins, and Nonvulcanizable Easton",4,2820.SIC
-2830.SIC,　　Drugs,3,28.SIC
-2833.SIC,　　　Medicinal Chemicals and Botanical Products,4,2830.SIC
-2834.SIC,　　　Pharmaceutical Preparations,4,2830.SIC
-2835.SIC,　　　In Vitro and In Vivo Diagnostic Substances,4,2830.SIC
-2836.SIC,"　　　Biological Products, Except Diagnostic Substances",4,2830.SIC
-2840.SIC,"　　Soap, Detergents, and Cleaning Preparations; Perfumes, Cosmetics, and Other Toilet Preparations",3,28.SIC
-2842.SIC,"　　　Specialty Cleaning, Polishing, and Sanitation Preparations",4,2840.SIC
-2844.SIC,"　　　Perfumes, Cosmetics, and Other Toilet Preparations",4,2840.SIC
-2850.SIC,"　　Paints, Varnishes, Lacquers, Enamels, and Allied Products",3,28.SIC
-2851.SIC,"　　　Paints, Varnishes, Lacquers, Enamels, and Allied Products",4,2850.SIC
-2890.SIC,　　Miscellaneous Chemical Products,3,28.SIC
-2891.SIC,　　　Adhesives and Sealants,4,2890.SIC
-29.SIC,　Petroleum Refining and Related Industries,2,D.SIC
-2910.SIC,　　Petroleum Refining,3,29.SIC
-2911.SIC,　　　Petroleum Refining,4,2910.SIC
-30.SIC,　Rubber and Miscellaneous Plastics Products,2,D.SIC
-3010.SIC,　　Tires and Inner Tubes,3,30.SIC
-3011.SIC,　　　Tires and Inner Tubes,4,3010.SIC
-3020.SIC,　　Rubber and Plastics Footwear,3,30.SIC
-3021.SIC,　　　Rubber and Plastics Footwear,4,3020.SIC
-3080.SIC,　　Miscellaneous Plastics Products,3,30.SIC
-3086.SIC,　　　Plastics Foam Products,4,3080.SIC
-3089.SIC,"　　　Plastics Products, Not Elsewhere Classified",4,3080.SIC
-32.SIC,"　Stone, Clay, Glass, and Concrete Products",2,D.SIC
-3220.SIC,"　　Glass and Glassware, Pressed Or Blown",3,32.SIC
-3221.SIC,　　　Glass Containers,4,3220.SIC
-3230.SIC,"　　Glass Products, Made of Purchased Glass",3,32.SIC
-3231.SIC,"　　　Glass Products, Made of Purchased Glass",4,3230.SIC
-3240.SIC,"　　Cement, Hydraulic",3,32.SIC
-3241.SIC,"　　　Cement, Hydraulic",4,3240.SIC
-3270.SIC,"　　Concrete, Gypsum, and Plaster Products",3,32.SIC
-3272.SIC,"　　　Concrete Products, Except Block and Brick",4,3270.SIC
-3280.SIC,　　Cut Stone and Stone Products,3,32.SIC
-3281.SIC,　　　Cut Stone and Stone Products,4,3280.SIC
-33.SIC,　Primary Metal Industries,2,D.SIC
-3310.SIC,"　　Steel Works, Blast Furnaces, and Rolling and Finishing Mills",3,33.SIC
-3312.SIC,"　　　Steel Works, Blast Furnaces (Including Coke Ovens), and Rolling Mills",4,3310.SIC
-3317.SIC,　　　Steel Pipe and Tubes,4,3310.SIC
-3330.SIC,　　Primary Smelting and Refining of Nonferrous Metals,3,33.SIC
-3334.SIC,　　　Primary Production of Aluminum,4,3330.SIC
-3340.SIC,　　Secondary Smelting and Refining of Nonferrous Metals,3,33.SIC
-3341.SIC,　　　Secondary Smelting and Refining of Nonferrous Metals,4,3340.SIC
-3350.SIC,"　　Rolling, Drawing, and Extruding of Nonferrous Metals",3,33.SIC
-3357.SIC,　　　Drawing and Insulating of Nonferrous Wire,4,3350.SIC
-34.SIC,"　Fabricated Metal Products, Except Machinery and Transportation Equipment",2,D.SIC
-3410.SIC,　　Metal Cans and Shipping Containers,3,34.SIC
-3411.SIC,　　　Metal Cans,4,3410.SIC
-3412.SIC,"　　　Metal Shipping Barrels, Drums, Kegs, and Pails",4,3410.SIC
-3430.SIC,"　　Heating Equipment, Except Electric and Warm Air; and Plumbing Fixtures",3,34.SIC
-3433.SIC,"　　　Heating Equipment, Except Electric and Warm Air Furnaces",4,3430.SIC
-3440.SIC,　　Fabricated Structural Metal Products,3,34.SIC
-3442.SIC,"　　　Metal Doors, Sash, Frames, Molding, and Trim Manufacturing",4,3440.SIC
-3443.SIC,　　　Fabricated Plate Work (Boiler Shops),4,3440.SIC
-35.SIC,　Industrial and Commercial Machinery and Computer Equipment,2,D.SIC
-3520.SIC,　　Farm and Garden Machinery and Equipment,3,35.SIC
-3523.SIC,　　　Farm Machinery and Equipment,4,3520.SIC
-3524.SIC,　　　Lawn and Garden Tractors and Home Lawn and Garden Equipment,4,3520.SIC
-3530.SIC,"　　Construction, Mining, and Materials Handling Machinery and Equipment",3,35.SIC
-3531.SIC,　　　Construction Machinery and Equipment,4,3530.SIC
-3533.SIC,　　　Oil and Gas Field Machinery and Equipment,4,3530.SIC
-3537.SIC,"　　　Industrial Trucks, Tractors, Trailers, and Stackers",4,3530.SIC
-3540.SIC,　　Metalworking Machinery and Equipment,3,35.SIC
-3541.SIC,"　　　Machine Tools, Metal Cutting Types",4,3540.SIC
-3550.SIC,"　　Special Industry Machinery, Except Metalworking Machinery",3,35.SIC
-3555.SIC,　　　Printing Trades Machinery and Equipment,4,3550.SIC
-3559.SIC,"　　　Special Industry Machinery, Not Elsewhere Classified",4,3550.SIC
-3560.SIC,　　General Industrial Machinery and Equipment,3,35.SIC
-3561.SIC,　　　Pumps and Pumping Equipment,4,3560.SIC
-3562.SIC,　　　Ball and Roller Bearings,4,3560.SIC
-3564.SIC,　　　Industrial and Commercial Fans and Blowers and Air Purification Equipment,4,3560.SIC
-3569.SIC,"　　　General Industrial Machinery and Equipment, Not Elsewhere Classified",4,3560.SIC
-3570.SIC,　　Computer and Office Equipment,3,35.SIC
-3571.SIC,　　　Electronic Computers,4,3570.SIC
-3572.SIC,　　　Computer Storage Devices,4,3570.SIC
-3576.SIC,　　　Computer Communications Equipment,4,3570.SIC
-3577.SIC,"　　　Computer Peripheral Equipment, Not Elsewhere Classified",4,3570.SIC
-3578.SIC,"　　　Calculating and Accounting Machines, Except Electronic Computers",4,3570.SIC
-3579.SIC,"　　　Office Machines, Not Elsewhere Classified",4,3570.SIC
-3580.SIC,　　Refrigeration and Service Industry Machinery,3,35.SIC
-3585.SIC,　　　Air- Conditioning and Warm Air Heating Equipment and Commercial and Industrial Refrigeration Equipment,4,3580.SIC
-36.SIC,"　Electronic and Other Electrical Equipment and Components, Except Computer",2,D.SIC
-3610.SIC,　　Electric Transmission and Distribution Equipment,3,36.SIC
-3612.SIC,"　　　Power, Distribution, and Specialty Transformers",4,3610.SIC
-3613.SIC,　　　Switchgear and Switchboard Apparatus,4,3610.SIC
-3620.SIC,　　Electrical Industrial Apparatus,3,36.SIC
-3621.SIC,　　　Motors and Generators,4,3620.SIC
-3630.SIC,　　Household Appliances,3,36.SIC
-3634.SIC,　　　Electric Housewares and Fans,4,3630.SIC
-3650.SIC,"　　Household Audio and Video Equipment, and Audio Recordings",3,36.SIC
-3651.SIC,　　　Household Audio and Video Equipment,4,3650.SIC
-3660.SIC,　　Communications Equipment,3,36.SIC
-3661.SIC,　　　Telephone and Telegraph Apparatus,4,3660.SIC
-3663.SIC,　　　Radio and Television Broadcasting and Communications Equipment,4,3660.SIC
-3669.SIC,"　　　Communications Equipment, Not Elsewhere Classified",4,3660.SIC
-3670.SIC,　　Electronic Components and Accessories,3,36.SIC
-3672.SIC,　　　Printed Circuit Boards,4,3670.SIC
-3674.SIC,　　　Semiconductors and Related Devices,4,3670.SIC
-3677.SIC,"　　　Electronic Coils, Transformers, and Other Inductors",4,3670.SIC
-3678.SIC,　　　Electronic Connectors,4,3670.SIC
-3679.SIC,"　　　Electronic Components, Not Elsewhere Classified",4,3670.SIC
-37.SIC,　Transportation Equipment,2,D.SIC
-3710.SIC,　　Motor Vehicles and Motor Vehicle Equipment,3,37.SIC
-3711.SIC,　　　Motor Vehicles and Passenger Car Bodies,4,3710.SIC
-3713.SIC,　　　Truck and Bus Bodies,4,3710.SIC
-3714.SIC,　　　Motor Vehicle Parts and Accessories,4,3710.SIC
-3715.SIC,　　　Truck Trailers,4,3710.SIC
-3716.SIC,　　　Motor Homes,4,3710.SIC
-3720.SIC,　　Aircraft and Parts,3,37.SIC
-3721.SIC,　　　Aircraft,4,3720.SIC
-3724.SIC,　　　Aircraft Engines and Engine Parts,4,3720.SIC
-3728.SIC,"　　　Aircraft Parts and Auxiliary Equipment, Not Elsewhere Classified",4,3720.SIC
-3740.SIC,　　Railroad Equipment,3,37.SIC
-3743.SIC,　　　Railroad Equipment,4,3740.SIC
-3750.SIC,"　　Motorcycles, Bicycles, and Parts",3,37.SIC
-3751.SIC,"　　　Motorcycles, Bicycles, and Parts",4,3750.SIC
-38.SIC,"　Measuring, Analyzing and Controlling Instruments; Photographic, Medical and Optical Goods",2,D.SIC
-3810.SIC,"　　Search, Detection, Navigation, Guidance, Aeronautical, and Nautical Systems, instruments and Equipment",3,38.SIC
-3812.SIC,"　　　Search, Detection, Navigation, Guidance, Aeronautical, and Nautical Systems and Instruments",4,3810.SIC
-3820.SIC,"　　Laboratory Apparatus and Analytical, Optical, Measuring, and Controlling Instruments",3,38.SIC
-3821.SIC,　　　Laboratory Apparatus and Furniture,4,3820.SIC
-3822.SIC,　　　Automatic Controls For Regulating Residential and Commercial Environments and Appliances,4,3820.SIC
-3823.SIC,"　　　Industrial Instruments For Measurement, Display, and Control of Process Variables; and Related Products",4,3820.SIC
-3824.SIC,　　　Totalizing Fluid Meters and Counting Devices,4,3820.SIC
-3825.SIC,　　　Instruments For Measuring and Testing of Electricity and Electrical Signals,4,3820.SIC
-3826.SIC,　　　Laboratory Analytical Instruments,4,3820.SIC
-3827.SIC,　　　Optical Instruments and Lenses,4,3820.SIC
-3829.SIC,"　　　Measuring and Controlling Devices, Not Elsewhere Classified",4,3820.SIC
-3840.SIC,"　　Surgical, Medical, and Dental Instruments and Supplies",3,38.SIC
-3841.SIC,　　　Surgical and Medical Instruments and Apparatus,4,3840.SIC
-3842.SIC,"　　　Orthopedic, Prosthetic, and Surgical Appliances and Supplies",4,3840.SIC
-3843.SIC,　　　Dental Equipment and Supplies,4,3840.SIC
-3844.SIC,　　　X- Ray apparatus and Tubes and Related Irradiation Apparatus,4,3840.SIC
-3845.SIC,　　　Electromedical and Electrotherapeutic Apparatus,4,3840.SIC
-3850.SIC,　　Ophthalmic Goods,3,38.SIC
-3851.SIC,　　　Ophthalmic Goods,4,3850.SIC
-3860.SIC,　　Photographic Equipment and Supplies,3,38.SIC
-3861.SIC,　　　Photographic Equipment and Supplies,4,3860.SIC
-3870.SIC,"　　Watches, Clocks, Clockwork Operated Devices, and Parts",3,38.SIC
-3873.SIC,"　　　Watches, Clocks, Clockwork Operated Devices, and Parts",4,3870.SIC
-39.SIC,　Miscellaneous Manufacturing Industries,2,D.SIC
-3940.SIC,"　　Dolls, Toys, Games and Sporting and Athletic Goods",3,39.SIC
-3942.SIC,　　　Dolls and Stuffed Toys,4,3940.SIC
-3944.SIC,"　　　Games, Toys, and Children's Vehicles, Except Dolls and Bicycles",4,3940.SIC
-3949.SIC,"　　　Sporting and Athletic Goods, Not Elsewhere Classified",4,3940.SIC
+20.SIC,Food and Kindred Products,2,D.SIC
+2010.SIC,Meat Products,3,20.SIC
+2011.SIC,Meat Packing Plants,4,2010.SIC
+2013.SIC,Sausages and Other Prepared Meat Products,4,2010.SIC
+2015.SIC,Poultry Slaughtering and Processing,4,2010.SIC
+2030.SIC,"Canned, Frozen, and Preserved Fruits, Vegetables, and Food Specialties",3,20.SIC
+2033.SIC,"Canned Fruits, Vegetables, Preserves, Jams, and Jellies",4,2030.SIC
+2050.SIC,Bakery Products,3,20.SIC
+2052.SIC,Cookies and Crackers,4,2050.SIC
+2080.SIC,Beverages,3,20.SIC
+2082.SIC,Malt Beverages,4,2080.SIC
+2086.SIC,Bottled and Canned Soft Drinks and Carbonated Waters,4,2080.SIC
+21.SIC,Tobacco Products,2,D.SIC
+2110.SIC,Cigarettes,3,21.SIC
+2111.SIC,Cigarettes,4,2110.SIC
+22.SIC,Textile Mill Products,2,D.SIC
+2210.SIC,"Broadwoven Fabric Mills, Cotton",3,22.SIC
+2211.SIC,"Broadwoven Fabric Mills, Cotton",4,2210.SIC
+2220.SIC,"Broadwoven Fabric Mills, Manmade Fiber and Silk",3,22.SIC
+2221.SIC,"Broadwoven Fabric Mills, Manmade Fiber and Silk",4,2220.SIC
+2270.SIC,Carpets and Rugs,3,22.SIC
+2273.SIC,Carpets and Rugs,4,2270.SIC
+24.SIC,"Lumber and Wood Products, Except Furniture",2,D.SIC
+2420.SIC,Sawmills and Planing Mills,3,24.SIC
+2421.SIC,"Sawmills and Planing Mills, General",4,2420.SIC
+2450.SIC,Wood Buildings and Mobile Homes,3,24.SIC
+2451.SIC,Mobile Homes,4,2450.SIC
+25.SIC,Furniture and Fixtures,2,D.SIC
+2510.SIC,Household Furniture,3,25.SIC
+2511.SIC,"Wood Household Furniture, Except Upholstered",4,2510.SIC
+2520.SIC,Office Furniture,3,25.SIC
+2522.SIC,"Office Furniture, Except Wood",4,2520.SIC
+2530.SIC,Public Building and Related Furniture,3,25.SIC
+2531.SIC,Public Building and Related Furniture,4,2530.SIC
+26.SIC,Paper and Allied Products,2,D.SIC
+2610.SIC,Pulp Mills,3,26.SIC
+2611.SIC,Pulp Mills,4,2610.SIC
+2620.SIC,Paper Mills,3,26.SIC
+2621.SIC,Paper Mills,4,2620.SIC
+2630.SIC,Paperboard Mills,3,26.SIC
+2631.SIC,Paperboard Mills,4,2630.SIC
+2670.SIC,"Converted Paper and Paperboard Products, Except Containers and Box",3,26.SIC
+2673.SIC,"Plastics, Foil, and Coated Paper Bags",4,2670.SIC
+27.SIC,"Printing, Publishing, and Allied Industries",2,D.SIC
+2710.SIC,"Newspapers: Publishing, Or Publishing and Printing",3,27.SIC
+2711.SIC,"Newspapers: Publishing, Or Publishing and Printing",4,2710.SIC
+2730.SIC,Books,3,27.SIC
+2731.SIC,"Books: Publishing, Or Publishing and Printing",4,2730.SIC
+2740.SIC,Miscellaneous Publishing,3,27.SIC
+2741.SIC,Miscellaneous Publishing,4,2740.SIC
+2760.SIC,Manifold Business Forms,3,27.SIC
+2761.SIC,Manifold Business Forms,4,2760.SIC
+28.SIC,Chemicals and Allied Products,2,D.SIC
+2820.SIC,"Plastics Materials and Synthetic Resins, Synthetic Rubber, Cellulose(no Glass)",3,28.SIC
+2821.SIC,"Plastics Materials, Synthetic Resins, and Nonvulcanizable Easton",4,2820.SIC
+2830.SIC,Drugs,3,28.SIC
+2833.SIC,Medicinal Chemicals and Botanical Products,4,2830.SIC
+2834.SIC,Pharmaceutical Preparations,4,2830.SIC
+2835.SIC,In Vitro and In Vivo Diagnostic Substances,4,2830.SIC
+2836.SIC,"Biological Products, Except Diagnostic Substances",4,2830.SIC
+2840.SIC,"Soap, Detergents, and Cleaning Preparations; Perfumes, Cosmetics, and Other Toilet Preparations",3,28.SIC
+2842.SIC,"Specialty Cleaning, Polishing, and Sanitation Preparations",4,2840.SIC
+2844.SIC,"Perfumes, Cosmetics, and Other Toilet Preparations",4,2840.SIC
+2850.SIC,"Paints, Varnishes, Lacquers, Enamels, and Allied Products",3,28.SIC
+2851.SIC,"Paints, Varnishes, Lacquers, Enamels, and Allied Products",4,2850.SIC
+2890.SIC,Miscellaneous Chemical Products,3,28.SIC
+2891.SIC,Adhesives and Sealants,4,2890.SIC
+29.SIC,Petroleum Refining and Related Industries,2,D.SIC
+2910.SIC,Petroleum Refining,3,29.SIC
+2911.SIC,Petroleum Refining,4,2910.SIC
+30.SIC,Rubber and Miscellaneous Plastics Products,2,D.SIC
+3010.SIC,Tires and Inner Tubes,3,30.SIC
+3011.SIC,Tires and Inner Tubes,4,3010.SIC
+3020.SIC,Rubber and Plastics Footwear,3,30.SIC
+3021.SIC,Rubber and Plastics Footwear,4,3020.SIC
+3080.SIC,Miscellaneous Plastics Products,3,30.SIC
+3086.SIC,Plastics Foam Products,4,3080.SIC
+3089.SIC,"Plastics Products, Not Elsewhere Classified",4,3080.SIC
+32.SIC,"Stone, Clay, Glass, and Concrete Products",2,D.SIC
+3220.SIC,"Glass and Glassware, Pressed Or Blown",3,32.SIC
+3221.SIC,Glass Containers,4,3220.SIC
+3230.SIC,"Glass Products, Made of Purchased Glass",3,32.SIC
+3231.SIC,"Glass Products, Made of Purchased Glass",4,3230.SIC
+3240.SIC,"Cement, Hydraulic",3,32.SIC
+3241.SIC,"Cement, Hydraulic",4,3240.SIC
+3270.SIC,"Concrete, Gypsum, and Plaster Products",3,32.SIC
+3272.SIC,"Concrete Products, Except Block and Brick",4,3270.SIC
+3280.SIC,Cut Stone and Stone Products,3,32.SIC
+3281.SIC,Cut Stone and Stone Products,4,3280.SIC
+33.SIC,Primary Metal Industries,2,D.SIC
+3310.SIC,"Steel Works, Blast Furnaces, and Rolling and Finishing Mills",3,33.SIC
+3312.SIC,"Steel Works, Blast Furnaces (Including Coke Ovens), and Rolling Mills",4,3310.SIC
+3317.SIC,Steel Pipe and Tubes,4,3310.SIC
+3330.SIC,Primary Smelting and Refining of Nonferrous Metals,3,33.SIC
+3334.SIC,Primary Production of Aluminum,4,3330.SIC
+3340.SIC,Secondary Smelting and Refining of Nonferrous Metals,3,33.SIC
+3341.SIC,Secondary Smelting and Refining of Nonferrous Metals,4,3340.SIC
+3350.SIC,"Rolling, Drawing, and Extruding of Nonferrous Metals",3,33.SIC
+3357.SIC,Drawing and Insulating of Nonferrous Wire,4,3350.SIC
+34.SIC,"Fabricated Metal Products, Except Machinery and Transportation Equipment",2,D.SIC
+3410.SIC,Metal Cans and Shipping Containers,3,34.SIC
+3411.SIC,Metal Cans,4,3410.SIC
+3412.SIC,"Metal Shipping Barrels, Drums, Kegs, and Pails",4,3410.SIC
+3430.SIC,"Heating Equipment, Except Electric and Warm Air; and Plumbing Fixtures",3,34.SIC
+3433.SIC,"Heating Equipment, Except Electric and Warm Air Furnaces",4,3430.SIC
+3440.SIC,Fabricated Structural Metal Products,3,34.SIC
+3442.SIC,"Metal Doors, Sash, Frames, Molding, and Trim Manufacturing",4,3440.SIC
+3443.SIC,Fabricated Plate Work (Boiler Shops),4,3440.SIC
+35.SIC,Industrial and Commercial Machinery and Computer Equipment,2,D.SIC
+3520.SIC,Farm and Garden Machinery and Equipment,3,35.SIC
+3523.SIC,Farm Machinery and Equipment,4,3520.SIC
+3524.SIC,Lawn and Garden Tractors and Home Lawn and Garden Equipment,4,3520.SIC
+3530.SIC,"Construction, Mining, and Materials Handling Machinery and Equipment",3,35.SIC
+3531.SIC,Construction Machinery and Equipment,4,3530.SIC
+3533.SIC,Oil and Gas Field Machinery and Equipment,4,3530.SIC
+3537.SIC,"Industrial Trucks, Tractors, Trailers, and Stackers",4,3530.SIC
+3540.SIC,Metalworking Machinery and Equipment,3,35.SIC
+3541.SIC,"Machine Tools, Metal Cutting Types",4,3540.SIC
+3550.SIC,"Special Industry Machinery, Except Metalworking Machinery",3,35.SIC
+3555.SIC,Printing Trades Machinery and Equipment,4,3550.SIC
+3559.SIC,"Special Industry Machinery, Not Elsewhere Classified",4,3550.SIC
+3560.SIC,General Industrial Machinery and Equipment,3,35.SIC
+3561.SIC,Pumps and Pumping Equipment,4,3560.SIC
+3562.SIC,Ball and Roller Bearings,4,3560.SIC
+3564.SIC,Industrial and Commercial Fans and Blowers and Air Purification Equipment,4,3560.SIC
+3569.SIC,"General Industrial Machinery and Equipment, Not Elsewhere Classified",4,3560.SIC
+3570.SIC,Computer and Office Equipment,3,35.SIC
+3571.SIC,Electronic Computers,4,3570.SIC
+3572.SIC,Computer Storage Devices,4,3570.SIC
+3576.SIC,Computer Communications Equipment,4,3570.SIC
+3577.SIC,"Computer Peripheral Equipment, Not Elsewhere Classified",4,3570.SIC
+3578.SIC,"Calculating and Accounting Machines, Except Electronic Computers",4,3570.SIC
+3579.SIC,"Office Machines, Not Elsewhere Classified",4,3570.SIC
+3580.SIC,Refrigeration and Service Industry Machinery,3,35.SIC
+3585.SIC,Air- Conditioning and Warm Air Heating Equipment and Commercial and Industrial Refrigeration Equipment,4,3580.SIC
+36.SIC,"Electronic and Other Electrical Equipment and Components, Except Computer",2,D.SIC
+3610.SIC,Electric Transmission and Distribution Equipment,3,36.SIC
+3612.SIC,"Power, Distribution, and Specialty Transformers",4,3610.SIC
+3613.SIC,Switchgear and Switchboard Apparatus,4,3610.SIC
+3620.SIC,Electrical Industrial Apparatus,3,36.SIC
+3621.SIC,Motors and Generators,4,3620.SIC
+3630.SIC,Household Appliances,3,36.SIC
+3634.SIC,Electric Housewares and Fans,4,3630.SIC
+3650.SIC,"Household Audio and Video Equipment, and Audio Recordings",3,36.SIC
+3651.SIC,Household Audio and Video Equipment,4,3650.SIC
+3660.SIC,Communications Equipment,3,36.SIC
+3661.SIC,Telephone and Telegraph Apparatus,4,3660.SIC
+3663.SIC,Radio and Television Broadcasting and Communications Equipment,4,3660.SIC
+3669.SIC,"Communications Equipment, Not Elsewhere Classified",4,3660.SIC
+3670.SIC,Electronic Components and Accessories,3,36.SIC
+3672.SIC,Printed Circuit Boards,4,3670.SIC
+3674.SIC,Semiconductors and Related Devices,4,3670.SIC
+3677.SIC,"Electronic Coils, Transformers, and Other Inductors",4,3670.SIC
+3678.SIC,Electronic Connectors,4,3670.SIC
+3679.SIC,"Electronic Components, Not Elsewhere Classified",4,3670.SIC
+37.SIC,Transportation Equipment,2,D.SIC
+3710.SIC,Motor Vehicles and Motor Vehicle Equipment,3,37.SIC
+3711.SIC,Motor Vehicles and Passenger Car Bodies,4,3710.SIC
+3713.SIC,Truck and Bus Bodies,4,3710.SIC
+3714.SIC,Motor Vehicle Parts and Accessories,4,3710.SIC
+3715.SIC,Truck Trailers,4,3710.SIC
+3716.SIC,Motor Homes,4,3710.SIC
+3720.SIC,Aircraft and Parts,3,37.SIC
+3721.SIC,Aircraft,4,3720.SIC
+3724.SIC,Aircraft Engines and Engine Parts,4,3720.SIC
+3728.SIC,"Aircraft Parts and Auxiliary Equipment, Not Elsewhere Classified",4,3720.SIC
+3740.SIC,Railroad Equipment,3,37.SIC
+3743.SIC,Railroad Equipment,4,3740.SIC
+3750.SIC,"Motorcycles, Bicycles, and Parts",3,37.SIC
+3751.SIC,"Motorcycles, Bicycles, and Parts",4,3750.SIC
+38.SIC,"Measuring, Analyzing and Controlling Instruments; Photographic, Medical and Optical Goods",2,D.SIC
+3810.SIC,"Search, Detection, Navigation, Guidance, Aeronautical, and Nautical Systems, instruments and Equipment",3,38.SIC
+3812.SIC,"Search, Detection, Navigation, Guidance, Aeronautical, and Nautical Systems and Instruments",4,3810.SIC
+3820.SIC,"Laboratory Apparatus and Analytical, Optical, Measuring, and Controlling Instruments",3,38.SIC
+3821.SIC,Laboratory Apparatus and Furniture,4,3820.SIC
+3822.SIC,Automatic Controls For Regulating Residential and Commercial Environments and Appliances,4,3820.SIC
+3823.SIC,"Industrial Instruments For Measurement, Display, and Control of Process Variables; and Related Products",4,3820.SIC
+3824.SIC,Totalizing Fluid Meters and Counting Devices,4,3820.SIC
+3825.SIC,Instruments For Measuring and Testing of Electricity and Electrical Signals,4,3820.SIC
+3826.SIC,Laboratory Analytical Instruments,4,3820.SIC
+3827.SIC,Optical Instruments and Lenses,4,3820.SIC
+3829.SIC,"Measuring and Controlling Devices, Not Elsewhere Classified",4,3820.SIC
+3840.SIC,"Surgical, Medical, and Dental Instruments and Supplies",3,38.SIC
+3841.SIC,Surgical and Medical Instruments and Apparatus,4,3840.SIC
+3842.SIC,"Orthopedic, Prosthetic, and Surgical Appliances and Supplies",4,3840.SIC
+3843.SIC,Dental Equipment and Supplies,4,3840.SIC
+3844.SIC,X- Ray apparatus and Tubes and Related Irradiation Apparatus,4,3840.SIC
+3845.SIC,Electromedical and Electrotherapeutic Apparatus,4,3840.SIC
+3850.SIC,Ophthalmic Goods,3,38.SIC
+3851.SIC,Ophthalmic Goods,4,3850.SIC
+3860.SIC,Photographic Equipment and Supplies,3,38.SIC
+3861.SIC,Photographic Equipment and Supplies,4,3860.SIC
+3870.SIC,"Watches, Clocks, Clockwork Operated Devices, and Parts",3,38.SIC
+3873.SIC,"Watches, Clocks, Clockwork Operated Devices, and Parts",4,3870.SIC
+39.SIC,Miscellaneous Manufacturing Industries,2,D.SIC
+3940.SIC,"Dolls, Toys, Games and Sporting and Athletic Goods",3,39.SIC
+3942.SIC,Dolls and Stuffed Toys,4,3940.SIC
+3944.SIC,"Games, Toys, and Children's Vehicles, Except Dolls and Bicycles",4,3940.SIC
+3949.SIC,"Sporting and Athletic Goods, Not Elsewhere Classified",4,3940.SIC
 E.SIC,"Transportation, Communications, Electric, Gas, And Sanitary Services",1,
-40.SIC,　Railroad Transportation,2,E.SIC
-4010.SIC,　　Railroads,3,40.SIC
-4011.SIC,"　　　Railroads, Line- Haul operating",4,4010.SIC
-42.SIC,　Motor Freight Transportation and Warehousing,2,E.SIC
-4210.SIC,"　　Trucking and Courier Services, Except Air",3,42.SIC
-4213.SIC,"　　　Trucking, Except Local",4,4210.SIC
-44.SIC,　Water Transportation,2,E.SIC
-4410.SIC,　　Deep Sea Foreign Transportation of Freight,3,44.SIC
-4412.SIC,　　　Deep Sea Foreign Transportation of Freight,4,4410.SIC
-45.SIC,　Transportation By Air,2,E.SIC
-4510.SIC,"　　Air Transportation, Scheduled, and Air Courier Services",3,45.SIC
-4512.SIC,"　　　Air Transportation, Scheduled",4,4510.SIC
-4513.SIC,　　　Air Courier Services,4,4510.SIC
-4520.SIC,"　　Air Transportation, Nonscheduled",3,45.SIC
-4522.SIC,"　　　Air Transportation, Nonscheduled",4,4520.SIC
-4580.SIC,"　　Airports, Flying Fields, and Airport Terminal Services",3,45.SIC
-4581.SIC,"　　　Airports, Flying Fields, and Airport Terminal Services",4,4580.SIC
-47.SIC,　Transportation Services,2,E.SIC
-4730.SIC,　　Arrangement of Transportation of Freight and Cargo,3,47.SIC
-4731.SIC,　　　Arrangement of Transportation of Freight and Cargo,4,4730.SIC
-48.SIC,　Communications,2,E.SIC
-4810.SIC,　　Telephone Communications,3,48.SIC
-4812.SIC,　　　Radiotelephone Communications,4,4810.SIC
-4813.SIC,"　　　Telephone Communications, Except Radiotelephone",4,4810.SIC
-4820.SIC,　　Telegraph and Other Message Communications,3,48.SIC
-4822.SIC,　　　Telegraph and Other Message Communications,4,4820.SIC
-4830.SIC,　　Radio and Television Broadcasting Stations,3,48.SIC
-4832.SIC,　　　Radio Broadcasting Stations,4,4830.SIC
-4833.SIC,　　　Television Broadcasting Stations,4,4830.SIC
-4840.SIC,　　Cable and Other Pay Television Services,3,48.SIC
-4841.SIC,　　　Cable and Other Pay Television Services,4,4840.SIC
-4890.SIC,"　　Communications Services, Not Elsewhere Classified",3,48.SIC
-4899.SIC,"　　　Communications Services, Not Elsewhere Classified",4,4890.SIC
-49.SIC,"　Electric, Gas, and Sanitary Services",2,E.SIC
-4910.SIC,　　Electric Services,3,49.SIC
-4911.SIC,　　　Electric Services,4,4910.SIC
-4920.SIC,　　Gas Production and Distribution,3,49.SIC
-4922.SIC,　　　Natural Gas Transmission,4,4920.SIC
-4923.SIC,　　　Natural Gas Transmission and Distribution,4,4920.SIC
-4924.SIC,　　　Natural Gas Distribution,4,4920.SIC
-4930.SIC,"　　Combination Electric and Gas, and Other Utility Services",3,49.SIC
-4931.SIC,　　　Electric and Other Services Combined,4,4930.SIC
-4932.SIC,　　　Gas and Other Services Combined,4,4930.SIC
-4940.SIC,　　Water Supply,3,49.SIC
-4941.SIC,　　　Water Supply,4,4940.SIC
-4950.SIC,　　Sanitary Services,3,49.SIC
-4953.SIC,　　　Refuse Systems,4,4950.SIC
-4955.SIC,　　　Hazardous Waste Management,4,4950.SIC
+40.SIC,Railroad Transportation,2,E.SIC
+4010.SIC,Railroads,3,40.SIC
+4011.SIC,"Railroads, Line- Haul operating",4,4010.SIC
+42.SIC,Motor Freight Transportation and Warehousing,2,E.SIC
+4210.SIC,"Trucking and Courier Services, Except Air",3,42.SIC
+4213.SIC,"Trucking, Except Local",4,4210.SIC
+44.SIC,Water Transportation,2,E.SIC
+4410.SIC,Deep Sea Foreign Transportation of Freight,3,44.SIC
+4412.SIC,Deep Sea Foreign Transportation of Freight,4,4410.SIC
+45.SIC,Transportation By Air,2,E.SIC
+4510.SIC,"Air Transportation, Scheduled, and Air Courier Services",3,45.SIC
+4512.SIC,"Air Transportation, Scheduled",4,4510.SIC
+4513.SIC,Air Courier Services,4,4510.SIC
+4520.SIC,"Air Transportation, Nonscheduled",3,45.SIC
+4522.SIC,"Air Transportation, Nonscheduled",4,4520.SIC
+4580.SIC,"Airports, Flying Fields, and Airport Terminal Services",3,45.SIC
+4581.SIC,"Airports, Flying Fields, and Airport Terminal Services",4,4580.SIC
+47.SIC,Transportation Services,2,E.SIC
+4730.SIC,Arrangement of Transportation of Freight and Cargo,3,47.SIC
+4731.SIC,Arrangement of Transportation of Freight and Cargo,4,4730.SIC
+48.SIC,Communications,2,E.SIC
+4810.SIC,Telephone Communications,3,48.SIC
+4812.SIC,Radiotelephone Communications,4,4810.SIC
+4813.SIC,"Telephone Communications, Except Radiotelephone",4,4810.SIC
+4820.SIC,Telegraph and Other Message Communications,3,48.SIC
+4822.SIC,Telegraph and Other Message Communications,4,4820.SIC
+4830.SIC,Radio and Television Broadcasting Stations,3,48.SIC
+4832.SIC,Radio Broadcasting Stations,4,4830.SIC
+4833.SIC,Television Broadcasting Stations,4,4830.SIC
+4840.SIC,Cable and Other Pay Television Services,3,48.SIC
+4841.SIC,Cable and Other Pay Television Services,4,4840.SIC
+4890.SIC,"Communications Services, Not Elsewhere Classified",3,48.SIC
+4899.SIC,"Communications Services, Not Elsewhere Classified",4,4890.SIC
+49.SIC,"Electric, Gas, and Sanitary Services",2,E.SIC
+4910.SIC,Electric Services,3,49.SIC
+4911.SIC,Electric Services,4,4910.SIC
+4920.SIC,Gas Production and Distribution,3,49.SIC
+4922.SIC,Natural Gas Transmission,4,4920.SIC
+4923.SIC,Natural Gas Transmission and Distribution,4,4920.SIC
+4924.SIC,Natural Gas Distribution,4,4920.SIC
+4930.SIC,"Combination Electric and Gas, and Other Utility Services",3,49.SIC
+4931.SIC,Electric and Other Services Combined,4,4930.SIC
+4932.SIC,Gas and Other Services Combined,4,4930.SIC
+4940.SIC,Water Supply,3,49.SIC
+4941.SIC,Water Supply,4,4940.SIC
+4950.SIC,Sanitary Services,3,49.SIC
+4953.SIC,Refuse Systems,4,4950.SIC
+4955.SIC,Hazardous Waste Management,4,4950.SIC
 F.SIC,Wholesale Trade,1,
-50.SIC,　Wholesale Trade - Durable Goods,2,F.SIC
-5010.SIC,　　Motor Vehicles and Motor Vehicle Parts and Supplies,3,50.SIC
-5013.SIC,　　　Motor Vehicle Supplies and New Parts,4,5010.SIC
-5030.SIC,　　Lumber and Other Construction Materials,3,50.SIC
-5031.SIC,"　　　Lumber, Plywood, Millwork, and Wood Panels",4,5030.SIC
-5040.SIC,　　Professional and Commercial Equipment and Supplies,3,50.SIC
-5045.SIC,　　　Computers and Computer Peripheral Equipment and Software,4,5040.SIC
-5047.SIC,"　　　Medical, Dental, and Hospital Equipment and Supplies",4,5040.SIC
-5050.SIC,"　　Metals and Minerals, Except Petroleum",3,50.SIC
-5051.SIC,　　　Metals Service Centers and Offices,4,5050.SIC
-5060.SIC,　　Electrical Goods,3,50.SIC
-5063.SIC,"　　　Electrical Apparatus and Equipment, Wiring Supplies, and Construction Materials",4,5060.SIC
-5064.SIC,"　　　Electrical Appliances, Television and Radio Sets",4,5060.SIC
-5065.SIC,"　　　Electronic Parts and Equipment, Not Elsewhere Classified",4,5060.SIC
-5070.SIC,"　　Hardware, and Plumbing and Heating Equipment and Supplies",3,50.SIC
-5072.SIC,　　　Hardware,4,5070.SIC
-5080.SIC,"　　Machinery, Equipment, and Supplies",3,50.SIC
-5084.SIC,　　　Industrial Machinery and Equipment,4,5080.SIC
-5090.SIC,　　Miscellaneous Durable Goods,3,50.SIC
-5094.SIC,"　　　Jewelry, Watches, Precious Stones, and Precious Metals",4,5090.SIC
-5099.SIC,"　　　Durable Goods, Not Elsewhere Classified",4,5090.SIC
-51.SIC,　Wholesale Trade - Nondurable Goods,2,F.SIC
-5120.SIC,"　　Drugs, Drug Proprietaries, and Druggists' Sundries",3,51.SIC
-5122.SIC,"　　　Drugs, Drug Proprietaries, and Druggists' Sundries",4,5120.SIC
-5140.SIC,　　Groceries and Related Products,3,51.SIC
-5141.SIC,"　　　Groceries, General Line",4,5140.SIC
-5170.SIC,　　Petroleum and Petroleum Products,3,51.SIC
-5172.SIC,"　　　Petroleum and Petroleum Products Wholesalers, Except Bulk Station",4,5170.SIC
+50.SIC,Wholesale Trade - Durable Goods,2,F.SIC
+5010.SIC,Motor Vehicles and Motor Vehicle Parts and Supplies,3,50.SIC
+5013.SIC,Motor Vehicle Supplies and New Parts,4,5010.SIC
+5030.SIC,Lumber and Other Construction Materials,3,50.SIC
+5031.SIC,"Lumber, Plywood, Millwork, and Wood Panels",4,5030.SIC
+5040.SIC,Professional and Commercial Equipment and Supplies,3,50.SIC
+5045.SIC,Computers and Computer Peripheral Equipment and Software,4,5040.SIC
+5047.SIC,"Medical, Dental, and Hospital Equipment and Supplies",4,5040.SIC
+5050.SIC,"Metals and Minerals, Except Petroleum",3,50.SIC
+5051.SIC,Metals Service Centers and Offices,4,5050.SIC
+5060.SIC,Electrical Goods,3,50.SIC
+5063.SIC,"Electrical Apparatus and Equipment, Wiring Supplies, and Construction Materials",4,5060.SIC
+5064.SIC,"Electrical Appliances, Television and Radio Sets",4,5060.SIC
+5065.SIC,"Electronic Parts and Equipment, Not Elsewhere Classified",4,5060.SIC
+5070.SIC,"Hardware, and Plumbing and Heating Equipment and Supplies",3,50.SIC
+5072.SIC,Hardware,4,5070.SIC
+5080.SIC,"Machinery, Equipment, and Supplies",3,50.SIC
+5084.SIC,Industrial Machinery and Equipment,4,5080.SIC
+5090.SIC,Miscellaneous Durable Goods,3,50.SIC
+5094.SIC,"Jewelry, Watches, Precious Stones, and Precious Metals",4,5090.SIC
+5099.SIC,"Durable Goods, Not Elsewhere Classified",4,5090.SIC
+51.SIC,Wholesale Trade - Nondurable Goods,2,F.SIC
+5120.SIC,"Drugs, Drug Proprietaries, and Druggists' Sundries",3,51.SIC
+5122.SIC,"Drugs, Drug Proprietaries, and Druggists' Sundries",4,5120.SIC
+5140.SIC,Groceries and Related Products,3,51.SIC
+5141.SIC,"Groceries, General Line",4,5140.SIC
+5170.SIC,Petroleum and Petroleum Products,3,51.SIC
+5172.SIC,"Petroleum and Petroleum Products Wholesalers, Except Bulk Station",4,5170.SIC
 G.SIC,Retail Trade,1,
-52.SIC,"　Building Materials, Hardware, Garden Supply, and Mobile Home Dealers",2,G.SIC
-5210.SIC,　　Lumber and Other Building Materials Dealers,3,52.SIC
-5211.SIC,　　　Lumber and Other Building Materials Dealers,4,5210.SIC
-53.SIC,　General Merchandise Stores,2,G.SIC
-5310.SIC,　　Department Stores,3,53.SIC
-5311.SIC,　　　Department Stores,4,5310.SIC
-5330.SIC,　　Variety Stores,3,53.SIC
-5331.SIC,　　　Variety Stores,4,5330.SIC
-54.SIC,　Food Stores,2,G.SIC
-5410.SIC,　　Grocery Stores,3,54.SIC
-5411.SIC,　　　Grocery Stores,4,5410.SIC
-5412.SIC,　　　Convenience Stores,4,5410.SIC
-55.SIC,　Automotive Dealers and Gasoline Service Stations,2,G.SIC
-5530.SIC,　　Auto and Home Supply Stores,3,55.SIC
-5531.SIC,　　　Auto and Home Supply Stores,4,5530.SIC
-56.SIC,　Apparel and Accessory Stores,2,G.SIC
-5620.SIC,　　Women's Clothing Stores,3,56.SIC
-5621.SIC,　　　Women's Clothing Stores,4,5620.SIC
-5650.SIC,　　Family Clothing Stores,3,56.SIC
-5651.SIC,　　　Family Clothing Stores,4,5650.SIC
-5660.SIC,　　Shoe Stores,3,56.SIC
-5661.SIC,　　　Shoe Stores,4,5660.SIC
-57.SIC,"　Home Furniture, Furnishings, and Equipment Stores",2,G.SIC
-5710.SIC,　　Home Furniture and Furnishings Stores,3,57.SIC
-5712.SIC,　　　Furniture Stores,4,5710.SIC
-5730.SIC,"　　Radio, Television, Consumer Electronics, and Music Stores",3,57.SIC
-5731.SIC,"　　　Radio, Television, and Consumer Electronics Stores",4,5730.SIC
-5734.SIC,　　　Computer and Computer Software Stores,4,5730.SIC
-58.SIC,　Eating and Drinking Places,2,G.SIC
-5810.SIC,　　Eating and Drinking Places,3,58.SIC
-5812.SIC,　　　Eating Places,4,5810.SIC
-59.SIC,　Miscellaneous Retail,2,G.SIC
-5910.SIC,　　Drug Stores and Proprietary Stores,3,59.SIC
-5912.SIC,　　　Drug Stores and Proprietary Stores,4,5910.SIC
-5940.SIC,　　Miscellaneous Shopping Goods Stores,3,59.SIC
-5944.SIC,　　　Jewelry Stores,4,5940.SIC
-5945.SIC,"　　　Hobby, Toy, and Game Shops",4,5940.SIC
-5960.SIC,　　Nonstore Retailers,3,59.SIC
-5961.SIC,　　　Catalog and Mail- Order houses,4,5960.SIC
+52.SIC,"Building Materials, Hardware, Garden Supply, and Mobile Home Dealers",2,G.SIC
+5210.SIC,Lumber and Other Building Materials Dealers,3,52.SIC
+5211.SIC,Lumber and Other Building Materials Dealers,4,5210.SIC
+53.SIC,General Merchandise Stores,2,G.SIC
+5310.SIC,Department Stores,3,53.SIC
+5311.SIC,Department Stores,4,5310.SIC
+5330.SIC,Variety Stores,3,53.SIC
+5331.SIC,Variety Stores,4,5330.SIC
+54.SIC,Food Stores,2,G.SIC
+5410.SIC,Grocery Stores,3,54.SIC
+5411.SIC,Grocery Stores,4,5410.SIC
+5412.SIC,Convenience Stores,4,5410.SIC
+55.SIC,Automotive Dealers and Gasoline Service Stations,2,G.SIC
+5530.SIC,Auto and Home Supply Stores,3,55.SIC
+5531.SIC,Auto and Home Supply Stores,4,5530.SIC
+56.SIC,Apparel and Accessory Stores,2,G.SIC
+5620.SIC,Women's Clothing Stores,3,56.SIC
+5621.SIC,Women's Clothing Stores,4,5620.SIC
+5650.SIC,Family Clothing Stores,3,56.SIC
+5651.SIC,Family Clothing Stores,4,5650.SIC
+5660.SIC,Shoe Stores,3,56.SIC
+5661.SIC,Shoe Stores,4,5660.SIC
+57.SIC,"Home Furniture, Furnishings, and Equipment Stores",2,G.SIC
+5710.SIC,Home Furniture and Furnishings Stores,3,57.SIC
+5712.SIC,Furniture Stores,4,5710.SIC
+5730.SIC,"Radio, Television, Consumer Electronics, and Music Stores",3,57.SIC
+5731.SIC,"Radio, Television, and Consumer Electronics Stores",4,5730.SIC
+5734.SIC,Computer and Computer Software Stores,4,5730.SIC
+58.SIC,Eating and Drinking Places,2,G.SIC
+5810.SIC,Eating and Drinking Places,3,58.SIC
+5812.SIC,Eating Places,4,5810.SIC
+59.SIC,Miscellaneous Retail,2,G.SIC
+5910.SIC,Drug Stores and Proprietary Stores,3,59.SIC
+5912.SIC,Drug Stores and Proprietary Stores,4,5910.SIC
+5940.SIC,Miscellaneous Shopping Goods Stores,3,59.SIC
+5944.SIC,Jewelry Stores,4,5940.SIC
+5945.SIC,"Hobby, Toy, and Game Shops",4,5940.SIC
+5960.SIC,Nonstore Retailers,3,59.SIC
+5961.SIC,Catalog and Mail- Order houses,4,5960.SIC
 H.SIC,"Finance, Insurance and Real Estate",1,
-60.SIC,　Depository Institutions,2,H.SIC
-6020.SIC,　　Commercial Banks,3,60.SIC
-6021.SIC,　　　National Commercial Banks,4,6020.SIC
-6022.SIC,　　　State Commercial Banks,4,6020.SIC
-6029.SIC,"　　　Commercial Banks, Not Elsewhere Classified",4,6020.SIC
-6030.SIC,　　Savings Institutions,3,60.SIC
-6035.SIC,"　　　Savings Institutions, Federally Chartered",4,6030.SIC
-6036.SIC,"　　　Savings Institutions, Not Federally Chartered",4,6030.SIC
-6090.SIC,　　Functions Related To Depository Banking,3,60.SIC
-6099.SIC,"　　　Functions Related To Depository Banking, Not Elsewhere Classified",4,6090.SIC
-61.SIC,　Nondepository Credit Institutions,2,H.SIC
-6110.SIC,　　Federal and Federally- Sponsored credit Agencies,3,61.SIC
-6111.SIC,　　　Federal and Federally- Sponsored credit Agencies,4,6110.SIC
-6140.SIC,　　Personal Credit Institutions,3,61.SIC
-6141.SIC,　　　Personal Credit Institutions,4,6140.SIC
-6150.SIC,　　Business Credit Institutions,3,61.SIC
-6153.SIC,"　　　Short- Term business Credit Institutions, Except Agricultural",4,6150.SIC
-6159.SIC,　　　Miscellaneous Business Credit Institutions,4,6150.SIC
-6160.SIC,　　Mortgage Bankers and Brokers,3,61.SIC
-6162.SIC,　　　Mortgage Bankers and Loan Correspondents,4,6160.SIC
-6163.SIC,　　　Loan Brokers,4,6160.SIC
-62.SIC,"　Security and Commodity Brokers, Dealers, Exchanges, and Services",2,H.SIC
-6210.SIC,"　　Security Brokers, Dealers, and Flotation Companies",3,62.SIC
-6211.SIC,"　　　Security Brokers, Dealers, and Flotation Companies",4,6210.SIC
-6220.SIC,　　Commodity Contracts Brokers and Dealers,3,62.SIC
-6221.SIC,　　　Commodity Contracts Brokers and Dealers,4,6220.SIC
-6280.SIC,　　Services Allied With The Exchange of Securities Or Commodities,3,62.SIC
-6282.SIC,　　　Investment Advice,4,6280.SIC
-63.SIC,　Insurance Carriers,2,H.SIC
-6310.SIC,　　Life Insurance,3,63.SIC
-6311.SIC,　　　Life Insurance,4,6310.SIC
-6320.SIC,　　Accident and Health Insurance and Medical Service Plans,3,63.SIC
-6321.SIC,　　　Accident and Health Insurance,4,6320.SIC
-6324.SIC,　　　Hospital and Medical Service Plans,4,6320.SIC
-6330.SIC,"　　Fire, Marine, and Casualty Insurance",3,63.SIC
-6331.SIC,"　　　Fire, Marine, and Casualty Insurance",4,6330.SIC
-6350.SIC,　　Surety Insurance,3,63.SIC
-6351.SIC,　　　Surety Insurance,4,6350.SIC
-6360.SIC,　　Title Insurance,3,63.SIC
-6361.SIC,　　　Title Insurance,4,6360.SIC
-6390.SIC,"　　Insurance Carriers, Not Elsewhere Classified",3,63.SIC
-6399.SIC,"　　　Insurance Carriers, Not Elsewhere Classified",4,6390.SIC
-64.SIC,"　Insurance Agents, Brokers, and Service",2,H.SIC
-6410.SIC,"　　Insurance Agents, Brokers, and Service",3,64.SIC
-6411.SIC,"　　　Insurance Agents, Brokers, and Service",4,6410.SIC
-65.SIC,　Real Estate,2,H.SIC
-6510.SIC,　　Real Estate Operators (Except Developers) and Lessors,3,65.SIC
-6512.SIC,　　　Operators of Nonresidential Buildings,4,6510.SIC
-6513.SIC,　　　Operators of Apartment Buildings,4,6510.SIC
-6519.SIC,"　　　Lessors of Real Property, Not Elsewhere Classified",4,6510.SIC
-6530.SIC,　　Real Estate Agents and Managers,3,65.SIC
-6531.SIC,　　　Real Estate Agents and Managers,4,6530.SIC
-6550.SIC,　　Land Subdividers and Developers,3,65.SIC
-6552.SIC,"　　　Land Subdividers and Developers, Except Cemeteries",4,6550.SIC
-67.SIC,　Holding and Other Investment Offices,2,H.SIC
-6790.SIC,　　Miscellaneous Investing,3,67.SIC
-6792.SIC,　　　Oil Royalty Traders,4,6790.SIC
-6794.SIC,　　　Patent Owners and Lessors,4,6790.SIC
-6795.SIC,　　　Mineral Royalty Traders,4,6790.SIC
-6798.SIC,　　　Real Estate Investment Trusts,4,6790.SIC
-6799.SIC,"　　　Investors, Not Elsewhere Classified",4,6790.SIC
+60.SIC,Depository Institutions,2,H.SIC
+6020.SIC,Commercial Banks,3,60.SIC
+6021.SIC,National Commercial Banks,4,6020.SIC
+6022.SIC,State Commercial Banks,4,6020.SIC
+6029.SIC,"Commercial Banks, Not Elsewhere Classified",4,6020.SIC
+6030.SIC,Savings Institutions,3,60.SIC
+6035.SIC,"Savings Institutions, Federally Chartered",4,6030.SIC
+6036.SIC,"Savings Institutions, Not Federally Chartered",4,6030.SIC
+6090.SIC,Functions Related To Depository Banking,3,60.SIC
+6099.SIC,"Functions Related To Depository Banking, Not Elsewhere Classified",4,6090.SIC
+61.SIC,Nondepository Credit Institutions,2,H.SIC
+6110.SIC,Federal and Federally- Sponsored credit Agencies,3,61.SIC
+6111.SIC,Federal and Federally- Sponsored credit Agencies,4,6110.SIC
+6140.SIC,Personal Credit Institutions,3,61.SIC
+6141.SIC,Personal Credit Institutions,4,6140.SIC
+6150.SIC,Business Credit Institutions,3,61.SIC
+6153.SIC,"Short- Term business Credit Institutions, Except Agricultural",4,6150.SIC
+6159.SIC,Miscellaneous Business Credit Institutions,4,6150.SIC
+6160.SIC,Mortgage Bankers and Brokers,3,61.SIC
+6162.SIC,Mortgage Bankers and Loan Correspondents,4,6160.SIC
+6163.SIC,Loan Brokers,4,6160.SIC
+62.SIC,"Security and Commodity Brokers, Dealers, Exchanges, and Services",2,H.SIC
+6210.SIC,"Security Brokers, Dealers, and Flotation Companies",3,62.SIC
+6211.SIC,"Security Brokers, Dealers, and Flotation Companies",4,6210.SIC
+6220.SIC,Commodity Contracts Brokers and Dealers,3,62.SIC
+6221.SIC,Commodity Contracts Brokers and Dealers,4,6220.SIC
+6280.SIC,Services Allied With The Exchange of Securities Or Commodities,3,62.SIC
+6282.SIC,Investment Advice,4,6280.SIC
+63.SIC,Insurance Carriers,2,H.SIC
+6310.SIC,Life Insurance,3,63.SIC
+6311.SIC,Life Insurance,4,6310.SIC
+6320.SIC,Accident and Health Insurance and Medical Service Plans,3,63.SIC
+6321.SIC,Accident and Health Insurance,4,6320.SIC
+6324.SIC,Hospital and Medical Service Plans,4,6320.SIC
+6330.SIC,"Fire, Marine, and Casualty Insurance",3,63.SIC
+6331.SIC,"Fire, Marine, and Casualty Insurance",4,6330.SIC
+6350.SIC,Surety Insurance,3,63.SIC
+6351.SIC,Surety Insurance,4,6350.SIC
+6360.SIC,Title Insurance,3,63.SIC
+6361.SIC,Title Insurance,4,6360.SIC
+6390.SIC,"Insurance Carriers, Not Elsewhere Classified",3,63.SIC
+6399.SIC,"Insurance Carriers, Not Elsewhere Classified",4,6390.SIC
+64.SIC,"Insurance Agents, Brokers, and Service",2,H.SIC
+6410.SIC,"Insurance Agents, Brokers, and Service",3,64.SIC
+6411.SIC,"Insurance Agents, Brokers, and Service",4,6410.SIC
+65.SIC,Real Estate,2,H.SIC
+6510.SIC,Real Estate Operators (Except Developers) and Lessors,3,65.SIC
+6512.SIC,Operators of Nonresidential Buildings,4,6510.SIC
+6513.SIC,Operators of Apartment Buildings,4,6510.SIC
+6519.SIC,"Lessors of Real Property, Not Elsewhere Classified",4,6510.SIC
+6530.SIC,Real Estate Agents and Managers,3,65.SIC
+6531.SIC,Real Estate Agents and Managers,4,6530.SIC
+6550.SIC,Land Subdividers and Developers,3,65.SIC
+6552.SIC,"Land Subdividers and Developers, Except Cemeteries",4,6550.SIC
+67.SIC,Holding and Other Investment Offices,2,H.SIC
+6790.SIC,Miscellaneous Investing,3,67.SIC
+6792.SIC,Oil Royalty Traders,4,6790.SIC
+6794.SIC,Patent Owners and Lessors,4,6790.SIC
+6795.SIC,Mineral Royalty Traders,4,6790.SIC
+6798.SIC,Real Estate Investment Trusts,4,6790.SIC
+6799.SIC,"Investors, Not Elsewhere Classified",4,6790.SIC
 I.SIC,Services,1,
-70.SIC,"　Hotels, Rooming Houses, Camps, and Other Lodging Places",2,I.SIC
-7010.SIC,　　Hotels and Motels,3,70.SIC
-7011.SIC,　　　Hotels and Motels,4,7010.SIC
-73.SIC,　Business Services,2,I.SIC
-7310.SIC,　　Advertising,3,73.SIC
-7311.SIC,　　　Advertising Agencies,4,7310.SIC
-7330.SIC,"　　Mailing, Reproduction, Commercial Art and Photography, and Stenographic Services",3,73.SIC
-7331.SIC,　　　Direct Mail Advertising Services,4,7330.SIC
-7350.SIC,　　Miscellaneous Equipment Rental and Leasing,3,73.SIC
-7359.SIC,"　　　Equipment Rental and Leasing, Not Elsewhere Classified",4,7350.SIC
-7360.SIC,　　Personnel Supply Services,3,73.SIC
-7361.SIC,　　　Employment Agencies,4,7360.SIC
-7363.SIC,　　　Help Supply Services,4,7360.SIC
-7370.SIC,"　　Computer Programming, Data Processing, and Other Computer Related Services",3,73.SIC
-7371.SIC,　　　Computer Programming Services,4,7370.SIC
-7372.SIC,　　　Prepackaged Software,4,7370.SIC
-7373.SIC,　　　Computer Integrated Systems Design,4,7370.SIC
-7374.SIC,　　　Computer Processing and Data Preparation and Processing Services,4,7370.SIC
-7380.SIC,　　Miscellaneous Business Services,3,73.SIC
-7381.SIC,"　　　Detective, Guard, and Armored Car Services",4,7380.SIC
-7389.SIC,"　　　Business Services, Not Elsewhere Classified",4,7380.SIC
-78.SIC,　Motion Pictures,2,I.SIC
-7810.SIC,　　Motion Picture Production and Allied Services,3,78.SIC
-7812.SIC,　　　Motion Picture and Video Tape Production,4,7810.SIC
-7819.SIC,　　　Services Allied To Motion Picture Production,4,7810.SIC
-7840.SIC,　　Video Tape Rental,3,78.SIC
-7841.SIC,　　　Video Tape Rental,4,7840.SIC
-79.SIC,　Amusement and Recreation Services,2,I.SIC
-7940.SIC,　　Commercial Sports,3,79.SIC
-7948.SIC,"　　　Racing, Including Track Operation",4,7940.SIC
-7990.SIC,　　Miscellaneous Amusement and Recreation Services,3,79.SIC
-7997.SIC,　　　Membership Sports and Recreation Clubs,4,7990.SIC
-80.SIC,　Health Services,2,I.SIC
-8010.SIC,　　Offices and Clinics of Doctors of Medicine,3,80.SIC
-8011.SIC,　　　Offices and Clinics of Doctors of Medicine,4,8010.SIC
-8050.SIC,　　Nursing and Personal Care Facilities,3,80.SIC
-8051.SIC,　　　Skilled Nursing Care Facilities,4,8050.SIC
-8060.SIC,　　Hospitals,3,80.SIC
-8062.SIC,　　　General Medical and Surgical Hospitals,4,8060.SIC
-8070.SIC,　　Medical and Dental Laboratories,3,80.SIC
-8071.SIC,　　　Medical Laboratories,4,8070.SIC
-8080.SIC,　　Home Health Care Services,3,80.SIC
-8082.SIC,　　　Home Health Care Services,4,8080.SIC
-8090.SIC,"　　Miscellaneous Health and Allied Services, Not Elsewhere Classified",3,80.SIC
-8093.SIC,"　　　Specialty Outpatient Facilities, Not Elsewhere Classified",4,8090.SIC
-81.SIC,　Legal Services,2,I.SIC
-8110.SIC,　　Legal Services,3,81.SIC
-8111.SIC,　　　Legal Services,4,8110.SIC
-83.SIC,　Social Services,2,I.SIC
-8350.SIC,　　Child Day Care Services,3,83.SIC
-8351.SIC,　　　Child Day Care Services,4,8350.SIC
-87.SIC,"　Engineering, Accounting, Research, Management, and Related Services",2,I.SIC
-8710.SIC,"　　Engineering, Architectural, and Surveying Services",3,87.SIC
-8711.SIC,　　　Engineering Services,4,8710.SIC
-8730.SIC,"　　Research, Development, and Testing Services",3,87.SIC
-8731.SIC,　　　Commercial Physical and Biological Research,4,8730.SIC
-8734.SIC,　　　Testing Laboratories,4,8730.SIC
-8740.SIC,　　Management and Public Relations Services,3,87.SIC
-8741.SIC,　　　Management Services,4,8740.SIC
-8742.SIC,　　　Management Consulting Services,4,8740.SIC
-8744.SIC,　　　Facilities Support Management Services,4,8740.SIC
+70.SIC,"Hotels, Rooming Houses, Camps, and Other Lodging Places",2,I.SIC
+7010.SIC,Hotels and Motels,3,70.SIC
+7011.SIC,Hotels and Motels,4,7010.SIC
+73.SIC,Business Services,2,I.SIC
+7310.SIC,Advertising,3,73.SIC
+7311.SIC,Advertising Agencies,4,7310.SIC
+7330.SIC,"Mailing, Reproduction, Commercial Art and Photography, and Stenographic Services",3,73.SIC
+7331.SIC,Direct Mail Advertising Services,4,7330.SIC
+7350.SIC,Miscellaneous Equipment Rental and Leasing,3,73.SIC
+7359.SIC,"Equipment Rental and Leasing, Not Elsewhere Classified",4,7350.SIC
+7360.SIC,Personnel Supply Services,3,73.SIC
+7361.SIC,Employment Agencies,4,7360.SIC
+7363.SIC,Help Supply Services,4,7360.SIC
+7370.SIC,"Computer Programming, Data Processing, and Other Computer Related Services",3,73.SIC
+7371.SIC,Computer Programming Services,4,7370.SIC
+7372.SIC,Prepackaged Software,4,7370.SIC
+7373.SIC,Computer Integrated Systems Design,4,7370.SIC
+7374.SIC,Computer Processing and Data Preparation and Processing Services,4,7370.SIC
+7380.SIC,Miscellaneous Business Services,3,73.SIC
+7381.SIC,"Detective, Guard, and Armored Car Services",4,7380.SIC
+7389.SIC,"Business Services, Not Elsewhere Classified",4,7380.SIC
+78.SIC,Motion Pictures,2,I.SIC
+7810.SIC,Motion Picture Production and Allied Services,3,78.SIC
+7812.SIC,Motion Picture and Video Tape Production,4,7810.SIC
+7819.SIC,Services Allied To Motion Picture Production,4,7810.SIC
+7840.SIC,Video Tape Rental,3,78.SIC
+7841.SIC,Video Tape Rental,4,7840.SIC
+79.SIC,Amusement and Recreation Services,2,I.SIC
+7940.SIC,Commercial Sports,3,79.SIC
+7948.SIC,"Racing, Including Track Operation",4,7940.SIC
+7990.SIC,Miscellaneous Amusement and Recreation Services,3,79.SIC
+7997.SIC,Membership Sports and Recreation Clubs,4,7990.SIC
+80.SIC,Health Services,2,I.SIC
+8010.SIC,Offices and Clinics of Doctors of Medicine,3,80.SIC
+8011.SIC,Offices and Clinics of Doctors of Medicine,4,8010.SIC
+8050.SIC,Nursing and Personal Care Facilities,3,80.SIC
+8051.SIC,Skilled Nursing Care Facilities,4,8050.SIC
+8060.SIC,Hospitals,3,80.SIC
+8062.SIC,General Medical and Surgical Hospitals,4,8060.SIC
+8070.SIC,Medical and Dental Laboratories,3,80.SIC
+8071.SIC,Medical Laboratories,4,8070.SIC
+8080.SIC,Home Health Care Services,3,80.SIC
+8082.SIC,Home Health Care Services,4,8080.SIC
+8090.SIC,"Miscellaneous Health and Allied Services, Not Elsewhere Classified",3,80.SIC
+8093.SIC,"Specialty Outpatient Facilities, Not Elsewhere Classified",4,8090.SIC
+81.SIC,Legal Services,2,I.SIC
+8110.SIC,Legal Services,3,81.SIC
+8111.SIC,Legal Services,4,8110.SIC
+83.SIC,Social Services,2,I.SIC
+8350.SIC,Child Day Care Services,3,83.SIC
+8351.SIC,Child Day Care Services,4,8350.SIC
+87.SIC,"Engineering, Accounting, Research, Management, and Related Services",2,I.SIC
+8710.SIC,"Engineering, Architectural, and Surveying Services",3,87.SIC
+8711.SIC,Engineering Services,4,8710.SIC
+8730.SIC,"Research, Development, and Testing Services",3,87.SIC
+8731.SIC,Commercial Physical and Biological Research,4,8730.SIC
+8734.SIC,Testing Laboratories,4,8730.SIC
+8740.SIC,Management and Public Relations Services,3,87.SIC
+8741.SIC,Management Services,4,8740.SIC
+8742.SIC,Management Consulting Services,4,8740.SIC
+8744.SIC,Facilities Support Management Services,4,8740.SIC
 J.SIC,Public Administration,1,
-99.SIC,　Non-classifiable Establishments,2,J.SIC
-9990.SIC,　　Non-classifiable Establishments,3,99.SIC
-9995.SIC,　　　Non-operating Establishments,4,9990.SIC
+99.SIC,Non-classifiable Establishments,2,J.SIC
+9990.SIC,Non-classifiable Establishments,3,99.SIC
+9995.SIC,Non-operating Establishments,4,9990.SIC
