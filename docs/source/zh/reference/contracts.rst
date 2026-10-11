@@ -33,4 +33,3 @@
 
     instrument
     calendar
-    index_meta

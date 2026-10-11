@@ -18,6 +18,8 @@ Historical research needs clear security identities, information valid at the de
 * **High-quality adjustment factors, exfactor**: account for corporate actions when comparing prices, with unadjusted, forward-adjusted, and backward-adjusted series. Inspect event and cumulative factors through ``get_ex_factor`` to understand price adjustments.
 
 Explore :doc:`concepts/security_identifiers`, :doc:`concepts/point_in_time`, and :doc:`concepts/exfactor`.
+How indices, industries and themes differ is in :doc:`concepts/classification`; what a factor is and how to test
+one is in :doc:`concepts/factors`.
 
 .. code-block:: python
 
@@ -220,6 +222,8 @@ code runs fine and your numbers are wrong.
     concepts/security_identifiers
     concepts/point_in_time
     concepts/exfactor
+    concepts/classification
+    concepts/factors
 
 .. toctree::
     :maxdepth: 2

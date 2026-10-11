@@ -19,6 +19,7 @@ libfinance
 * **高质量的复权因子 exfactor**\ ：结合公司行动处理价格可比性，提供不复权、前复权和后复权行情；通过 ``get_ex_factor`` 查看单次及累计因子，让价格变化有据可查。
 
 深入了解 :doc:`concepts/security_identifiers`\ 、\ :doc:`concepts/point_in_time` 与 :doc:`concepts/exfactor`\ 。
+指数、行业与主题有何不同，见 :doc:`concepts/classification`\ ；因子是什么、怎么检验，见 :doc:`concepts/factors`\ 。
 
 .. code-block:: python
 
@@ -211,6 +212,8 @@ A 股；美股没有涨跌停，也没有提供成交额。
     concepts/security_identifiers
     concepts/point_in_time
     concepts/exfactor
+    concepts/classification
+    concepts/factors
 
 ..  toctree::
     :maxdepth: 2
