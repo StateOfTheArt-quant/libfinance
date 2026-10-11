@@ -141,7 +141,7 @@
 ================
 
 三类对象的代码表见 :doc:`index_meta`\ 、\ :doc:`industry_meta`\ 、\ :doc:`theme_meta`\ ；
-它们之间的区别见 :doc:`../concepts/classification`\ 。
+它们之间的区别见 :doc:`../tutorials/classification`\ 。
 
 对象属性
 --------

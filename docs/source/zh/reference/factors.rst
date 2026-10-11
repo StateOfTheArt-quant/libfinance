@@ -3,12 +3,20 @@
 
 .. currentmodule:: libfinance
 
+.. epigraph::
+
+    学术界和业界一直关心同一个问题：股票之间的\ **异象**\ （anomaly），或者说公司自身的\ **属性**\ （firm
+    characteristic），能在多大程度上解释股票收益在\ **截面**\ 上的差异。换一种说法：既然股票的未来收益可以看成
+    当前\ **状态变量**\ 的函数，我们想知道的就是——哪些状态变量能预测股票的未来收益。这些状态变量在不同的地方有不同
+    的名字：特征（feature）、预测变量（predictor）、因子（factor）、alpha、指标（indicator）、决定因素
+    （determinant）。它们说的是同一件事。
+
+    -- 教程 :doc:`../tutorials/factors`
+
 日频因子包括 qlib 与 alpha158 的量价因子，Barra CNE5 的风格、行业、国家因子，以及 CNE5、CNE6 的原始描述符。
 因子名写\ **全名**\ ：库 ``owner/library[@rev]``\ （展开为它的全部因子）或因子 ``owner/library/factor[@rev]``\ ，
 可以混在一次请求里；没有简称。\ ``start_date`` 与 ``end_date`` 相同时就是当天的截面。
 各库的口径与计算方式见 :doc:`../data/factors`\ ，每个因子的公式与含义见 :doc:`factor_dictionary`\ 。
-
-因子是什么、暴露与因子收益有何不同、怎么检验一个因子，见 :doc:`../concepts/factors`\ 。
 
 .. list-table::
     :header-rows: 1

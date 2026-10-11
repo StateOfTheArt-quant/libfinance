@@ -13,7 +13,7 @@ service you connect to may be newer, so trust the query:
     >>> lf.instruments("000300.XSHG")                 # one index: base date, base value, launch date
     >>> lf.all_instruments(type="index", as_of="2016-01-04")   # the catalogue on that day
 
-What an index is and how to use one: :doc:`../concepts/classification`.
+What an index is and how to use one: :doc:`../tutorials/classification`.
 
 Columns
 =======

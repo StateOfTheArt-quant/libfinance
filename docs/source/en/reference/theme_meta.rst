@@ -18,7 +18,7 @@ generated**:
     Theme history is short: theme data starts on the day in the "Effective from" column, and an earlier
     ``as_of`` raises ``CoverageError``. Backtesting the past with today's theme lists carries future
     information in the lists themselves (many themes are created, and their members confirmed, after the
-    fact). See :doc:`../concepts/classification`.
+    fact). See :doc:`../tutorials/classification`.
 
 Columns
 =======

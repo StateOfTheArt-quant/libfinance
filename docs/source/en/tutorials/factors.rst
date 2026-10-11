@@ -176,13 +176,13 @@ code runs and the numbers are wrong.
     *   - Using what was unknown at :math:`t`
         - Aligning financials by reporting period (a 2023 annual report is published in April 2024); using
           restated figures
-        - Pass ``as_of`` for financial data; see :doc:`point_in_time`
+        - Pass ``as_of`` for financial data; see :doc:`../concepts/point_in_time`
     *   - Survivorship bias
         - Backtesting the past on today's index members or today's listed stocks
         - Build the universe with ``all_instruments(as_of=...)`` or ``get_index_constituents(..., as_of=...)``
     *   - Returns polluted by ex-dates
         - Returns from unadjusted prices turn dividends into fake drops
-        - Use adjusted prices for returns; see :doc:`exfactor`
+        - Use adjusted prices for returns; see :doc:`../concepts/exfactor`
     *   - The exposure is really industry or size
         - Most of a "new factor"'s return comes from favouring a few industries or small caps
         - Regress on industry dummies and SIZE and keep the residual (neutralization); industries in

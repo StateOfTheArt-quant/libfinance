@@ -22,7 +22,7 @@ libfinance
 
 详见 :doc:`concepts/security_identifiers`\ 、\ :doc:`concepts/point_in_time`\ 、\ :doc:`concepts/exfactor` 与
 :doc:`concepts/python_cpp`\ 。
-指数、行业与主题有何不同，见 :doc:`concepts/classification`\ ；因子是什么、怎么检验，见 :doc:`concepts/factors`\ 。
+教程：\ :doc:`tutorials/factors`\ 、\ :doc:`tutorials/classification`\ 。
 
 .. code-block:: python
 
@@ -212,8 +212,6 @@ A 股；美股没有涨跌停，也没有提供成交额。
     concepts/point_in_time
     concepts/exfactor
     concepts/python_cpp
-    concepts/classification
-    concepts/factors
 
 ..  toctree::
     :maxdepth: 2
@@ -235,7 +233,19 @@ A 股；美股没有涨跌停，也没有提供成交额。
 
     reference/fields
     reference/factor_dictionary
+    reference/index_meta
+    reference/industry_meta
+    reference/theme_meta
     reference/errors
+
+.. toctree::
+    :maxdepth: 1
+    :caption: 教程
+    :titlesonly:
+    :hidden:
+
+    tutorials/factors
+    tutorials/classification
 
 ..  toctree::
     :maxdepth: 1

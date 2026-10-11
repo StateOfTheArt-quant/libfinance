@@ -1,7 +1,7 @@
 4 行业和概念信息
 ========================================
 
-指数、行业、主题（概念）是三种给股票分组的方式，规则和用途各不相同，见 :doc:`../concepts/classification`\ 。
+指数、行业、主题（概念）是三种给股票分组的方式，规则和用途各不相同，见 :doc:`../tutorials/classification`\ 。
 全部代码见 :doc:`index_meta`\ 、\ :doc:`industry_meta`\ 、\ :doc:`theme_meta`\ 。
 
 .. list-table::
@@ -34,6 +34,3 @@
 
     industry
     weights
-    index_meta
-    industry_meta
-    theme_meta
