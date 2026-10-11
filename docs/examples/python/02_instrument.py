@@ -35,7 +35,7 @@ print(len(before), len(after))
 
 # [instruments.1] 单个代码：返回一个证券，查不到为 None
 stock = lf.instruments("000001.XSHE")
-print(stock.order_book_id, stock.name, stock.type, stock.permanent_id)
+print(stock.order_book_id, stock.name, stock.type, stock.market)
 # [/instruments.1]
 
 # [instruments.2] 一个列表混合四种类型、两个市场：类型由代码决定

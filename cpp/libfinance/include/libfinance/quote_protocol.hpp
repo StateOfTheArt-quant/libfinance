@@ -69,16 +69,10 @@ struct LoginRsp {
   int64_t sequence_epoch_ns = 0;  // a change means the gateway rebuilt its log: resume positions are void
 };
 
-//: A code (instrument_id) and its exchange as one order_book_id: 600519 + XSHG -> 600519.XSHG.
-struct Coded {
-  std::string instrument_id;
-  std::string exchange_id;
-  std::string order_book_id() const { return instrument_id.empty() ? "" : instrument_id + "." + exchange_id; }
-};
-
 //: RSP_SUBSCRIBE / RSP_UNSUBSCRIBE, one per order_book_id.
-struct SubRsp : Coded {
+struct SubRsp {
   std::string source;             // echoed: the source the gateway chose for a subscription without one
+  std::string order_book_id;      // 600519.XSHG
   int32_t error_id = 0;
   std::string error_msg;
   int32_t current_subs = 0;
@@ -125,7 +119,7 @@ struct RecordEnvelope {
   uint32_t flags = 0;
   uint64_t seq = 0;               // consecutive within the stream (the resume position)
   uint64_t inst_seq = 0;          // consecutive within (stream, instrument, kind) (gap detection)
-  uint64_t instrument_key = 0;    // instrument_hash(exchange, code)
+  uint64_t instrument_key = 0;    // instrument_hash(order_book_id)
   int64_t received_ns = 0;
   int64_t sequenced_ns = 0;
   //: The latest value sent on subscribing (or merged for a slow consumer), not a new event.
@@ -133,9 +127,9 @@ struct RecordEnvelope {
 };
 
 //: Tag 401: snapshot with 10 levels.
-struct Quote : Coded {
+struct Quote {
   int64_t data_time = 0;
-  int8_t instrument_type = 0;
+  std::string order_book_id;      // 600519.XSHG
   double pre_close_price = 0, pre_settlement_price = 0, last_price = 0, volume = 0, turnover = 0;
   double pre_open_interest = 0, open_interest = 0;
   double open_price = 0, high_price = 0, low_price = 0, upper_limit_price = 0, lower_limit_price = 0;
@@ -146,61 +140,62 @@ struct Quote : Coded {
   std::string trading_phase_code;
 };
 
-struct Entrust : Coded {
+struct Entrust {
   int64_t data_time = 0;
-  int8_t instrument_type = 0;
+  std::string order_book_id;      // 600519.XSHG
   double price = 0, volume = 0;
   int8_t side = 0, price_type = 0;
   int64_t main_seq = 0, seq = 0, orig_order_no = 0, biz_index = 0;
 };
 
-struct Transaction : Coded {
+struct Transaction {
   int64_t data_time = 0;
-  int8_t instrument_type = 0;
+  std::string order_book_id;      // 600519.XSHG
   double price = 0, volume = 0;
   int64_t bid_no = 0, ask_no = 0;
   int8_t exec_type = 0, side = 0;
   int64_t main_seq = 0, seq = 0, biz_index = 0;
 };
 
-struct Tick : Coded {
+struct Tick {
   int64_t data_time = 0;
-  int8_t instrument_type = 0;
+  std::string order_book_id;      // 600519.XSHG
   double bid_price = 0, bid_volume = 0, ask_price = 0, ask_volume = 0;
 };
 
-struct Depth : Coded {
+struct Depth {
   int64_t data_time = 0;
-  int8_t instrument_type = 0;
+  std::string order_book_id;      // 600519.XSHG
   double price = 0, volume = 0;
   int8_t side = 0;
 };
 
 //: Records the client found missing: received_inst_seq - expected_inst_seq never arrived.
-struct SequenceGap : Coded {
+struct SequenceGap {
+  std::string order_book_id;
   uint32_t stream_id = 0;
   uint16_t tag = 0;
   uint64_t expected_inst_seq = 0;
   uint64_t received_inst_seq = 0;
 };
 
-//: md_protocol.instrument_hash: FNV-1a 64 of exchange, 0x1f, code (= RecordEnvelope::instrument_key).
-uint64_t instrument_hash(const std::string& exchange_id, const std::string& instrument_id);
+//: md_protocol.instrument_hash: FNV-1a 64 of the order_book_id (= RecordEnvelope::instrument_key).
+uint64_t instrument_hash(const std::string& order_book_id);
 
 // ---------------------------------------------------------------- codes
 
 //: The exchanges the gateway serves (order_book_id suffixes): XSHG, XSHE, XBSE and the futures exchanges.
 const std::vector<std::string>& quote_exchanges();
-//: 600519.XSHG -> {XSHG, 600519}: the wire's (exchange_id, instrument_id). std::invalid_argument when
-//: the code is not <code>.<exchange> or names an exchange the gateway does not serve.
-std::pair<std::string, std::string> split_order_book_id(const std::string& order_book_id);
+//: The order_book_id itself, checked for the gateway: std::invalid_argument when it is not <code>.<exchange>,
+//: names an exchange the gateway does not serve, or is too long. Protocol v4 sends it as it is.
+const std::string& check_order_book_id(const std::string& order_book_id);
 
 // ---------------------------------------------------------------- frames
 
 namespace quote_protocol {
 
 constexpr uint32_t kMagic = 0x44594E31;  // "DYN1"
-constexpr uint16_t kVersion = 3;
+constexpr uint16_t kVersion = 4;  // v4: order_book_id is the only instrument field
 constexpr size_t kHeaderSize = 16;
 constexpr uint32_t kMaxBodyLen = 16u * 1024 * 1024;
 constexpr double kHeartbeatInterval = 5.0;  // seconds: send at least one frame this often
@@ -229,8 +224,7 @@ FrameHeader unpack_header(const std::string& data);
 
 std::string pack_login_req(const std::string& token, const std::string& client_id = "libfinance");
 std::string pack_reauth_req(const std::string& token);
-std::string pack_sub_req(const std::string& exchange_id, const std::string& instrument_id,
-                         const std::string& source = "");
+std::string pack_sub_req(const std::string& order_book_id, const std::string& source = "");
 std::string pack_sub_all_req(MarketType market, uint64_t instrument_type, uint64_t data_type);
 //: REQ_RESUME: {stream_id: last seq}.
 std::string pack_resume_positions(const std::vector<std::pair<uint32_t, uint64_t>>& positions);

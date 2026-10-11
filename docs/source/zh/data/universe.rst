@@ -17,7 +17,7 @@
     *   - 行业分类
         - :func:`~libfinance.get_industry_constituents` / :func:`~libfinance.get_instrument_industry`
         - 全市场覆盖，多级层次，多种分类体系
-    *   - 概念板块
+    *   - 主题板块
         - :func:`~libfinance.get_theme_constituents`, :func:`~libfinance.get_theme_weights`
         - 主题驱动，数量多，边界模糊
 
@@ -93,45 +93,47 @@
     行业归属会变。做历史回测时要传 ``as_of``\ ，否则用的是\ **今天**\ 的分类去划分历史上的
     股票——这同样是一种前视偏差。
 
-概念板块
+主题板块
 ========
 
-目前只有 ``source="THS"`` 一个来源。先查有哪些概念：
+主题是证券目录里的一类对象（\ ``type="theme"``\ ），代码形如 ``300008.THS``\ ，目前来源只有 THS。先从目录里查有哪些主题：
 
 ..  code-block:: python
 
-    >>> from libfinance import get_concept_meta
-    >>> get_concept_meta(source="THS").head(3)
-      source concept_id concept_name established_date  component_number
-    0    THS     300008        新能源汽车              NaN               NaN
-    1    THS     300013          大飞机              NaN               NaN
-    2    THS     300018         参股保险              NaN               NaN
+    >>> from libfinance import all_instruments
+    >>> all_instruments(type="theme")[["order_book_id", "source", "name"]].head(3)
+      order_book_id source   name
+    0    300008.THS    THS  新能源汽车
+    1    300013.THS    THS    大飞机
+    2    300018.THS    THS   参股保险
 
-再按 ``concept_id`` 取成分：
+再按主题代码取成分与权重：
 
 ..  code-block:: python
 
-    >>> from libfinance import get_concept_weights
-    >>> get_concept_weights(concept_ids=["300008"], source="THS").head(3)
-      source concept_id       date order_book_id    weight
-    0    THS     300008 2026-09-15   000009.XSHE  0.000943
-    1    THS     300008 2026-09-15   000021.XSHE  0.000943
-    2    THS     300008 2026-09-15   000062.XSHE  0.000943
+    >>> from libfinance import get_theme_constituents, get_theme_weights
+    >>> members = get_theme_constituents("300008.THS")
+    >>> len(members), members[:3]
+    (1061, ['000009.XSHE', '000021.XSHE', '000030.XSHE'])
+    >>> get_theme_weights("300008.THS")[["order_book_id", "weight", "effective_from"]].head(3)
+      order_book_id    weight effective_from
+    0   000009.XSHE  0.000943     2026-09-22
+    1   000021.XSHE  0.000943     2026-09-22
+    2   000030.XSHE  0.000943     2026-09-22
+
+反查一只证券属于哪些主题，用 :func:`~libfinance.get_instrument_themes`\ 。
 
 ..  warning::
 
-    **概念 id 必须来自 :func:`~libfinance.get_concept_meta`\ 。** 传一个不存在的 id
-    会返回空表——从调用方看，"这个概念今天没有成分"和"这个 id 根本不存在"长得一模
-    一样。客户端为此会给一句警告：
+    **主题代码要从目录里查，不要写死。**\ 该日不存在的主题，\ ``get_theme_constituents`` 返回 ``None``\ ，
+    不报错：
 
     ..  code-block:: python
 
-        >>> get_concept_weights(concept_ids=["886074"], source="THS")
-        UserWarning: 未知的 concept_id: 886074（source='THS'）。用 get_concept_meta()
-                     查可用的概念。
-        Empty DataFrame
+        >>> get_theme_constituents("886074.THS") is None
+        True
 
-    别把概念 id 写死在代码里，从元信息表里查出来。
+    代码写错与"这个主题当天不存在"在结果上无法区分，用 ``all_instruments(type="theme")`` 核对。
 
 ``as_of`` 同样适用：以该时点\ **已知**\ 的成分为准。构造历史股票池时要传，理由见
 :doc:`point_in_time`\ 。

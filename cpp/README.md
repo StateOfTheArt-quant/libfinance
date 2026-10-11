@@ -9,7 +9,7 @@
 覆盖行情、证券信息、交易日历、公司行动、股本、财务、行业、指数与主题；`as_of` 按历史时点还原当时
 可见的信息，复权因子让价格前后可比。
 
-C++ 客户端与 Python 客户端（`../python`）**逐一对应**：同样的 30 个函数、同样的函数名、参数顺序与
+C++ 客户端与 Python 客户端（`../python`）**逐一对应**：同样的 33 个函数、同样的函数名、参数顺序与
 默认值、同样的校验与报错、同样的答案。函数清单见 `../contract/contract.json`，两种语言的一致性由
 `../contract/conformance/` 核对。它适合需要在 C++ 里直接取数的场景——回测引擎、因子计算、实盘系统——不必经过
 Python。两种客户端共用仓库的版本号（`../VERSION`）。
@@ -64,7 +64,7 @@ set(BUILD_EXAMPLES  OFF CACHE BOOL "" FORCE)
 set(ENABLE_UNITTEST OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
     libfinance
-    URL           https://github.com/StateOfTheArt-quant/libfinance/archive/refs/tags/v0.1.2.tar.gz
+    URL           https://github.com/StateOfTheArt-quant/libfinance/archive/refs/tags/v0.1.3.tar.gz
     SOURCE_SUBDIR cpp               # C++ 客户端在仓库的 cpp/ 目录
 )
 FetchContent_MakeAvailable(nlohmann_json libfinance)
@@ -74,7 +74,7 @@ target_link_libraries(my_strategy PRIVATE libfinance::libfinance)
 ```
 
 换版本只改 URL 里的标签（[发布列表](https://github.com/StateOfTheArt-quant/libfinance/releases)）。
-也可以用 git 取（`GIT_REPOSITORY https://github.com/StateOfTheArt-quant/libfinance.git`、`GIT_TAG v0.1.2`、
+也可以用 git 取（`GIT_REPOSITORY https://github.com/StateOfTheArt-quant/libfinance.git`、`GIT_TAG v0.1.3`、
 `GIT_SHALLOW TRUE`、`SOURCE_SUBDIR cpp`，并去掉上面 nlohmann_json 的两段）：此时 libfinance 自己克隆
 nlohmann/json，网络慢时要多花不少时间。本地已有 libfinance 源码时，配置时传
 `-DFETCHCONTENT_SOURCE_DIR_LIBFINANCE=<libfinance 仓库>` 即可不下载。

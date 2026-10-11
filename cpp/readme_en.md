@@ -11,7 +11,7 @@ prices, security information, trading calendars, corporate actions, share counts
 indices and themes; `as_of` reconstructs what was visible at a historical date, and adjustment factors keep
 prices comparable over time.
 
-The C++ client mirrors the Python client (`../python`) **one to one**: the same 30 functions, with the same
+The C++ client mirrors the Python client (`../python`) **one to one**: the same 33 functions, with the same
 names, argument order and defaults, the same validation and errors, and the same answers. The function list is
 `../contract/contract.json`; `../contract/conformance/` checks that both languages agree. Use it where you want data
 directly in C++ — a backtesting engine, factor computation, a trading system — without going through Python.
@@ -68,7 +68,7 @@ set(BUILD_EXAMPLES  OFF CACHE BOOL "" FORCE)
 set(ENABLE_UNITTEST OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
     libfinance
-    URL           https://github.com/StateOfTheArt-quant/libfinance/archive/refs/tags/v0.1.2.tar.gz
+    URL           https://github.com/StateOfTheArt-quant/libfinance/archive/refs/tags/v0.1.3.tar.gz
     SOURCE_SUBDIR cpp               # the C++ client lives in the repository's cpp/ directory
 )
 FetchContent_MakeAvailable(nlohmann_json libfinance)
@@ -78,7 +78,7 @@ target_link_libraries(my_strategy PRIVATE libfinance::libfinance)
 ```
 
 To change version, change the tag in the URL ([releases](https://github.com/StateOfTheArt-quant/libfinance/releases)).
-Git works too (`GIT_REPOSITORY https://github.com/StateOfTheArt-quant/libfinance.git`, `GIT_TAG v0.1.2`,
+Git works too (`GIT_REPOSITORY https://github.com/StateOfTheArt-quant/libfinance.git`, `GIT_TAG v0.1.3`,
 `GIT_SHALLOW TRUE`, `SOURCE_SUBDIR cpp`, without the two nlohmann_json lines above): libfinance then clones
 nlohmann/json itself, which takes considerably longer on a slow network. With a local libfinance checkout,
 configure with `-DFETCHCONTENT_SOURCE_DIR_LIBFINANCE=<libfinance repository>` to skip the download.

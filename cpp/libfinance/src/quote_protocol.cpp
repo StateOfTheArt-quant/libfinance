@@ -10,8 +10,7 @@ namespace libfinance {
 namespace {
 
 constexpr size_t kSourceLen = 16;
-constexpr size_t kExchangeIdLen = 16;
-constexpr size_t kInstrumentIdLen = 32;
+constexpr size_t kOrderBookIdLen = 48;  // protocol v4: <code>.<exchange>, with its terminating '\0'
 
 //: Little-endian writer (the host is little-endian, as the server is: x86-64 / aarch64).
 class Writer {
@@ -77,13 +76,11 @@ class Reader {
   size_t at_;
 };
 
-//: The common head of every record: data_time, instrument_id[32], exchange_id[16], instrument_type.
+//: The common head of every record: data_time, order_book_id[48].
 template <typename Record>
 void head(Reader& in, Record& record) {
   record.data_time = in.get<int64_t>();
-  record.instrument_id = in.fixed(kInstrumentIdLen);
-  record.exchange_id = in.fixed(kExchangeIdLen);
-  record.instrument_type = in.get<int8_t>();
+  record.order_book_id = in.fixed(kOrderBookIdLen);
 }
 
 }  // namespace
@@ -96,7 +93,7 @@ const std::vector<std::string>& quote_exchanges() {
   return exchanges;
 }
 
-std::pair<std::string, std::string> split_order_book_id(const std::string& order_book_id) {
+const std::string& check_order_book_id(const std::string& order_book_id) {
   const auto dot = order_book_id.rfind('.');
   if (dot == std::string::npos || dot == 0 || dot + 1 == order_book_id.size())
     throw std::invalid_argument("'" + order_book_id + "' is not <code>.<exchange>, e.g. 600519.XSHG");
@@ -108,20 +105,17 @@ std::pair<std::string, std::string> split_order_book_id(const std::string& order
     for (const auto& known : quote_exchanges()) list += (list.empty() ? "'" : ", '") + known + "'";
     throw std::invalid_argument("'" + order_book_id + "': the quote gateway serves [" + list + "] only");
   }
-  if (code.size() >= kInstrumentIdLen)
-    throw std::invalid_argument("'" + order_book_id + "': the code is longer than the gateway takes");
-  return {exchange, code};
+  if (order_book_id.size() >= kOrderBookIdLen)
+    throw std::invalid_argument("'" + order_book_id + "': longer than the gateway takes");
+  return order_book_id;
 }
 
-uint64_t instrument_hash(const std::string& exchange_id, const std::string& instrument_id) {
+uint64_t instrument_hash(const std::string& order_book_id) {
   uint64_t hash = 14695981039346656037ull;
-  auto mix = [&hash](unsigned char byte) {
-    hash ^= byte;
+  for (unsigned char c : order_book_id) {
+    hash ^= c;
     hash *= 1099511628211ull;
-  };
-  for (unsigned char c : exchange_id) mix(c);
-  mix(0x1f);
-  for (unsigned char c : instrument_id) mix(c);
+  }
   return hash;
 }
 
@@ -162,9 +156,9 @@ std::string pack_reauth_req(const std::string& token) {
   return Writer().put<uint32_t>(static_cast<uint32_t>(token.size())).put<uint32_t>(0).bytes(token).str();
 }
 
-std::string pack_sub_req(const std::string& exchange_id, const std::string& instrument_id, const std::string& source) {
-  // "<16s16s32s": source, exchange_id, instrument_id
-  return Writer().fixed(source, kSourceLen).fixed(exchange_id, kExchangeIdLen).fixed(instrument_id, kInstrumentIdLen).str();
+std::string pack_sub_req(const std::string& order_book_id, const std::string& source) {
+  // "<16s48s": source, order_book_id
+  return Writer().fixed(source, kSourceLen).fixed(order_book_id, kOrderBookIdLen).str();
 }
 
 std::string pack_sub_all_req(MarketType market, uint64_t instrument_type, uint64_t data_type) {
@@ -210,12 +204,11 @@ SessionClosed unpack_session_closed(const std::string& body) {
 }
 
 SubRsp unpack_sub_rsp(const std::string& body) {
-  // "<16s16s32si64sii"
+  // "<16s48si64sii"
   Reader in(body);
   SubRsp rsp;
   rsp.source = in.fixed(kSourceLen);
-  rsp.exchange_id = in.fixed(kExchangeIdLen);
-  rsp.instrument_id = in.fixed(kInstrumentIdLen);
+  rsp.order_book_id = in.fixed(kOrderBookIdLen);
   rsp.error_id = in.get<int32_t>();
   rsp.error_msg = in.fixed(64);
   rsp.current_subs = in.get<int32_t>();
@@ -303,11 +296,11 @@ std::vector<BatchRecord> iter_batch(const std::string& body) {
 
 size_t record_size(uint16_t tag) {
   switch (static_cast<RecordTag>(tag)) {
-    case RecordTag::Quote: return 529;
-    case RecordTag::Entrust: return 107;
-    case RecordTag::Transaction: return 115;
-    case RecordTag::Tick: return 89;
-    case RecordTag::Depth: return 74;
+    case RecordTag::Quote: return 528;
+    case RecordTag::Entrust: return 106;
+    case RecordTag::Transaction: return 114;
+    case RecordTag::Tick: return 88;
+    case RecordTag::Depth: return 73;
   }
   return 0;
 }

@@ -4,6 +4,32 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
+0.1.3 (2026-10-10)
+==================
+
+.. danger::
+
+    **Results no longer carry the server's internal identities:** a security is named by ``order_book_id``
+    only (contract 3.0.0, libfinanceserver v0.1.10 or later).
+
+    - ``get_price``, ``all_instruments``, ``get_ex_factor`` and ``get_index_weights`` drop the ``permanent_id`` column.
+    - ``get_dividends`` / ``get_splits`` / ``get_allotments`` / ``get_spinoffs`` drop ``permanent_id``, ``event_id`` and
+      ``confirmed_by_revision``; ``get_spinoffs`` also drops ``child_permanent_id`` (``child_symbol`` still names the child).
+    - The ``Instrument`` from ``instruments`` no longer has ``permanent_id``, ``listing_id`` or ``identity_quality``;
+      C++ removes ``Instrument::permanent_id()``.
+    - Code that joined or deduplicated on these columns uses ``order_book_id``; ``as_of`` resolves historical identity.
+
+.. danger::
+
+    **Live quotes name a security by order_book_id only:** the quote gateway protocol is now v4,
+    incompatible with older gateways (dynamics protocol v4).
+
+    - ``Quote`` and the trade / order / tick / depth records, subscription receipts (``SubRsp``) and gap
+      notices (``SequenceGap``) carry one identity field, ``order_book_id``; ``instrument_id``,
+      ``exchange_id`` and ``instrument_type`` are gone. ``get_last_quotes`` snapshots likewise.
+    - In C++, ``order_book_id`` is a field instead of the method ``order_book_id()``.
+    - For the kind of security, look up ``type`` with :func:`~libfinance.instruments`.
+
 0.1.2 (2026-10-10)
 ==================
 

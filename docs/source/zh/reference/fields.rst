@@ -44,8 +44,6 @@
         - 含义
     *   - ``order_book_id``
         - 代码，如 ``600000.XSHG``\ 、\ ``000300.XSHG``\ 、\ ``480000.SW``\ 、\ ``300008.THS``
-    *   - ``permanent_id``
-        - 永久 ID：代码会更名、会复用，永久 ID 不变，跨时间拼接同一只证券时用它
     *   - ``type``
         - ``stock`` 股票 / ``index`` 指数 / ``industry`` 行业 / ``theme`` 主题
     *   - ``market``
@@ -229,7 +227,7 @@
 
     *   - 字段
         - 含义
-    *   - ``order_book_id`` / ``permanent_id``
+    *   - ``order_book_id``
         - 成分证券
     *   - ``weight``
         - 权重，同一天内加总为 1
@@ -314,3 +312,8 @@
 ========
 
 ``Quote`` 的字段见 :doc:`../data/realtime`\ 。
+
+因子
+====
+
+:func:`~libfinance.get_factor_exposure` 的列是因子全名，每个因子的公式与含义见 :doc:`factor_dictionary`\ 。

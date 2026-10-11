@@ -59,13 +59,13 @@ std::vector<std::pair<std::string, int>> parse_addresses(const std::string& addr
 }
 
 //: Every code checked before anything is sent; duplicates once, in the order given.
-std::vector<std::pair<std::string, std::string>> split_all(const Codes& order_book_ids) {
+std::vector<std::string> checked_all(const Codes& order_book_ids) {
   const auto& codes = order_book_ids.values();
   if (codes.empty()) throw std::invalid_argument("order_book_ids: at least one order book id expected");
-  std::vector<std::pair<std::string, std::string>> out;
+  std::vector<std::string> out;
   std::set<std::string> seen;
   for (const auto& code : codes)
-    if (seen.insert(code).second) out.push_back(split_order_book_id(code));
+    if (seen.insert(code).second) out.push_back(check_order_book_id(code));
   return out;
 }
 
@@ -402,7 +402,7 @@ struct QuoteApi::Impl {
       case qp::RSP_UNSUBSCRIBE: {
         const auto rsp = qp::unpack_sub_rsp(body);
         if (rsp.error_id == static_cast<int32_t>(QuoteError::GrantShrunk))  // revoked by the gateway: no more records
-          forget_baseline(instrument_hash(rsp.exchange_id, rsp.instrument_id));
+          forget_baseline(instrument_hash(rsp.order_book_id));
         safe("on_rsp_unsubscribe", [&] { s->on_rsp_unsubscribe(rsp, request); });
         break;
       }
@@ -490,8 +490,7 @@ struct QuoteApi::Impl {
       SequenceGap gap;
       gap.stream_id = env.stream_id;
       gap.tag = env.tag;
-      gap.exchange_id = record.exchange_id;
-      gap.instrument_id = record.instrument_id;
+      gap.order_book_id = record.order_book_id;
       gap.expected_inst_seq = before->second + 1;
       gap.received_inst_seq = env.inst_seq;
       return gap;
@@ -591,16 +590,16 @@ int QuoteApi::login(TokenProvider provider) {
 
 int QuoteApi::subscribe(const Codes& order_book_ids, const std::string& source) {
   int last = 0;
-  for (const auto& [exchange_id, code] : split_all(order_book_ids))
-    last = impl_->send(qp::REQ_SUBSCRIBE, qp::pack_sub_req(exchange_id, code, source));
+  for (const auto& order_book_id : checked_all(order_book_ids))
+    last = impl_->send(qp::REQ_SUBSCRIBE, qp::pack_sub_req(order_book_id, source));
   return last;
 }
 
 int QuoteApi::unsubscribe(const Codes& order_book_ids, const std::string& source) {
   int last = 0;
-  for (const auto& [exchange_id, code] : split_all(order_book_ids)) {
-    impl_->forget_baseline(instrument_hash(exchange_id, code));
-    last = impl_->send(qp::REQ_UNSUBSCRIBE, qp::pack_sub_req(exchange_id, code, source));
+  for (const auto& order_book_id : checked_all(order_book_ids)) {
+    impl_->forget_baseline(instrument_hash(order_book_id));
+    last = impl_->send(qp::REQ_UNSUBSCRIBE, qp::pack_sub_req(order_book_id, source));
   }
   return last;
 }

@@ -129,7 +129,7 @@ def get_price(
         指数原样返回
     :param adjust_orig: 前复权的基准日；省略时为 ``end_date``\ ：价格换算到查询区间最后一天的口径，
         区间之后的除权不影响结果（point-in-time）
-    :returns: 以 ``(order_book_id, datetime)`` 为索引的 DataFrame，列为 ``permanent_id`` 与所选字段。
+    :returns: 以 ``(order_book_id, datetime)`` 为索引的 DataFrame，列为所选字段。
 
     复权规则：成交量随复权反向缩放，成交额 ``turnover`` 不受复权影响。
     """
@@ -167,7 +167,7 @@ def get_price(
 
 
 def _to_panel(frame):
-    r"""daybar 的扁平表（\ ``order_book_id, permanent_id, session_date, 字段...``\ ）还原成
+    r"""daybar 的扁平表（\ ``order_book_id, session_date, 字段...``\ ）还原成
     ``(order_book_id, datetime)`` 索引。不认识的形状原样返回，让调用方看见真实的列。"""
     if not isinstance(frame, pd.DataFrame) or not {"order_book_id", "session_date"} <= set(frame.columns):
         return frame

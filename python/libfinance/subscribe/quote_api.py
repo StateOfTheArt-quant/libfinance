@@ -1,5 +1,5 @@
 """
-quote_api.py — dynamics 实时行情订阅（纯 Python，XTP 风格，协议 v3）
+quote_api.py — dynamics 实时行情订阅（纯 Python，XTP 风格，协议 v4）
 
     from libfinance.subscribe.quote_api import QuoteApi, QuoteSpi
 
@@ -44,7 +44,7 @@ from libfinance.subscribe.md_protocol import (
     MAGIC, VERSION, HEADER_SIZE, MAX_BODY_LEN, HEARTBEAT_INTERVAL, HEARTBEAT_TIMEOUT, MAX_TOKEN_BYTES,
     MsgType, RecordTag, ErrorCode, SessionCloseReason,
     MarketType, SubscribeInstrumentType, SubscribeDataType,
-    unpack_header, make_frame, make_heartbeat, instrument_hash, split_order_book_id, _Coded,
+    unpack_header, make_frame, make_heartbeat, instrument_hash, check_order_book_id,
     pack_login_req, pack_reauth_req, pack_sub_req, pack_sub_all_req, pack_resume_positions,
     unpack_login_rsp, unpack_sub_rsp, unpack_sub_all_rsp, unpack_source_dir_list,
     unpack_stream_status, unpack_session_closed, iter_batch, RECORD_UNPACKERS,
@@ -56,12 +56,11 @@ TokenProvider = Callable[[], str]
 
 
 @dataclass
-class SequenceGap(_Coded):
+class SequenceGap:
     """SDK 检测到的缺口：received_inst_seq - expected_inst_seq 条记录未送达。"""
     stream_id: int
     tag: int
-    exchange_id: str
-    instrument_id: str
+    order_book_id: str
     expected_inst_seq: int
     received_inst_seq: int
 
@@ -103,12 +102,12 @@ def libfinance_ticket() -> dict:
     return get_client().call("issue_quote_ticket", {})
 
 
-def _split(order_book_ids: Union[str, List[str]]) -> List[Tuple[str, str]]:
-    """一个或多个 order_book_id -> [(exchange_id, instrument_id)]；全部合法才返回，不发半截订阅。"""
+def _checked(order_book_ids: Union[str, List[str]]) -> List[str]:
+    """一个或多个 order_book_id，去重并校验；全部合法才返回，不发半截订阅。"""
     codes = [order_book_ids] if isinstance(order_book_ids, str) else list(order_book_ids)
     if not codes:
         raise ValueError("order_book_ids: at least one order book id expected")
-    return [split_order_book_id(code) for code in dict.fromkeys(codes)]
+    return [check_order_book_id(code) for code in dict.fromkeys(codes)]
 
 
 def _parse_addresses(addresses: str) -> List[Tuple[str, int]]:
@@ -213,15 +212,15 @@ class QuoteApi:
     def subscribe(self, order_book_ids: Union[str, List[str]], *, source: str = "") -> int:
         """订阅；返回最后一条请求的序号（0 = 断线间隙，重连后在 on_rsp_login 里重放）。"""
         last = 0
-        for exchange_id, code in _split(order_book_ids):
-            last = self._send(MsgType.REQ_SUBSCRIBE, pack_sub_req(exchange_id, code, source))
+        for order_book_id in _checked(order_book_ids):
+            last = self._send(MsgType.REQ_SUBSCRIBE, pack_sub_req(order_book_id, source))
         return last
 
     def unsubscribe(self, order_book_ids: Union[str, List[str]], *, source: str = "") -> int:
         last = 0
-        for exchange_id, code in _split(order_book_ids):
-            self._forget_baseline(instrument_hash(exchange_id, code))
-            last = self._send(MsgType.REQ_UNSUBSCRIBE, pack_sub_req(exchange_id, code, source))
+        for order_book_id in _checked(order_book_ids):
+            self._forget_baseline(instrument_hash(order_book_id))
+            last = self._send(MsgType.REQ_UNSUBSCRIBE, pack_sub_req(order_book_id, source))
         return last
 
     # ── 整市场订阅 ────────────────────────────────────────────────
@@ -472,7 +471,7 @@ class QuoteApi:
         elif msg_type == MsgType.RSP_UNSUBSCRIBE:
             rsp = unpack_sub_rsp(body)
             if rsp.error_id == ErrorCode.GRANT_SHRUNK:   # 网关撤销的订阅：该合约不再有后续记录
-                self._forget_baseline(instrument_hash(rsp.exchange_id, rsp.instrument_id))
+                self._forget_baseline(instrument_hash(rsp.order_book_id))
             self._safe(spi.on_rsp_unsubscribe, rsp, seq_no)
         elif msg_type == MsgType.RSP_SUBSCRIBE_ALL:
             self._safe(spi.on_rsp_subscribe_all, unpack_sub_all_rsp(body), seq_no)
@@ -544,6 +543,5 @@ class QuoteApi:
                 return None
             stream_id, last = previous
             if stream_id == env.stream_id and env.inst_seq > last + 1:
-                return SequenceGap(env.stream_id, env.tag, record.exchange_id, record.instrument_id,
-                                   last + 1, env.inst_seq)
+                return SequenceGap(env.stream_id, env.tag, record.order_book_id, last + 1, env.inst_seq)
             return None

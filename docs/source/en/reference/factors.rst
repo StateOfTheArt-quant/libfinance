@@ -4,10 +4,12 @@
 
 .. currentmodule:: libfinance
 
-Daily factors come from factors-daybar: qlib and alpha158 price-volume factors, and the Barra CNE5
-style, industry and country factors with their raw descriptors. Factor names are written **in full**:
+Daily factors comprise the qlib and alpha158 price-volume factors, the Barra CNE5 style, industry and
+country factors, and the raw CNE5 and CNE6 descriptors. Factor names are written **in full**:
 a library ``owner/library[@rev]`` (all its factors) or a factor ``owner/library/factor[@rev]``, mixed
 freely in one request; there are no short names. ``start_date == end_date`` is that day's cross section.
+Conventions and computation per library: :doc:`../data/factors`; each factor's formula and meaning:
+:doc:`factor_dictionary`.
 
 What a factor is, exposure versus factor return, and how to test a factor: :doc:`../concepts/factors`.
 
@@ -39,8 +41,9 @@ What a factor is, exposure versus factor return, and how to test a factor: :doc:
     * - ``system/barra-cne5-descriptor``, ``system/barra-cne6-descriptor``
       - Raw Barra descriptors (LNCAP, BETA, STOM, ...): each security's own time series, independent of any universe
 
-**Free tier**: without login, ``get_factor_exposure`` pulls start_date up to one year before today and
-takes at most 300 codes per call; the client warns when a request will be cut. No limit after login.
+**Traffic quota**: no tier clamps the dates or the number of codes. The answer is estimated before the
+call from codes × sessions × factors; one over the 512 MB per-call cap or over what is left of today's
+quota is refused (``RpcError(code=1401)``), see :doc:`../data/factors`.
 
 .. py:function:: get_factor_exposure(order_book_ids, factor_names, start_date, end_date, universe=None)
 
