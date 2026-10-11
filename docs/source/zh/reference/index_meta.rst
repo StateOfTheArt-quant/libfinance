@@ -12,7 +12,7 @@
     >>> lf.instruments("000300.XSHG")                 # 单个指数的基日、基点、发布日期
     >>> lf.all_instruments(type="index", as_of="2016-01-04")   # 那一天的目录
 
-指数是什么、怎么用，见 :doc:`../concepts/classification`\ 。
+指数是什么、怎么用，见 :doc:`../tutorials/classification`\ 。
 
 列的含义
 ========

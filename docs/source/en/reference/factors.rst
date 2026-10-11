@@ -4,14 +4,22 @@
 
 .. currentmodule:: libfinance
 
+.. epigraph::
+
+    Academics and practitioners are keenly interested in exploring **anomalies** (or **firm
+    characteristics**) and analysing their ability to explain the **cross-section** of stock returns. In other
+    words, considering that future stock returns are a function of current **state variables**, we are
+    interested in which state variables can predict future stock returns. These variables go by many names:
+    feature, predictor, factor, alpha, indicator, determinant. They describe the same thing.
+
+    -- Tutorial: :doc:`../tutorials/factors`
+
 Daily factors comprise the qlib and alpha158 price-volume factors, the Barra CNE5 style, industry and
 country factors, and the raw CNE5 and CNE6 descriptors. Factor names are written **in full**:
 a library ``owner/library[@rev]`` (all its factors) or a factor ``owner/library/factor[@rev]``, mixed
 freely in one request; there are no short names. ``start_date == end_date`` is that day's cross section.
 Conventions and computation per library: :doc:`../data/factors`; each factor's formula and meaning:
 :doc:`factor_dictionary`.
-
-What a factor is, exposure versus factor return, and how to test a factor: :doc:`../concepts/factors`.
 
 .. list-table::
     :header-rows: 1

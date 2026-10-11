@@ -1,272 +1,272 @@
 10.GICS,Energy,1,
-1010.GICS,　Energy,2,10.GICS
-101010.GICS,　　Energy Equipment & Services,3,1010.GICS
-10101010.GICS,　　　Oil & Gas Drilling,4,101010.GICS
-10101020.GICS,　　　Oil & Gas Equipment & Services,4,101010.GICS
-101020.GICS,"　　Oil, Gas & Consumable Fuels",3,1010.GICS
-10102010.GICS,　　　Integrated Oil & Gas,4,101020.GICS
-10102020.GICS,　　　Oil & Gas Exploration & Production,4,101020.GICS
-10102030.GICS,　　　Oil & Gas Refining & Marketing,4,101020.GICS
-10102040.GICS,　　　Oil & Gas Storage & Transportation,4,101020.GICS
-10102050.GICS,　　　Coal & Consumable Fuels,4,101020.GICS
+1010.GICS,Energy,2,10.GICS
+101010.GICS,Energy Equipment & Services,3,1010.GICS
+10101010.GICS,Oil & Gas Drilling,4,101010.GICS
+10101020.GICS,Oil & Gas Equipment & Services,4,101010.GICS
+101020.GICS,"Oil, Gas & Consumable Fuels",3,1010.GICS
+10102010.GICS,Integrated Oil & Gas,4,101020.GICS
+10102020.GICS,Oil & Gas Exploration & Production,4,101020.GICS
+10102030.GICS,Oil & Gas Refining & Marketing,4,101020.GICS
+10102040.GICS,Oil & Gas Storage & Transportation,4,101020.GICS
+10102050.GICS,Coal & Consumable Fuels,4,101020.GICS
 15.GICS,Materials,1,
-1510.GICS,　Materials,2,15.GICS
-151010.GICS,　　Chemicals,3,1510.GICS
-15101010.GICS,　　　Commodity Chemicals,4,151010.GICS
-15101020.GICS,　　　Diversified Chemicals,4,151010.GICS
-15101030.GICS,　　　Fertilizers & Agricultural Chemicals,4,151010.GICS
-15101040.GICS,　　　Industrial Gases,4,151010.GICS
-15101050.GICS,　　　Specialty Chemicals,4,151010.GICS
-151020.GICS,　　Construction Materials,3,1510.GICS
-15102010.GICS,　　　Construction Materials,4,151020.GICS
-151030.GICS,　　Containers & Packaging,3,1510.GICS
-15103010.GICS,"　　　Metal, Glass & Plastic Containers",4,151030.GICS
-15103020.GICS,　　　Paper & Plastic Packaging Products & Materials,4,151030.GICS
-151040.GICS,　　Metals & Mining,3,1510.GICS
-15104010.GICS,　　　Aluminum,4,151040.GICS
-15104020.GICS,　　　Diversified Metals & Mining,4,151040.GICS
-15104025.GICS,　　　Copper,4,151040.GICS
-15104030.GICS,　　　Gold,4,151040.GICS
-15104040.GICS,　　　Precious Metals & Minerals,4,151040.GICS
-15104045.GICS,　　　Silver,4,151040.GICS
-15104050.GICS,　　　Steel,4,151040.GICS
-151050.GICS,　　Paper & Forest Products,3,1510.GICS
-15105010.GICS,　　　Forest Products,4,151050.GICS
-15105020.GICS,　　　Paper Products,4,151050.GICS
+1510.GICS,Materials,2,15.GICS
+151010.GICS,Chemicals,3,1510.GICS
+15101010.GICS,Commodity Chemicals,4,151010.GICS
+15101020.GICS,Diversified Chemicals,4,151010.GICS
+15101030.GICS,Fertilizers & Agricultural Chemicals,4,151010.GICS
+15101040.GICS,Industrial Gases,4,151010.GICS
+15101050.GICS,Specialty Chemicals,4,151010.GICS
+151020.GICS,Construction Materials,3,1510.GICS
+15102010.GICS,Construction Materials,4,151020.GICS
+151030.GICS,Containers & Packaging,3,1510.GICS
+15103010.GICS,"Metal, Glass & Plastic Containers",4,151030.GICS
+15103020.GICS,Paper & Plastic Packaging Products & Materials,4,151030.GICS
+151040.GICS,Metals & Mining,3,1510.GICS
+15104010.GICS,Aluminum,4,151040.GICS
+15104020.GICS,Diversified Metals & Mining,4,151040.GICS
+15104025.GICS,Copper,4,151040.GICS
+15104030.GICS,Gold,4,151040.GICS
+15104040.GICS,Precious Metals & Minerals,4,151040.GICS
+15104045.GICS,Silver,4,151040.GICS
+15104050.GICS,Steel,4,151040.GICS
+151050.GICS,Paper & Forest Products,3,1510.GICS
+15105010.GICS,Forest Products,4,151050.GICS
+15105020.GICS,Paper Products,4,151050.GICS
 20.GICS,Industrials,1,
-2010.GICS,　Capital Goods,2,20.GICS
-201010.GICS,　　Aerospace & Defense,3,2010.GICS
-20101010.GICS,　　　Aerospace & Defense,4,201010.GICS
-201020.GICS,　　Building Products,3,2010.GICS
-20102010.GICS,　　　Building Products,4,201020.GICS
-201030.GICS,　　Construction & Engineering,3,2010.GICS
-20103010.GICS,　　　Construction & Engineering,4,201030.GICS
-201040.GICS,　　Electrical Equipment,3,2010.GICS
-20104010.GICS,　　　Electrical Components & Equipment,4,201040.GICS
-20104020.GICS,　　　Heavy Electrical Equipment,4,201040.GICS
-201050.GICS,　　Industrial Conglomerates,3,2010.GICS
-20105010.GICS,　　　Industrial Conglomerates,4,201050.GICS
-201060.GICS,　　Machinery,3,2010.GICS
-20106010.GICS,　　　Construction Machinery & Heavy Transportation Equipment,4,201060.GICS
-20106015.GICS,　　　Agricultural & Farm Machinery,4,201060.GICS
-20106020.GICS,　　　Industrial Machinery & Supplies & Components,4,201060.GICS
-201070.GICS,　　Trading Companies & Distributors,3,2010.GICS
-20107010.GICS,　　　Trading Companies & Distributors,4,201070.GICS
-2020.GICS,　Commercial  & Professional Services,2,20.GICS
-202010.GICS,　　Commercial Services & Supplies,3,2020.GICS
-20201010.GICS,　　　Commercial Printing,4,202010.GICS
-20201050.GICS,　　　Environmental & Facilities Services,4,202010.GICS
-20201060.GICS,　　　Office Services & Supplies,4,202010.GICS
-20201070.GICS,　　　Diversified Support Services,4,202010.GICS
-20201080.GICS,　　　Security & Alarm Services,4,202010.GICS
-202020.GICS,　　Professional Services,3,2020.GICS
-20202010.GICS,　　　Human Resource & Employment Services,4,202020.GICS
-20202020.GICS,　　　Research & Consulting Services,4,202020.GICS
-20202030.GICS,　　　Data Processing & Outsourced Services,4,202020.GICS
-2030.GICS,　Transportation,2,20.GICS
-203010.GICS,　　Air Freight & Logistics,3,2030.GICS
-20301010.GICS,　　　Air Freight & Logistics,4,203010.GICS
-203020.GICS,　　Passenger Airlines,3,2030.GICS
-20302010.GICS,　　　Passenger Airlines,4,203020.GICS
-203030.GICS,　　Marine Transportation,3,2030.GICS
-20303010.GICS,　　　Marine Transportation,4,203030.GICS
-203040.GICS,　　Ground Transportation,3,2030.GICS
-20304010.GICS,　　　Rail Transportation,4,203040.GICS
-20304030.GICS,　　　Cargo Ground Transportation,4,203040.GICS
-20304040.GICS,　　　Passenger Ground Transportation,4,203040.GICS
-203050.GICS,　　Transportation Infrastructure,3,2030.GICS
-20305010.GICS,　　　Airport Services,4,203050.GICS
-20305030.GICS,　　　Marine Ports & Services,4,203050.GICS
+2010.GICS,Capital Goods,2,20.GICS
+201010.GICS,Aerospace & Defense,3,2010.GICS
+20101010.GICS,Aerospace & Defense,4,201010.GICS
+201020.GICS,Building Products,3,2010.GICS
+20102010.GICS,Building Products,4,201020.GICS
+201030.GICS,Construction & Engineering,3,2010.GICS
+20103010.GICS,Construction & Engineering,4,201030.GICS
+201040.GICS,Electrical Equipment,3,2010.GICS
+20104010.GICS,Electrical Components & Equipment,4,201040.GICS
+20104020.GICS,Heavy Electrical Equipment,4,201040.GICS
+201050.GICS,Industrial Conglomerates,3,2010.GICS
+20105010.GICS,Industrial Conglomerates,4,201050.GICS
+201060.GICS,Machinery,3,2010.GICS
+20106010.GICS,Construction Machinery & Heavy Transportation Equipment,4,201060.GICS
+20106015.GICS,Agricultural & Farm Machinery,4,201060.GICS
+20106020.GICS,Industrial Machinery & Supplies & Components,4,201060.GICS
+201070.GICS,Trading Companies & Distributors,3,2010.GICS
+20107010.GICS,Trading Companies & Distributors,4,201070.GICS
+2020.GICS,Commercial  & Professional Services,2,20.GICS
+202010.GICS,Commercial Services & Supplies,3,2020.GICS
+20201010.GICS,Commercial Printing,4,202010.GICS
+20201050.GICS,Environmental & Facilities Services,4,202010.GICS
+20201060.GICS,Office Services & Supplies,4,202010.GICS
+20201070.GICS,Diversified Support Services,4,202010.GICS
+20201080.GICS,Security & Alarm Services,4,202010.GICS
+202020.GICS,Professional Services,3,2020.GICS
+20202010.GICS,Human Resource & Employment Services,4,202020.GICS
+20202020.GICS,Research & Consulting Services,4,202020.GICS
+20202030.GICS,Data Processing & Outsourced Services,4,202020.GICS
+2030.GICS,Transportation,2,20.GICS
+203010.GICS,Air Freight & Logistics,3,2030.GICS
+20301010.GICS,Air Freight & Logistics,4,203010.GICS
+203020.GICS,Passenger Airlines,3,2030.GICS
+20302010.GICS,Passenger Airlines,4,203020.GICS
+203030.GICS,Marine Transportation,3,2030.GICS
+20303010.GICS,Marine Transportation,4,203030.GICS
+203040.GICS,Ground Transportation,3,2030.GICS
+20304010.GICS,Rail Transportation,4,203040.GICS
+20304030.GICS,Cargo Ground Transportation,4,203040.GICS
+20304040.GICS,Passenger Ground Transportation,4,203040.GICS
+203050.GICS,Transportation Infrastructure,3,2030.GICS
+20305010.GICS,Airport Services,4,203050.GICS
+20305030.GICS,Marine Ports & Services,4,203050.GICS
 25.GICS,Consumer Discretionary,1,
-2510.GICS,　Automobiles & Components,2,25.GICS
-251010.GICS,　　Automobile Components,3,2510.GICS
-25101010.GICS,　　　Automotive Parts & Equipment,4,251010.GICS
-25101020.GICS,　　　Tires & Rubber,4,251010.GICS
-251020.GICS,　　Automobiles,3,2510.GICS
-25102010.GICS,　　　Automobile Manufacturers,4,251020.GICS
-25102020.GICS,　　　Motorcycle Manufacturers,4,251020.GICS
-2520.GICS,　Consumer Durables & Apparel,2,25.GICS
-252010.GICS,　　Household Durables,3,2520.GICS
-25201010.GICS,　　　Consumer Electronics,4,252010.GICS
-25201020.GICS,　　　Home Furnishings,4,252010.GICS
-25201030.GICS,　　　Homebuilding,4,252010.GICS
-25201040.GICS,　　　Household Appliances,4,252010.GICS
-25201050.GICS,　　　Housewares & Specialties,4,252010.GICS
-252020.GICS,　　Leisure Products,3,2520.GICS
-25202010.GICS,　　　Leisure Products,4,252020.GICS
-252030.GICS,"　　Textiles, Apparel & Luxury Goods",3,2520.GICS
-25203010.GICS,"　　　Apparel, Accessories & Luxury Goods",4,252030.GICS
-25203020.GICS,　　　Footwear,4,252030.GICS
-25203030.GICS,　　　Textiles,4,252030.GICS
-2530.GICS,　Consumer Services,2,25.GICS
-253010.GICS,"　　Hotels, Restaurants & Leisure",3,2530.GICS
-25301010.GICS,　　　Casinos & Gaming,4,253010.GICS
-25301020.GICS,"　　　Hotels, Resorts & Cruise Lines",4,253010.GICS
-25301030.GICS,　　　Leisure Facilities,4,253010.GICS
-25301040.GICS,　　　Restaurants,4,253010.GICS
-253020.GICS,　　Diversified Consumer Services,3,2530.GICS
-25302010.GICS,　　　Education Services,4,253020.GICS
-25302020.GICS,　　　Specialized Consumer Services,4,253020.GICS
-2550.GICS,　Consumer Discretionary Distribution & Retail,2,25.GICS
-255010.GICS,　　Distributors,3,2550.GICS
-25501010.GICS,　　　Distributors,4,255010.GICS
-255030.GICS,　　Broadline Retail,3,2550.GICS
-25503030.GICS,　　　Broadline Retail,4,255030.GICS
-255040.GICS,　　Specialty Retail,3,2550.GICS
-25504010.GICS,　　　Apparel Retail,4,255040.GICS
-25504020.GICS,　　　Computer & Electronics Retail,4,255040.GICS
-25504030.GICS,　　　Home Improvement Retail,4,255040.GICS
-25504040.GICS,　　　Other Specialty Retail,4,255040.GICS
-25504050.GICS,　　　Automotive Retail,4,255040.GICS
-25504060.GICS,　　　Homefurnishing Retail,4,255040.GICS
+2510.GICS,Automobiles & Components,2,25.GICS
+251010.GICS,Automobile Components,3,2510.GICS
+25101010.GICS,Automotive Parts & Equipment,4,251010.GICS
+25101020.GICS,Tires & Rubber,4,251010.GICS
+251020.GICS,Automobiles,3,2510.GICS
+25102010.GICS,Automobile Manufacturers,4,251020.GICS
+25102020.GICS,Motorcycle Manufacturers,4,251020.GICS
+2520.GICS,Consumer Durables & Apparel,2,25.GICS
+252010.GICS,Household Durables,3,2520.GICS
+25201010.GICS,Consumer Electronics,4,252010.GICS
+25201020.GICS,Home Furnishings,4,252010.GICS
+25201030.GICS,Homebuilding,4,252010.GICS
+25201040.GICS,Household Appliances,4,252010.GICS
+25201050.GICS,Housewares & Specialties,4,252010.GICS
+252020.GICS,Leisure Products,3,2520.GICS
+25202010.GICS,Leisure Products,4,252020.GICS
+252030.GICS,"Textiles, Apparel & Luxury Goods",3,2520.GICS
+25203010.GICS,"Apparel, Accessories & Luxury Goods",4,252030.GICS
+25203020.GICS,Footwear,4,252030.GICS
+25203030.GICS,Textiles,4,252030.GICS
+2530.GICS,Consumer Services,2,25.GICS
+253010.GICS,"Hotels, Restaurants & Leisure",3,2530.GICS
+25301010.GICS,Casinos & Gaming,4,253010.GICS
+25301020.GICS,"Hotels, Resorts & Cruise Lines",4,253010.GICS
+25301030.GICS,Leisure Facilities,4,253010.GICS
+25301040.GICS,Restaurants,4,253010.GICS
+253020.GICS,Diversified Consumer Services,3,2530.GICS
+25302010.GICS,Education Services,4,253020.GICS
+25302020.GICS,Specialized Consumer Services,4,253020.GICS
+2550.GICS,Consumer Discretionary Distribution & Retail,2,25.GICS
+255010.GICS,Distributors,3,2550.GICS
+25501010.GICS,Distributors,4,255010.GICS
+255030.GICS,Broadline Retail,3,2550.GICS
+25503030.GICS,Broadline Retail,4,255030.GICS
+255040.GICS,Specialty Retail,3,2550.GICS
+25504010.GICS,Apparel Retail,4,255040.GICS
+25504020.GICS,Computer & Electronics Retail,4,255040.GICS
+25504030.GICS,Home Improvement Retail,4,255040.GICS
+25504040.GICS,Other Specialty Retail,4,255040.GICS
+25504050.GICS,Automotive Retail,4,255040.GICS
+25504060.GICS,Homefurnishing Retail,4,255040.GICS
 30.GICS,Consumer Staples,1,
-3010.GICS,　Consumer Staples Distribution & Retail,2,30.GICS
-301010.GICS,　　Consumer Staples Distribution & Retail,3,3010.GICS
-30101010.GICS,　　　Drug Retail,4,301010.GICS
-30101020.GICS,　　　Food Distributors,4,301010.GICS
-30101030.GICS,　　　Food Retail,4,301010.GICS
-30101040.GICS,　　　Consumer Staples Merchandise Retail,4,301010.GICS
-3020.GICS,"　Food, Beverage & Tobacco",2,30.GICS
-302010.GICS,　　Beverages,3,3020.GICS
-30201010.GICS,　　　Brewers,4,302010.GICS
-30201020.GICS,　　　Distillers & Vintners,4,302010.GICS
-30201030.GICS,　　　Soft Drinks & Non-alcoholic Beverages,4,302010.GICS
-302020.GICS,　　Food Products,3,3020.GICS
-30202010.GICS,　　　Agricultural Products & Services,4,302020.GICS
-30202030.GICS,　　　Packaged Foods & Meats,4,302020.GICS
-302030.GICS,　　Tobacco,3,3020.GICS
-30203010.GICS,　　　Tobacco,4,302030.GICS
-3030.GICS,　Household & Personal Products,2,30.GICS
-303010.GICS,　　Household Products,3,3030.GICS
-30301010.GICS,　　　Household Products,4,303010.GICS
-303020.GICS,　　Personal Care Products,3,3030.GICS
-30302010.GICS,　　　Personal Care Products,4,303020.GICS
+3010.GICS,Consumer Staples Distribution & Retail,2,30.GICS
+301010.GICS,Consumer Staples Distribution & Retail,3,3010.GICS
+30101010.GICS,Drug Retail,4,301010.GICS
+30101020.GICS,Food Distributors,4,301010.GICS
+30101030.GICS,Food Retail,4,301010.GICS
+30101040.GICS,Consumer Staples Merchandise Retail,4,301010.GICS
+3020.GICS,"Food, Beverage & Tobacco",2,30.GICS
+302010.GICS,Beverages,3,3020.GICS
+30201010.GICS,Brewers,4,302010.GICS
+30201020.GICS,Distillers & Vintners,4,302010.GICS
+30201030.GICS,Soft Drinks & Non-alcoholic Beverages,4,302010.GICS
+302020.GICS,Food Products,3,3020.GICS
+30202010.GICS,Agricultural Products & Services,4,302020.GICS
+30202030.GICS,Packaged Foods & Meats,4,302020.GICS
+302030.GICS,Tobacco,3,3020.GICS
+30203010.GICS,Tobacco,4,302030.GICS
+3030.GICS,Household & Personal Products,2,30.GICS
+303010.GICS,Household Products,3,3030.GICS
+30301010.GICS,Household Products,4,303010.GICS
+303020.GICS,Personal Care Products,3,3030.GICS
+30302010.GICS,Personal Care Products,4,303020.GICS
 35.GICS,Health Care,1,
-3510.GICS,　Health Care Equipment & Services,2,35.GICS
-351010.GICS,　　Health Care Equipment & Supplies,3,3510.GICS
-35101010.GICS,　　　Health Care Equipment,4,351010.GICS
-35101020.GICS,　　　Health Care Supplies,4,351010.GICS
-351020.GICS,　　Health Care Providers & Services,3,3510.GICS
-35102010.GICS,　　　Health Care Distributors,4,351020.GICS
-35102015.GICS,　　　Health Care  Services,4,351020.GICS
-35102020.GICS,　　　Health Care Facilities,4,351020.GICS
-35102030.GICS,　　　Managed Health Care,4,351020.GICS
-351030.GICS,　　Health Care Technology,3,3510.GICS
-35103010.GICS,　　　Health Care Technology,4,351030.GICS
-3520.GICS,"　Pharmaceuticals, Biotechnology & Life Sciences",2,35.GICS
-352010.GICS,　　Biotechnology,3,3520.GICS
-35201010.GICS,　　　Biotechnology,4,352010.GICS
-352020.GICS,　　Pharmaceuticals,3,3520.GICS
-35202010.GICS,　　　Pharmaceuticals,4,352020.GICS
-352030.GICS,　　Life Sciences Tools & Services,3,3520.GICS
-35203010.GICS,　　　Life Sciences Tools & Services,4,352030.GICS
+3510.GICS,Health Care Equipment & Services,2,35.GICS
+351010.GICS,Health Care Equipment & Supplies,3,3510.GICS
+35101010.GICS,Health Care Equipment,4,351010.GICS
+35101020.GICS,Health Care Supplies,4,351010.GICS
+351020.GICS,Health Care Providers & Services,3,3510.GICS
+35102010.GICS,Health Care Distributors,4,351020.GICS
+35102015.GICS,Health Care  Services,4,351020.GICS
+35102020.GICS,Health Care Facilities,4,351020.GICS
+35102030.GICS,Managed Health Care,4,351020.GICS
+351030.GICS,Health Care Technology,3,3510.GICS
+35103010.GICS,Health Care Technology,4,351030.GICS
+3520.GICS,"Pharmaceuticals, Biotechnology & Life Sciences",2,35.GICS
+352010.GICS,Biotechnology,3,3520.GICS
+35201010.GICS,Biotechnology,4,352010.GICS
+352020.GICS,Pharmaceuticals,3,3520.GICS
+35202010.GICS,Pharmaceuticals,4,352020.GICS
+352030.GICS,Life Sciences Tools & Services,3,3520.GICS
+35203010.GICS,Life Sciences Tools & Services,4,352030.GICS
 40.GICS,Financials,1,
-4010.GICS,　Banks,2,40.GICS
-401010.GICS,　　Banks,3,4010.GICS
-40101010.GICS,　　　Diversified Banks,4,401010.GICS
-40101015.GICS,　　　Regional Banks,4,401010.GICS
-4020.GICS,　Financial Services,2,40.GICS
-402010.GICS,　　Financial Services,3,4020.GICS
-40201020.GICS,　　　Diversified Financial Services,4,402010.GICS
-40201030.GICS,　　　Multi-Sector Holdings,4,402010.GICS
-40201040.GICS,　　　Specialized Finance,4,402010.GICS
-40201050.GICS,　　　Commercial & Residential Mortgage Finance,4,402010.GICS
-40201060.GICS,　　　Transaction & Payment Processing Services,4,402010.GICS
-402020.GICS,　　Consumer Finance,3,4020.GICS
-40202010.GICS,　　　Consumer Finance,4,402020.GICS
-402030.GICS,　　Capital Markets,3,4020.GICS
-40203010.GICS,　　　Asset Management & Custody Banks,4,402030.GICS
-40203020.GICS,　　　Investment Banking & Brokerage,4,402030.GICS
-40203030.GICS,　　　Diversified Capital Markets,4,402030.GICS
-40203040.GICS,　　　Financial Exchanges & Data,4,402030.GICS
-402040.GICS,　　Mortgage Real Estate Investment Trusts (REITs),3,4020.GICS
-40204010.GICS,　　　Mortgage REITs,4,402040.GICS
-4030.GICS,　Insurance,2,40.GICS
-403010.GICS,　　Insurance,3,4030.GICS
-40301010.GICS,　　　Insurance Brokers,4,403010.GICS
-40301020.GICS,　　　Life & Health Insurance,4,403010.GICS
-40301030.GICS,　　　Multi-line Insurance,4,403010.GICS
-40301040.GICS,　　　Property & Casualty Insurance,4,403010.GICS
-40301050.GICS,　　　Reinsurance,4,403010.GICS
+4010.GICS,Banks,2,40.GICS
+401010.GICS,Banks,3,4010.GICS
+40101010.GICS,Diversified Banks,4,401010.GICS
+40101015.GICS,Regional Banks,4,401010.GICS
+4020.GICS,Financial Services,2,40.GICS
+402010.GICS,Financial Services,3,4020.GICS
+40201020.GICS,Diversified Financial Services,4,402010.GICS
+40201030.GICS,Multi-Sector Holdings,4,402010.GICS
+40201040.GICS,Specialized Finance,4,402010.GICS
+40201050.GICS,Commercial & Residential Mortgage Finance,4,402010.GICS
+40201060.GICS,Transaction & Payment Processing Services,4,402010.GICS
+402020.GICS,Consumer Finance,3,4020.GICS
+40202010.GICS,Consumer Finance,4,402020.GICS
+402030.GICS,Capital Markets,3,4020.GICS
+40203010.GICS,Asset Management & Custody Banks,4,402030.GICS
+40203020.GICS,Investment Banking & Brokerage,4,402030.GICS
+40203030.GICS,Diversified Capital Markets,4,402030.GICS
+40203040.GICS,Financial Exchanges & Data,4,402030.GICS
+402040.GICS,Mortgage Real Estate Investment Trusts (REITs),3,4020.GICS
+40204010.GICS,Mortgage REITs,4,402040.GICS
+4030.GICS,Insurance,2,40.GICS
+403010.GICS,Insurance,3,4030.GICS
+40301010.GICS,Insurance Brokers,4,403010.GICS
+40301020.GICS,Life & Health Insurance,4,403010.GICS
+40301030.GICS,Multi-line Insurance,4,403010.GICS
+40301040.GICS,Property & Casualty Insurance,4,403010.GICS
+40301050.GICS,Reinsurance,4,403010.GICS
 45.GICS,Information Technology,1,
-4510.GICS,　Software & Services,2,45.GICS
-451020.GICS,　　IT Services,3,4510.GICS
-45102010.GICS,　　　IT Consulting & Other Services,4,451020.GICS
-45102030.GICS,　　　Internet Services & Infrastructure,4,451020.GICS
-451030.GICS,　　Software,3,4510.GICS
-45103010.GICS,　　　Application Software,4,451030.GICS
-45103020.GICS,　　　Systems Software,4,451030.GICS
-4520.GICS,　Technology Hardware & Equipment,2,45.GICS
-452010.GICS,　　Communications Equipment,3,4520.GICS
-45201020.GICS,　　　Communications Equipment,4,452010.GICS
-452020.GICS,"　　Technology Hardware, Storage & Peripherals",3,4520.GICS
-45202030.GICS,"　　　Technology Hardware, Storage & Peripherals",4,452020.GICS
-452030.GICS,"　　Electronic Equipment, Instruments & Components",3,4520.GICS
-45203010.GICS,　　　Electronic Equipment & Instruments,4,452030.GICS
-45203015.GICS,　　　Electronic Components,4,452030.GICS
-45203020.GICS,　　　Electronic Manufacturing Services,4,452030.GICS
-45203030.GICS,　　　Technology Distributors,4,452030.GICS
-4530.GICS,　Semiconductors & Semiconductor Equipment,2,45.GICS
-453010.GICS,　　Semiconductors & Semiconductor Equipment,3,4530.GICS
-45301010.GICS,　　　Semiconductor Materials & Equipment,4,453010.GICS
-45301020.GICS,　　　Semiconductors,4,453010.GICS
+4510.GICS,Software & Services,2,45.GICS
+451020.GICS,IT Services,3,4510.GICS
+45102010.GICS,IT Consulting & Other Services,4,451020.GICS
+45102030.GICS,Internet Services & Infrastructure,4,451020.GICS
+451030.GICS,Software,3,4510.GICS
+45103010.GICS,Application Software,4,451030.GICS
+45103020.GICS,Systems Software,4,451030.GICS
+4520.GICS,Technology Hardware & Equipment,2,45.GICS
+452010.GICS,Communications Equipment,3,4520.GICS
+45201020.GICS,Communications Equipment,4,452010.GICS
+452020.GICS,"Technology Hardware, Storage & Peripherals",3,4520.GICS
+45202030.GICS,"Technology Hardware, Storage & Peripherals",4,452020.GICS
+452030.GICS,"Electronic Equipment, Instruments & Components",3,4520.GICS
+45203010.GICS,Electronic Equipment & Instruments,4,452030.GICS
+45203015.GICS,Electronic Components,4,452030.GICS
+45203020.GICS,Electronic Manufacturing Services,4,452030.GICS
+45203030.GICS,Technology Distributors,4,452030.GICS
+4530.GICS,Semiconductors & Semiconductor Equipment,2,45.GICS
+453010.GICS,Semiconductors & Semiconductor Equipment,3,4530.GICS
+45301010.GICS,Semiconductor Materials & Equipment,4,453010.GICS
+45301020.GICS,Semiconductors,4,453010.GICS
 50.GICS,Communication Services,1,
-5010.GICS,　Telecommunication Services,2,50.GICS
-501010.GICS,　　Diversified Telecommunication Services,3,5010.GICS
-50101010.GICS,　　　Alternative Carriers,4,501010.GICS
-50101020.GICS,　　　Integrated Telecommunication Services,4,501010.GICS
-501020.GICS,　　Wireless Telecommunication Services,3,5010.GICS
-50102010.GICS,　　　Wireless Telecommunication Services,4,501020.GICS
-5020.GICS,　Media & Entertainment,2,50.GICS
-502010.GICS,　　Media,3,5020.GICS
-50201010.GICS,　　　Advertising,4,502010.GICS
-50201020.GICS,　　　Broadcasting,4,502010.GICS
-50201030.GICS,　　　Cable & Satellite,4,502010.GICS
-50201040.GICS,　　　Publishing,4,502010.GICS
-502020.GICS,　　Entertainment,3,5020.GICS
-50202010.GICS,　　　Movies & Entertainment,4,502020.GICS
-50202020.GICS,　　　Interactive Home Entertainment,4,502020.GICS
-502030.GICS,　　Interactive Media & Services,3,5020.GICS
-50203010.GICS,　　　Interactive Media & Services,4,502030.GICS
+5010.GICS,Telecommunication Services,2,50.GICS
+501010.GICS,Diversified Telecommunication Services,3,5010.GICS
+50101010.GICS,Alternative Carriers,4,501010.GICS
+50101020.GICS,Integrated Telecommunication Services,4,501010.GICS
+501020.GICS,Wireless Telecommunication Services,3,5010.GICS
+50102010.GICS,Wireless Telecommunication Services,4,501020.GICS
+5020.GICS,Media & Entertainment,2,50.GICS
+502010.GICS,Media,3,5020.GICS
+50201010.GICS,Advertising,4,502010.GICS
+50201020.GICS,Broadcasting,4,502010.GICS
+50201030.GICS,Cable & Satellite,4,502010.GICS
+50201040.GICS,Publishing,4,502010.GICS
+502020.GICS,Entertainment,3,5020.GICS
+50202010.GICS,Movies & Entertainment,4,502020.GICS
+50202020.GICS,Interactive Home Entertainment,4,502020.GICS
+502030.GICS,Interactive Media & Services,3,5020.GICS
+50203010.GICS,Interactive Media & Services,4,502030.GICS
 55.GICS,Utilities,1,
-5510.GICS,　Utilities,2,55.GICS
-551010.GICS,　　Electric Utilities,3,5510.GICS
-55101010.GICS,　　　Electric Utilities,4,551010.GICS
-551020.GICS,　　Gas Utilities,3,5510.GICS
-55102010.GICS,　　　Gas Utilities,4,551020.GICS
-551030.GICS,　　Multi-Utilities,3,5510.GICS
-55103010.GICS,　　　Multi-Utilities,4,551030.GICS
-551040.GICS,　　Water Utilities,3,5510.GICS
-55104010.GICS,　　　Water Utilities,4,551040.GICS
-551050.GICS,　　Independent Power and Renewable Electricity Producers,3,5510.GICS
-55105010.GICS,　　　Independent Power Producers & Energy Traders,4,551050.GICS
-55105020.GICS,　　　Renewable Electricity,4,551050.GICS
+5510.GICS,Utilities,2,55.GICS
+551010.GICS,Electric Utilities,3,5510.GICS
+55101010.GICS,Electric Utilities,4,551010.GICS
+551020.GICS,Gas Utilities,3,5510.GICS
+55102010.GICS,Gas Utilities,4,551020.GICS
+551030.GICS,Multi-Utilities,3,5510.GICS
+55103010.GICS,Multi-Utilities,4,551030.GICS
+551040.GICS,Water Utilities,3,5510.GICS
+55104010.GICS,Water Utilities,4,551040.GICS
+551050.GICS,Independent Power and Renewable Electricity Producers,3,5510.GICS
+55105010.GICS,Independent Power Producers & Energy Traders,4,551050.GICS
+55105020.GICS,Renewable Electricity,4,551050.GICS
 60.GICS,Real Estate,1,
-6010.GICS,　Equity Real Estate Investment Trusts (REITs),2,60.GICS
-601010.GICS,　　Diversified REITs,3,6010.GICS
-60101010.GICS,　　　Diversified REITs,4,601010.GICS
-601025.GICS,　　Industrial REITs,3,6010.GICS
-60102510.GICS,　　　Industrial REITs,4,601025.GICS
-601030.GICS,　　Hotel & Resort REITs,3,6010.GICS
-60103010.GICS,　　　Hotel & Resort REITs,4,601030.GICS
-601040.GICS,　　Office REITs,3,6010.GICS
-60104010.GICS,　　　Office REITs,4,601040.GICS
-601050.GICS,　　Health Care REITs,3,6010.GICS
-60105010.GICS,　　　Health Care REITs,4,601050.GICS
-601060.GICS,　　Residential REITs,3,6010.GICS
-60106010.GICS,　　　Multi-Family Residential REITs,4,601060.GICS
-60106020.GICS,　　　Single-Family Residential REITs,4,601060.GICS
-601070.GICS,　　Retail REITs,3,6010.GICS
-60107010.GICS,　　　Retail REITs,4,601070.GICS
-601080.GICS,　　Specialized REITs,3,6010.GICS
-60108010.GICS,　　　Other Specialized REITs,4,601080.GICS
-60108020.GICS,　　　Self Storage REITs,4,601080.GICS
-60108030.GICS,　　　Telecom Tower REITs,4,601080.GICS
-60108040.GICS,　　　Timber REITs,4,601080.GICS
-60108050.GICS,　　　Data Center REITs,4,601080.GICS
-6020.GICS,　Real Estate Management & Development,2,60.GICS
-602010.GICS,　　Real Estate Management & Development,3,6020.GICS
-60201010.GICS,　　　Diversified Real Estate Activities,4,602010.GICS
-60201020.GICS,　　　Real Estate Operating Companies,4,602010.GICS
-60201030.GICS,　　　Real Estate Development,4,602010.GICS
-60201040.GICS,　　　Real Estate Services,4,602010.GICS
+6010.GICS,Equity Real Estate Investment Trusts (REITs),2,60.GICS
+601010.GICS,Diversified REITs,3,6010.GICS
+60101010.GICS,Diversified REITs,4,601010.GICS
+601025.GICS,Industrial REITs,3,6010.GICS
+60102510.GICS,Industrial REITs,4,601025.GICS
+601030.GICS,Hotel & Resort REITs,3,6010.GICS
+60103010.GICS,Hotel & Resort REITs,4,601030.GICS
+601040.GICS,Office REITs,3,6010.GICS
+60104010.GICS,Office REITs,4,601040.GICS
+601050.GICS,Health Care REITs,3,6010.GICS
+60105010.GICS,Health Care REITs,4,601050.GICS
+601060.GICS,Residential REITs,3,6010.GICS
+60106010.GICS,Multi-Family Residential REITs,4,601060.GICS
+60106020.GICS,Single-Family Residential REITs,4,601060.GICS
+601070.GICS,Retail REITs,3,6010.GICS
+60107010.GICS,Retail REITs,4,601070.GICS
+601080.GICS,Specialized REITs,3,6010.GICS
+60108010.GICS,Other Specialized REITs,4,601080.GICS
+60108020.GICS,Self Storage REITs,4,601080.GICS
+60108030.GICS,Telecom Tower REITs,4,601080.GICS
+60108040.GICS,Timber REITs,4,601080.GICS
+60108050.GICS,Data Center REITs,4,601080.GICS
+6020.GICS,Real Estate Management & Development,2,60.GICS
+602010.GICS,Real Estate Management & Development,3,6020.GICS
+60201010.GICS,Diversified Real Estate Activities,4,602010.GICS
+60201020.GICS,Real Estate Operating Companies,4,602010.GICS
+60201030.GICS,Real Estate Development,4,602010.GICS
+60201040.GICS,Real Estate Services,4,602010.GICS
