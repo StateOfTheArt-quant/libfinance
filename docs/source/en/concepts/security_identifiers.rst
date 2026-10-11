@@ -212,9 +212,11 @@ reuse require another layer. The upstream model separates:
 A change from ``FB.US`` to ``META.US`` should preserve the security's permanent
 identity. Reassignment of an old ticker to another security must create a
 distinct identity rather than splice unrelated price histories together.
-The client supports dated instrument information through
-``instruments(..., as_of=...)``. Permanent IDs and listing relationships belong
-to the underlying model, not separate client query APIs implied by this page.
+Permanent identities and listing relationships live only on the server and
+never appear in a result: the client always names a security by
+``order_book_id``, and ``as_of`` resolves its historical identity --
+``instruments(..., as_of=...)`` shows the instrument valid on a day, and every
+code-based query maps code to identity on the server.
 
 A company and its securities are also different objects. Ordinary shares,
 ADRs and different share classes may be separate securities. Prices belong to

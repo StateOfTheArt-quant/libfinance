@@ -177,7 +177,7 @@ MOMENTUM 的 0.475 看起来很高，但这只是\ **一期**——它说明这 
 在 libfinance 里
 --------------------------------
 
-:doc:`../reference/factors` 提供的几个库，对应上面不同的概念：
+:doc:`../reference/factors` 提供的几个库，对应上面不同的概念（各库的口径见 :doc:`../data/factors`\ ，每个因子的公式见 :doc:`../reference/factor_dictionary`\ ）：
 
 ..  list-table::
     :header-rows: 1

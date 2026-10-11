@@ -4,6 +4,29 @@
 
 只记录会\ **改变已有代码行为**\ 的变更。
 
+0.1.3（2026-10-10）
+===================
+
+..  danger::
+
+    **返回结果不再含服务端内部标识：**\ 证券只以 ``order_book_id`` 标识（契约 3.0.0，服务端 libfinanceserver v0.1.10 起）。
+
+    - ``get_price``\ 、\ ``all_instruments``\ 、\ ``get_ex_factor``\ 、\ ``get_index_weights`` 去掉 ``permanent_id`` 列。
+    - ``get_dividends`` / ``get_splits`` / ``get_allotments`` / ``get_spinoffs`` 去掉 ``permanent_id``\ 、\ ``event_id``\ 、
+      ``confirmed_by_revision``\ ；\ ``get_spinoffs`` 另去掉 ``child_permanent_id``\ （子公司仍由 ``child_symbol`` 给出）。
+    - ``instruments`` 返回的 ``Instrument`` 不再有 ``permanent_id``\ 、\ ``listing_id``\ 、\ ``identity_quality`` 属性；
+      C++ 删除 ``Instrument::permanent_id()``\ 。
+    - 用这些列做连接或去重的代码，改用 ``order_book_id``\ ；历史上的身份由 ``as_of`` 解析。
+
+..  danger::
+
+    **实时行情的标的只用 order_book_id：**\ 行情网关协议升到 v4，与旧网关不兼容（dynamics 协议 v4 起）。
+
+    - ``Quote`` 与逐笔、盘口、深度记录、订阅回执（\ ``SubRsp``\ ）、缺口通知（\ ``SequenceGap``\ ）只有 ``order_book_id``
+      一个标的字段，去掉 ``instrument_id``\ 、\ ``exchange_id``\ 、\ ``instrument_type``\ ；\ ``get_last_quotes`` 的快照同样。
+    - C++ 的 ``order_book_id`` 由方法 ``order_book_id()`` 改为字段 ``order_book_id``\ 。
+    - 需要品种时，用 :func:`~libfinance.instruments` 查 ``type``\ 。
+
 0.1.2（2026-10-10）
 ===================
 

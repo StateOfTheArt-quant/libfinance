@@ -2,9 +2,13 @@
 安装
 ====
 
-``libfinance`` 是一个纯 Python 客户端，数据在服务端，所以安装本身很轻。
+数据在服务端，客户端只负责请求与解析，安装很轻。下面是 Python 客户端的安装；它依赖 ``pandas``\ 、
+``numpy``\ 、\ ``pyarrow``\ 、\ ``lz4``\ 、\ ``msgpack``\ ，由 pip 自动安装。
 
-要求 Python 3.7 或更高版本。
+..  tip::
+
+    **使用 C++？**\ C++ 客户端与 Python 版函数一一对应，通过 CMake ``FetchContent`` 引入项目，依赖 Apache Arrow C++。
+    安装、构建与示例见 `C++ 客户端说明 <https://github.com/StateOfTheArt-quant/libfinance/blob/main/cpp/README.md>`_\ 。
 
 用 pip 安装
 ===========
@@ -34,8 +38,6 @@
     >>> import libfinance
     >>> libfinance.__version__        # 仓库的版本号，C++ 与 Python 客户端相同
 
-如果这一步报 ``ModuleNotFoundError``\ ，说明依赖没装全，重新装一次即可；
-``libfinance`` 依赖 ``pandas``\ 、\ ``numpy``\ 、\ ``lz4``\ 、\ ``msgpack``\ 、\ ``six``\ 、
-``python-dateutil``\ ，都会由 pip 自动带上。
+这一步报 ``ModuleNotFoundError`` 时，说明依赖没有装全，重新执行一次安装即可。
 
 下一步：\ :doc:`quickstart`\ 。

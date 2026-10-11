@@ -197,7 +197,8 @@ code runs and the numbers are wrong.
 In libfinance
 --------------------------------
 
-The libraries in :doc:`../reference/factors` map onto the concepts above:
+The libraries in :doc:`../reference/factors` map onto the concepts above (how each is computed: :doc:`../data/factors`;
+every factor's formula: :doc:`../reference/factor_dictionary`):
 
 .. list-table::
     :header-rows: 1

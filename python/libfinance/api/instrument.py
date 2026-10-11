@@ -5,8 +5,8 @@ r"""证券目录：股票、指数、行业、主题在同一个 instrument 聚�
 签名与列名取自后端 instrument 数据族（\ ``instrument.all_instruments`` /
 ``instrument.instruments``\ ），本模块只做参数检查、按数据版本缓存与结果的形状。
 
-* ``order_book_id`` 是代码（\ ``600000.XSHG``\ 、\ ``000300.XSHG``\ 、\ ``AAPL.US``\ ），
-  ``permanent_id`` 是证券不随代码变化的身份，\ ``name`` 是名称。
+* ``order_book_id`` 是代码（\ ``600000.XSHG``\ 、\ ``000300.XSHG``\ 、\ ``AAPL.US``\ ），也是客户端唯一的证券标识；
+  ``name`` 是名称。
 * ``type`` 取 ``stock`` / ``index`` / ``industry`` / ``theme``\ 。
 * ``source`` 是定义并编号证券的机构：股票的交易所（XSHG、XNAS）、指数的发布机构
   （CSI、SPDJI）、行业的分类体系（SW、GICS）、主题的 THS；\ ``exchange`` 只有股票有。
@@ -25,7 +25,7 @@ from libfinance.utils.validators import ensure_list_of_string
 VALID_TYPES = ("stock", "index", "industry", "theme")
 
 #: all_instruments 的列，按后端的顺序。
-COLUMNS = ("order_book_id", "permanent_id", "type", "market", "name", "exchange", "source")
+COLUMNS = ("order_book_id", "type", "market", "name", "exchange", "source")
 
 
 class Instrument(object):
@@ -90,7 +90,7 @@ def all_instruments(
     :param as_of: 给出则为该日的历史视图；省略时各类型取各自的当前状态。某类型不覆盖的日期
         报 CoverageError 并写明类型，缩小 ``type`` 或 ``source`` 即可。
     :param cached: 是否使用按服务端数据版本更新的缓存；显式指定市场时直接查询。
-    :returns: DataFrame，列为 ``order_book_id, permanent_id, type, market, name, exchange, source``\ 。
+    :returns: DataFrame，列为 ``order_book_id, type, market, name, exchange, source``\ 。
     """
     types = _normalize_types(type)
     sources = _optional_strings(source, "source")

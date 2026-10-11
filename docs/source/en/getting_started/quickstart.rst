@@ -2,85 +2,131 @@
 Quickstart
 ==========
 
-A complete path in five minutes: **establish the sessions, then the securities,
-then the prices**.
-
-That order matters. The trading calendar and the security master are the frame of
-reference for everything else: dates must land on sessions, and codes must resolve
-to real securities, or the final step comes back mysteriously empty.
+Four functions, one complete path: **security catalog → sessions → prices → factors**. The catalog
+and the calendar are the frame of reference for every other query: a code must resolve to a real
+security and a date must be a session, or the later queries come back empty or fail.
 
 .. note::
 
-    Every output below is a real run. Dates and values depend on how current your
-    service is — **do not copy the dates**.
+    Every output below is a real run against the public service. The data keeps updating, so your
+    row counts and values may differ; check how current it is with :doc:`../data/freshness` --
+    **do not copy the dates**.
 
-Step 1: sessions
-================
+Security catalog: all_instruments
+=================================
+
+.. code-block:: python
+
+    >>> from libfinance import all_instruments
+    >>> stocks = all_instruments(type="stock")
+    >>> stocks.groupby("market").size()
+
+.. code-block:: text
+
+    market
+    CN    5572
+    US    5383
+    dtype: int64
+
+.. code-block:: python
+
+    >>> stocks.set_index("order_book_id").loc[
+    ...     ["600000.XSHG", "000001.XSHE", "AAPL.US", "NVDA.US"], ["market", "exchange", "name"]]
+
+.. code-block:: text
+
+                  market exchange                               name
+    order_book_id
+    600000.XSHG       CN     XSHG                               浦发银行
+    000001.XSHE       CN     XSHE                               平安银行
+    AAPL.US           US     XNAS          Apple Inc. - Common Stock
+    NVDA.US           US     XNAS  NVIDIA Corporation - Common Stock
+
+Both markets are in one table with the same columns. ``order_book_id`` is the code and the only
+identifier the other functions take; ``name`` is the name. ``type`` also takes ``index``,
+``industry`` and ``theme``; pass ``as_of`` for the catalog of a past date.
+
+Sessions: get_trading_dates
+===========================
 
 .. code-block:: python
 
     >>> from libfinance import get_trading_dates
     >>> get_trading_dates("2024-05-11", "2024-05-20")
+
+.. code-block:: text
+
     DatetimeIndex(['2024-05-13', '2024-05-14', '2024-05-15', '2024-05-16',
                    '2024-05-17', '2024-05-20'],
-                  dtype='datetime64[ns]', freq=None)
+                  dtype='datetime64[us]', freq=None)
 
-Note that 11 and 12 May (a weekend) and 18 and 19 May are absent. You pass
-calendar dates; you get back only sessions.
+You pass calendar dates and get back the sessions among them: 11-12 and 18-19 May are weekends.
+Calendars are per market: ``market="cn"`` by default, ``market="us"`` for US equities.
 
-Step 2: securities
-==================
-
-Codes are written ``<exchange code>.<market suffix>``: ``.XSHG`` for the Shanghai
-exchange, ``.XSHE`` for Shenzhen, ``.US`` for US equities.
-
-.. code-block:: python
-
-    >>> from libfinance import instruments
-    >>> instruments("600000.XSHG")
-    Instrument(order_book_id='600000.XSHG', symbol='浦发银行', type='CS',
-               market='cn', listed_date='1999-11-10T00:00:00.000')
-
-``order_book_id`` is the code; ``symbol`` is the **name**. These two are easy to
-mix up.
-
-Step 3: prices
-==============
+Prices: get_price
+=================
 
 .. code-block:: python
 
     >>> from libfinance import get_price
-    >>> get_price(["000001.XSHE", "600000.XSHG"], "2024-03-01", "2024-03-06")
+    >>> get_price(["600000.XSHG", "AAPL.US"], "2024-03-01", "2024-03-05",
+    ...           fields=["open", "close", "volume", "limit_up"], adjust_type="none")
 
 .. code-block:: text
 
-                              open      high       low     close        volume      turnover
+                                open   close    volume  limit_up
     order_book_id datetime
-    000001.XSHE   2024-03-01  8.897049  8.905450  8.762627  8.813035  2.175959e+08  1.917689e+09
-                  2024-03-04  8.779430  8.821436  8.670212  8.678613  1.971024e+08  1.719563e+09
-                  2024-03-05  8.653409  8.796232  8.619804  8.762627  2.163123e+08  1.889144e+09
-                  2024-03-06  8.737423  8.779430  8.678613  8.678613  1.601692e+08  1.396940e+09
-    600000.XSHG   2024-03-01  6.373316  6.400132  6.346500  6.355438  3.292615e+07  2.094740e+08
-                  2024-03-04  6.364377  6.364377  6.301806  6.319683  3.116322e+07  1.971570e+08
-                  2024-03-05  6.301806  6.418009  6.292867  6.400132  4.671382e+07  2.976761e+08
-                  2024-03-06  6.409071  6.453764  6.364377  6.364377  2.899600e+07  1.858478e+08
+    600000.XSHG   2024-03-01    7.13    7.11  29431801      7.87
+                  2024-03-04    7.12    7.07  27855963      7.82
+                  2024-03-05    7.05    7.16  41756232      7.78
+    AAPL.US       2024-03-01  179.55  179.66  73563100       NaN
+                  2024-03-04  176.15  175.10  81510101       NaN
+                  2024-03-05  170.76  170.12  95132400       NaN
 
-The result is a ``DataFrame`` indexed by ``(order_book_id, datetime)``. Take one
-stock with ``df.loc["000001.XSHE"]``, one day with
+One call, both markets, one table indexed by ``(order_book_id, datetime)``. US stocks have no
+price limits, so ``limit_up`` is ``NaN`` -- the column stays, and the table's structure does not
+depend on the market. Select one security with ``df.loc["AAPL.US"]`` and one day with
 ``df.xs("2024-03-04", level="datetime")``.
 
 .. important::
 
-    Above, ``000001.XSHE`` closes at **8.81** on 2024-03-01 — but the price it
-    actually traded at that day was **10.49**, because ``adjust_type`` defaults to
-    ``"pre"`` (forward-adjusted).
+    ``adjust_type="none"`` here gives the prices actually traded that day. **Without it you get
+    forward-adjusted prices** (``adjust_type="pre"``): history is adjusted for later dividends and
+    splits and differs from what traded. The three conventions are explained in :doc:`../data/price`.
 
-    For the price as it actually traded, pass ``adjust_type="none"`` explicitly.
-    This matters enough that :doc:`../data/price` is devoted to it.
+Factors: get_factor_exposure
+============================
+
+.. code-block:: python
+
+    >>> from libfinance import get_factor_exposure
+    >>> f = get_factor_exposure(["600000.XSHG", "000001.XSHE"], "system/alpha158", "2026-09-07", "2026-09-10")
+    >>> f.shape
+    (8, 158)
+    >>> f.iloc[:, :6].rename(columns=lambda c: c.rsplit("/", 1)[1]).round(4)   # first 6 columns, short names
+
+.. code-block:: text
+
+                                KMID    KLEN   KMID2     KUP    KUP2    KLOW
+    order_book_id date
+    600000.XSHG   2026-09-07 -0.0212  0.0286 -0.7407  0.0032  0.1111  0.0042
+                  2026-09-08  0.0076  0.0141  0.5385  0.0065  0.4615  0.0000
+                  2026-09-09 -0.0022  0.0086 -0.2500  0.0043  0.5000  0.0022
+                  2026-09-10  0.0141  0.0184  0.7647  0.0011  0.0588  0.0033
+    000001.XSHE   2026-09-07 -0.0143  0.0194 -0.7391  0.0008  0.0435  0.0042
+                  2026-09-08  0.0103  0.0137  0.7500  0.0026  0.1875  0.0009
+                  2026-09-09 -0.0051  0.0085 -0.6000  0.0026  0.3000  0.0009
+                  2026-09-10  0.0146  0.0171  0.8500  0.0009  0.0500  0.0017
+
+The library name ``system/alpha158`` expands to its 158 factors, one column each, named in full
+(``system/alpha158/KMID``). For a few factors pass their full names, e.g.
+``["system/alpha158/KMID", "system/barra-cne5/SIZE"]``; list libraries and factors with
+:func:`~libfinance.list_factor_libraries` and :func:`~libfinance.list_factors`.
 
 Next
 ====
 
-* :doc:`../howto/price_panel` — why "the last N sessions" is not one line, and how to write it
-* :doc:`../data/price` — exactly which numbers adjustment changes
-* :doc:`../data/index` — the semantics of each data set
+* :doc:`../howto/price_panel`: a panel of the last N sessions, and where it goes wrong
+* :doc:`../concepts/point_in_time`: why a backtest passes ``as_of``
+* :doc:`../data/index`: what each kind of data means and covers
+* :doc:`../reference/factors`: the factor functions and examples

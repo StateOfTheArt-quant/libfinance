@@ -2,202 +2,202 @@
  "all_instruments.1": {
   "title": "目录全貌：按类型与市场计数",
   "code": "catalog = lf.all_instruments()\nprint(catalog.groupby([\"type\", \"market\"]).size())",
-  "output": "type      market\nindex     CN        1004\n          US           8\nindustry  CN         608\n          US        2386\nstock     CN        5572\n          US        5394\ntheme     CN         375\ndtype: int64",
+  "output": "type      market\nindex     CN        1004\n          US           8\nindustry  CN         608\n          US        2386\nstock     CN        5572\n          US        5383\ntheme     CN         375\ndtype: int64",
   "script": "docs/examples/python/02_instrument.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "all_instruments.2": {
   "title": "A 股股票：source 是上市交易所",
   "code": "print(lf.all_instruments(type=\"stock\", market=\"cn\").head())",
-  "output": "  order_book_id                          permanent_id   type market      name exchange source\n0   688669.XSHG  dbfa1fdd-eff2-55e0-83ea-275d92717222  stock     CN  聚石化学     XSHG   XSHG\n1   603052.XSHG  35003ff8-cf9c-52c3-9cb5-f2cef1237c10  stock     CN  可川科技     XSHG   XSHG\n2   600298.XSHG  8330b99f-0a81-59d3-9510-115cafffcdb2  stock     CN  安琪酵母     XSHG   XSHG\n3   601007.XSHG  ab77d3cd-02bb-59bd-8561-a64185c76cdb  stock     CN  金陵饭店     XSHG   XSHG\n4   688339.XSHG  61ffdd74-76d9-5a26-b64d-1a1a69cb03c6  stock     CN    亿华通     XSHG   XSHG",
+  "output": "  order_book_id   type market      name exchange source\n0   688669.XSHG  stock     CN  聚石化学     XSHG   XSHG\n1   603052.XSHG  stock     CN  可川科技     XSHG   XSHG\n2   600298.XSHG  stock     CN  安琪酵母     XSHG   XSHG\n3   601007.XSHG  stock     CN  金陵饭店     XSHG   XSHG\n4   688339.XSHG  stock     CN    亿华通     XSHG   XSHG",
   "script": "docs/examples/python/02_instrument.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "all_instruments.3": {
   "title": "中证指数公司（CSI）发布的指数",
   "code": "print(lf.all_instruments(type=\"index\", source=\"CSI\").head())",
-  "output": "  order_book_id                          permanent_id   type market      name exchange source\n0   000987.XSHG  0156aa19-c322-5d4e-8052-375ad6fb6884  index     CN  全指材料     None    CSI\n1   000836.XSHG  0322f1a8-f8f2-59e4-a410-f9e3de69e850  index     CN  成长7030     None    CSI\n2   000977.XSHG  0461fbb0-46f7-5657-bfc3-dc8c560f8db3  index     CN  内地低碳     None    CSI\n3   000834.XSHG  047fd2db-d36f-5609-a354-8c76e1609200  index     CN  价值7030     None    CSI\n4   399966.XSHE  04ecc769-e081-5066-9c1e-7d4dbf8caed8  index     CN   800证保     None    CSI",
+  "output": "  order_book_id   type market      name exchange source\n0   000987.XSHG  index     CN  全指材料      NaN    CSI\n1   000836.XSHG  index     CN  成长7030      NaN    CSI\n2   000977.XSHG  index     CN  内地低碳      NaN    CSI\n3   000834.XSHG  index     CN  价值7030      NaN    CSI\n4   399966.XSHE  index     CN   800证保      NaN    CSI",
   "script": "docs/examples/python/02_instrument.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "all_instruments.4": {
   "title": "申万（SW）行业：source 是分类体系",
   "code": "print(lf.all_instruments(type=\"industry\", source=\"SW\").head())",
-  "output": "  order_book_id                          permanent_id      type market        name exchange source\n0     110000.SW  32185aca-6ecc-416b-83c9-303af0552167  industry     CN    农林牧渔     None     SW\n1     110100.SW  98d987b1-dc0c-487d-bdbd-2d274840cc1d  industry     CN      种植业     None     SW\n2     110101.SW  a26ba29b-5abc-4dd4-9b0c-4fd7c7332d4b  industry     CN        种子     None     SW\n3     110102.SW  7cb57e18-8022-4519-bf51-6e6328f16071  industry     CN    粮食种植     None     SW\n4     110103.SW  0caf448e-484a-4827-bd88-9189f2c90e8f  industry     CN  其他种植业     None     SW",
+  "output": "  order_book_id      type market        name exchange source\n0     110000.SW  industry     CN    农林牧渔      NaN     SW\n1     110100.SW  industry     CN      种植业      NaN     SW\n2     110101.SW  industry     CN        种子      NaN     SW\n3     110102.SW  industry     CN    粮食种植      NaN     SW\n4     110103.SW  industry     CN  其他种植业      NaN     SW",
   "script": "docs/examples/python/02_instrument.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "all_instruments.5": {
   "title": "THS 主题，仅 A 股",
   "code": "print(lf.all_instruments(type=\"theme\").head())",
-  "output": "  order_book_id                          permanent_id   type market        name exchange source\n0    300008.THS  00ce7f9a-8770-5157-b433-585ea1b2e28b  theme     CN  新能源汽车     None    THS\n1    300013.THS  635f9f8c-3aa7-536f-8f55-99acb3bd3dde  theme     CN      大飞机     None    THS\n2    300018.THS  be225af3-1ad3-59d8-a172-8e0ef449b1e6  theme     CN    参股保险     None    THS\n3    300019.THS  43682444-905b-528b-bd34-74dcf70513ef  theme     CN    网络游戏     None    THS\n4    300023.THS  91e715bd-c80d-5ceb-8547-cf140fe374a4  theme     CN    食品安全     None    THS",
+  "output": "  order_book_id   type market        name exchange source\n0    300008.THS  theme     CN  新能源汽车      NaN    THS\n1    300013.THS  theme     CN      大飞机      NaN    THS\n2    300018.THS  theme     CN    参股保险      NaN    THS\n3    300019.THS  theme     CN    网络游戏      NaN    THS\n4    300023.THS  theme     CN    食品安全      NaN    THS",
   "script": "docs/examples/python/02_instrument.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "all_instruments.6": {
   "title": "一次取几种类型：type 给列表",
   "code": "both = lf.all_instruments(type=[\"index\", \"industry\"], market=\"cn\")\nprint(both.groupby([\"type\", \"source\"]).size())",
   "output": "type      source\nindex     CNI       110\n          CSI       178\n          SZSE        2\nindustry  SW        608\ndtype: int64",
   "script": "docs/examples/python/02_instrument.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "all_instruments.7": {
   "title": "历史时点：申万 2021 年改版前后的行业数",
   "code": "before = lf.all_instruments(type=\"industry\", source=\"SW\", as_of=\"2020-01-02\")\nafter = lf.all_instruments(type=\"industry\", source=\"SW\", as_of=\"2022-04-15\")\nprint(len(before), len(after))",
   "output": "400 608",
   "script": "docs/examples/python/02_instrument.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "count_trading_dates.1": {
   "title": "只要样本数时直接计数",
   "code": "print(lf.count_trading_dates(\"2024-01-01\", \"2024-01-31\", market=\"cn\"))",
   "output": "22",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_all_trading_dates.1": {
   "title": "当前日历包含的全部交易日",
   "code": "dates = lf.get_all_trading_dates(market=\"cn\")\nprint(len(dates), dates[0], dates[-1])",
   "output": "8797 1990-12-19 00:00:00 2026-12-31 00:00:00",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_allotments.1": {
   "title": "一只股票的配股事件",
   "code": "print(lf.get_allotments(\"600000.XSHG\"))",
-  "output": "Empty DataFrame\nColumns: [order_book_id, event_id, confirmed_by_revision, permanent_id, exchange, ex_date, ratio, raw_ratio_text, subscription_price, price_status, currency, realized_proportion, record_date, expiration_date]\nIndex: []",
+  "output": "Empty DataFrame\nColumns: [order_book_id, exchange, ex_date, ratio, raw_ratio_text, subscription_price, price_status, currency, realized_proportion, record_date, expiration_date]\nIndex: []",
   "script": "docs/examples/python/05_corporate_actions.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_allotments.2": {
   "title": "窗口内没有配股时返回空表",
   "code": "print(lf.get_allotments(\"600000.XSHG\", \"2024-01-01\", \"2024-12-31\"))",
-  "output": "Empty DataFrame\nColumns: [order_book_id, event_id, confirmed_by_revision, permanent_id, exchange, ex_date, ratio, raw_ratio_text, subscription_price, price_status, currency, realized_proportion, record_date, expiration_date]\nIndex: []",
+  "output": "Empty DataFrame\nColumns: [order_book_id, exchange, ex_date, ratio, raw_ratio_text, subscription_price, price_status, currency, realized_proportion, record_date, expiration_date]\nIndex: []",
   "script": "docs/examples/python/05_corporate_actions.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_calendar_coverage.1": {
   "title": "A 股日历确认到哪天（不是行情更新到哪天）",
   "code": "print(lf.get_calendar_coverage(market=\"cn\"))",
   "output": "{'history_start': Timestamp('1990-12-01 00:00:00'), 'confirmed_through': Timestamp('2026-12-31 00:00:00')}",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_calendar_coverage.2": {
   "title": "美股日历的覆盖范围",
   "code": "print(lf.get_calendar_coverage(market=\"us\"))",
   "output": "{'history_start': Timestamp('1929-01-01 00:00:00'), 'confirmed_through': Timestamp('2027-12-31 00:00:00')}",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_dividends.1": {
   "title": "一只股票的全部分红事件",
   "code": "print(lf.get_dividends(\"600000.XSHG\").head())",
-  "output": "  order_book_id                              event_id  confirmed_by_revision                          permanent_id exchange     ex_date   dist_kind   marker cash_per_share currency bonus_per_share transfer_per_share stock_div_ratio amount_basis declaration_date record_date payable_date  date_is_convention\n0   600000.XSHG  c70c6a5c-9cfc-54c4-9d8f-a0ad240bc7a0                      1  bb29e76c-0f22-525e-8d06-6a679c6ac4e2     XSHG  2000-07-06        CASH  REGULAR     0.15000000      CNY            0E-8               0E-8            0E-8   EVENT_TIME       2000-06-30  2000-07-05   2000-07-06                True\n1   600000.XSHG  b79af3e1-cc8d-55dc-ab06-532f87aa0463                      1  bb29e76c-0f22-525e-8d06-6a679c6ac4e2     XSHG  2002-08-22  CASH_STOCK  REGULAR     0.20000000      CNY            0E-8         0.50000000      0.50000000   EVENT_TIME       2002-08-17  2002-08-21   2002-08-27                True\n2   600000.XSHG  073d1df5-2f3d-59aa-8c91-d030fecdfad8                      1  bb29e76c-0f22-525e-8d06-6a679c6ac4e2     XSHG  2003-06-23        CASH  REGULAR     0.10000000      CNY            0E-8               0E-8            0E-8   EVENT_TIME       2003-06-17  2003-06-20   2003-06-27                True\n3   600000.XSHG  5f3f6d93-8d50-51fe-8c7c-1a040d263e8f                      1  bb29e76c-0f22-525e-8d06-6a679c6ac4e2     XSHG  2004-05-20        CASH  REGULAR     0.11000000      CNY            0E-8               0E-8            0E-8   EVENT_TIME       2004-05-15  2004-05-19   2004-05-25                True\n4   600000.XSHG  0551abcd-16b3-5189-97c2-01f0c6335c40                      1  bb29e76c-0f22-525e-8d06-6a679c6ac4e2     XSHG  2005-05-12        CASH  REGULAR     0.12000000      CNY            0E-8               0E-8            0E-8   EVENT_TIME       2005-04-30  2005-05-11   2005-05-16                True",
+  "output": "  order_book_id exchange     ex_date   dist_kind   marker cash_per_share currency bonus_per_share transfer_per_share stock_div_ratio amount_basis declaration_date record_date payable_date  date_is_convention\n0   600000.XSHG     XSHG  2000-07-06        CASH  REGULAR     0.15000000      CNY            0E-8               0E-8            0E-8   EVENT_TIME       2000-06-30  2000-07-05   2000-07-06                True\n1   600000.XSHG     XSHG  2002-08-22  CASH_STOCK  REGULAR     0.20000000      CNY            0E-8         0.50000000      0.50000000   EVENT_TIME       2002-08-17  2002-08-21   2002-08-27                True\n2   600000.XSHG     XSHG  2003-06-23        CASH  REGULAR     0.10000000      CNY            0E-8               0E-8            0E-8   EVENT_TIME       2003-06-17  2003-06-20   2003-06-27                True\n3   600000.XSHG     XSHG  2004-05-20        CASH  REGULAR     0.11000000      CNY            0E-8               0E-8            0E-8   EVENT_TIME       2004-05-15  2004-05-19   2004-05-25                True\n4   600000.XSHG     XSHG  2005-05-12        CASH  REGULAR     0.12000000      CNY            0E-8               0E-8            0E-8   EVENT_TIME       2005-04-30  2005-05-11   2005-05-16                True",
   "script": "docs/examples/python/05_corporate_actions.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_dividends.2": {
   "title": "多只股票、限定日期与字段",
   "code": "print(lf.get_dividends([\"600000.XSHG\", \"000001.XSHE\"], \"2024-01-01\", \"2024-06-28\",\n                       fields=[\"ex_date\", \"cash_per_share\"]))",
   "output": "  order_book_id     ex_date cash_per_share\n0   000001.XSHE  2024-06-14     0.71900000",
   "script": "docs/examples/python/05_corporate_actions.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_dividends.3": {
   "title": "as_of：只看截至那天已知的事件",
   "code": "print(lf.get_dividends(\"600000.XSHG\", \"2024-01-01\", \"2024-06-28\", fields=[\"ex_date\", \"cash_per_share\"],\n                       as_of=\"2024-06-28\"))",
   "output": "Empty DataFrame\nColumns: [order_book_id, ex_date, cash_per_share]\nIndex: []",
   "script": "docs/examples/python/05_corporate_actions.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_dividends.4": {
   "title": "A 股与美股混在一批",
   "code": "print(lf.get_dividends([\"600000.XSHG\", \"AAPL.US\"], \"2024-01-01\", \"2024-12-31\",\n                       fields=[\"ex_date\", \"cash_per_share\"]))",
   "output": "  order_book_id     ex_date cash_per_share\n0   600000.XSHG  2024-07-18     0.32100000\n1       AAPL.US  2024-11-08     0.25000000\n2       AAPL.US  2024-08-12     0.25000000\n3       AAPL.US  2024-05-10     0.25000000\n4       AAPL.US  2024-02-09     0.24000000",
   "script": "docs/examples/python/05_corporate_actions.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_ex_factor.1": {
   "title": "一只股票的除权事件与因子",
   "code": "print(lf.get_ex_factor(\"600000.XSHG\").head())",
-  "output": "      ex_date order_book_id                          permanent_id  ex_factor  ex_cum_factor\n0  2000-07-06   600000.XSHG  bb29e76c-0f22-525e-8d06-6a679c6ac4e2   1.006502       1.006502\n1  2002-08-22   600000.XSHG  bb29e76c-0f22-525e-8d06-6a679c6ac4e2   1.516484       1.526344\n2  2003-06-23   600000.XSHG  bb29e76c-0f22-525e-8d06-6a679c6ac4e2   1.008361       1.539106\n3  2004-05-20   600000.XSHG  bb29e76c-0f22-525e-8d06-6a679c6ac4e2   1.011853       1.557349\n4  2005-05-12   600000.XSHG  bb29e76c-0f22-525e-8d06-6a679c6ac4e2   1.017291       1.584278",
+  "output": "      ex_date order_book_id  ex_factor  ex_cum_factor\n0  2000-07-06   600000.XSHG   1.006502       1.006502\n1  2002-08-22   600000.XSHG   1.516484       1.526344\n2  2003-06-23   600000.XSHG   1.008361       1.539106\n3  2004-05-20   600000.XSHG   1.011853       1.557349\n4  2005-05-12   600000.XSHG   1.017291       1.584278",
   "script": "docs/examples/python/04_exfactor.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_ex_factor.2": {
   "title": "限定窗口（含两端）：累计值不从窗口起点重置",
   "code": "print(lf.get_ex_factor(\"600000.XSHG\", \"2023-07-01\", \"2023-07-31\"))",
-  "output": "      ex_date order_book_id                          permanent_id  ex_factor  ex_cum_factor\n0  2023-07-21   600000.XSHG  bb29e76c-0f22-525e-8d06-6a679c6ac4e2    1.04507      15.545885",
+  "output": "      ex_date order_book_id  ex_factor  ex_cum_factor\n0  2023-07-21   600000.XSHG    1.04507      15.545885",
   "script": "docs/examples/python/04_exfactor.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_ex_factor.3": {
   "title": "混合市场：代码自带市场",
   "code": "print(lf.get_ex_factor([\"600000.XSHG\", \"AAPL.US\"], \"2023-01-01\", \"2023-12-31\"))",
-  "output": "      ex_date order_book_id                          permanent_id  ex_factor  ex_cum_factor\n0  2023-07-21   600000.XSHG  bb29e76c-0f22-525e-8d06-6a679c6ac4e2   1.045070      15.545885\n1  2023-02-10       AAPL.US  7acb8a29-9422-50cd-917b-fcc21842fc98   1.001527     288.306603\n2  2023-05-12       AAPL.US  7acb8a29-9422-50cd-917b-fcc21842fc98   1.001383     288.705390\n3  2023-08-11       AAPL.US  7acb8a29-9422-50cd-917b-fcc21842fc98   1.001350     289.095247\n4  2023-11-10       AAPL.US  7acb8a29-9422-50cd-917b-fcc21842fc98   1.001317     289.476116",
+  "output": "      ex_date order_book_id  ex_factor  ex_cum_factor\n0  2023-07-21   600000.XSHG   1.045070      15.545885\n1  2023-02-10       AAPL.US   1.001527     288.306603\n2  2023-05-12       AAPL.US   1.001383     288.705390\n3  2023-08-11       AAPL.US   1.001350     289.095247\n4  2023-11-10       AAPL.US   1.001317     289.476116",
   "script": "docs/examples/python/04_exfactor.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_factor_exposure.1": {
   "title": "Barra CNE5 风格因子：库名展开为 42 列（10 个风格、31 个行业、COUNTRY）",
@@ -205,9 +205,9 @@
   "output": "(8, 42)\n                           SIZE   BETA  MOMENTUM  RESVOL  NLSIZE   BTOP  LIQUIDITY  EARNYILD  GROWTH  LEVERAGE\norder_book_id date                                                                                            \n600000.XSHG   2026-09-07  1.466 -2.158    -0.892   0.270  -1.476  3.680     -2.495     4.225  -0.685     3.895\n              2026-09-08  1.474 -2.151    -0.876   0.260  -1.475  3.672     -2.503     4.216  -0.679     3.896\n              2026-09-09  1.469 -2.154    -0.897   0.270  -1.482  3.684     -2.496     4.222  -0.679     3.905\n              2026-09-10  1.464 -2.152    -0.954   0.255  -1.485  3.682     -2.478     4.173  -0.680     3.896\n000001.XSHE   2026-09-07  1.420 -1.936    -0.438  -0.762  -1.469  3.680     -1.710     4.353  -0.846     3.086\n              2026-09-08  1.437 -1.932    -0.418  -0.737  -1.470  3.672     -1.715     4.342  -0.840     3.097\n              2026-09-09  1.419 -1.935    -0.409  -0.730  -1.474  3.684     -1.712     4.350  -0.841     3.105\n              2026-09-10  1.429 -1.934    -0.456  -0.723  -1.479  3.682     -1.699     4.299  -0.841     3.068",
   "script": "docs/examples/python/11_factors.py",
   "generated": "2026-10-09",
-  "server": "127.0.0.1:18080",
+  "server": "libfinance.tech:8080",
   "server_version": "0.1.4",
-  "data_version": null
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_factor_exposure.2": {
   "title": "原始描述符与标准化后的风格因子混在一次请求里",
@@ -215,9 +215,9 @@
   "output": "                          system/barra-cne5-descriptor/LNCAP  system/barra-cne5/SIZE  system/barra-cne5/BANKS\norder_book_id date                                                                                           \n600000.XSHG   2026-09-10                           26.464375                1.463998                      1.0\n600519.XSHG   2026-09-10                           28.105089                1.463998                      0.0",
   "script": "docs/examples/python/11_factors.py",
   "generated": "2026-10-09",
-  "server": "127.0.0.1:18080",
+  "server": "libfinance.tech:8080",
   "server_version": "0.1.4",
-  "data_version": null
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_factor_exposure.3": {
   "title": "universe：截面因子在给定的代码上重新标准化，时序因子不变",
@@ -225,9 +225,9 @@
   "output": "                          system/barra-cne5/SIZE  system/barra-cne5-descriptor/LNCAP\norder_book_id date                                                                  \n600000.XSHG   2026-09-10               -1.061550                           26.464375\n000001.XSHE   2026-09-10               -1.323651                           26.161171",
   "script": "docs/examples/python/11_factors.py",
   "generated": "2026-10-09",
-  "server": "127.0.0.1:18080",
+  "server": "libfinance.tech:8080",
   "server_version": "0.1.4",
-  "data_version": null
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_factor_exposure.4": {
   "title": "alpha158：当天的截面",
@@ -235,449 +235,449 @@
   "output": "                          system/alpha158/KMID  system/alpha158/ROC5  system/alpha158/STD20\norder_book_id date                                                                         \n600000.XSHG   2026-09-10              0.014100              0.991444               0.013712\n000001.XSHE   2026-09-10              0.014555              1.002532               0.023610\n600519.XSHG   2026-09-10             -0.004547              1.010699               0.011705",
   "script": "docs/examples/python/11_factors.py",
   "generated": "2026-10-09",
-  "server": "127.0.0.1:18080",
+  "server": "libfinance.tech:8080",
   "server_version": "0.1.4",
-  "data_version": null
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_financial_metrics.1": {
   "title": "逐交易日的指标：在公告日跳变，其间持平",
   "code": "print(lf.get_financial_metrics(\"600519.XSHG\", [\"roe_lf\", \"revenue_ttm\"], \"2024-10-28\", \"2024-11-01\"))",
   "output": "                            roe_lf   revenue_ttm\norder_book_id date                              \n600519.XSHG   2024-10-28  0.266621  1.652014e+11\n              2024-10-29  0.266621  1.652014e+11\n              2024-10-30  0.266621  1.652014e+11\n              2024-10-31  0.266621  1.652014e+11\n              2024-11-01  0.266621  1.652014e+11",
   "script": "docs/examples/python/07_financials.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_financial_metrics.2": {
   "title": "A 股与美股同一套公式；省略日期取最近一个交易日",
   "code": "print(lf.get_financial_metrics([\"600519.XSHG\", \"AAPL.US\"], [\"net_profit_growth_lyr\", \"debt_to_assets_lf\"]))",
-  "output": "                          net_profit_growth_lyr  debt_to_assets_lf\norder_book_id date                                                \n600519.XSHG   2026-09-30              -0.020290           0.151931\nAAPL.US       2026-10-05               0.200132           0.719464",
+  "output": "                          net_profit_growth_lyr  debt_to_assets_lf\norder_book_id date                                                \n600519.XSHG   2026-10-09              -0.020290           0.151931\nAAPL.US       2026-10-09               0.200132           0.719464",
   "script": "docs/examples/python/07_financials.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_index_constituents.1": {
   "title": "沪深 300 在 2024-06-28 的成分",
   "code": "members = lf.get_index_constituents(\"000300.XSHG\", as_of=\"2024-06-28\")\nprint(len(members), members[:5])",
   "output": "300 ['000001.XSHE', '000002.XSHE', '000063.XSHE', '000100.XSHE', '000157.XSHE']",
   "script": "docs/examples/python/09_index.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_index_constituents.2": {
   "title": "省略 as_of：已确认的最新成分",
   "code": "members = lf.get_index_constituents(\"SPX.US\")\nprint(len(members), members[:5])",
   "output": "504 ['A.US', 'AAPL.US', 'ABBV.US', 'ABNB.US', 'ABT.US']",
   "script": "docs/examples/python/09_index.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_index_weights.1": {
   "title": "成分权重与 methodology；非月末日按复权收益率漂移",
   "code": "weights = lf.get_index_weights(\"000300.XSHG\", as_of=\"2024-06-28\")\nprint(weights.head())\nprint(weights[\"weight\"].sum())",
-  "output": "  order_book_id                          permanent_id    weight      methodology source   basis        date quality_flags\n0   000001.XSHE  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  0.005954  VENDOR_SNAPSHOT    CSI  origin  2024-06-28     [DRIFTED]\n1   000002.XSHE  b1751b0c-f6ea-5046-b58e-67a129cfa5b6  0.002663  VENDOR_SNAPSHOT    CSI  origin  2024-06-28     [DRIFTED]\n2   000063.XSHE  dc412fe3-1025-56ae-bfd9-3fcc0d7053bb  0.005034  VENDOR_SNAPSHOT    CSI  origin  2024-06-28     [DRIFTED]\n3   000069.XSHE  8f4f7b8a-5003-522e-8001-6627ff946e84  0.000566  VENDOR_SNAPSHOT    CSI  origin  2024-06-28     [DRIFTED]\n4   000100.XSHE  953d7a88-1a19-5305-a7f8-3e832cbee2b8  0.004663  VENDOR_SNAPSHOT    CSI  origin  2024-06-28     [DRIFTED]\n1.0",
+  "output": "  order_book_id    weight      methodology source   basis        date quality_flags\n0   000001.XSHE  0.005954  VENDOR_SNAPSHOT    CSI  origin  2024-06-28     [DRIFTED]\n1   000002.XSHE  0.002663  VENDOR_SNAPSHOT    CSI  origin  2024-06-28     [DRIFTED]\n2   000063.XSHE  0.005034  VENDOR_SNAPSHOT    CSI  origin  2024-06-28     [DRIFTED]\n3   000069.XSHE  0.000566  VENDOR_SNAPSHOT    CSI  origin  2024-06-28     [DRIFTED]\n4   000100.XSHE  0.004663  VENDOR_SNAPSHOT    CSI  origin  2024-06-28     [DRIFTED]\n1.0",
   "script": "docs/examples/python/09_index.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_industry_constituents.1": {
   "title": "申万银行业（480000.SW）的成分",
   "code": "members = lf.get_industry_constituents(\"480000.SW\", as_of=\"2024-06-28\")\nprint(len(members), members[:5])",
   "output": "42 ['000001.XSHE', '001227.XSHE', '002142.XSHE', '002807.XSHE', '002839.XSHE']",
   "script": "docs/examples/python/08_industry.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_industry_weights.1": {
   "title": "行业成分的权重与 methodology",
   "code": "print(lf.get_industry_weights(\"480000.SW\", as_of=\"2024-06-28\").head())",
   "output": "  order_book_id   weight           methodology source effective_from effective_to\n0   000001.XSHE  0.02381  derived_equal_weight     SW     2021-12-10         None\n1   001227.XSHE  0.02381  derived_equal_weight     SW     2021-12-10         None\n2   002142.XSHE  0.02381  derived_equal_weight     SW     2021-12-10         None\n3   002807.XSHE  0.02381  derived_equal_weight     SW     2021-12-10         None\n4   002839.XSHE  0.02381  derived_equal_weight     SW     2021-12-10         None",
   "script": "docs/examples/python/08_industry.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_instrument_indices.1": {
   "title": "一只 A 股、一只美股所属的指数",
   "code": "print(lf.get_instrument_indices([\"600000.XSHG\", \"AAPL.US\"], as_of=\"2024-06-28\").head(10))",
-  "output": "  order_book_id related_order_book_id  source market level\n0   600000.XSHG           000300.XSHG     CSI     CN  None\n1   600000.XSHG           000906.XSHG     CSI     CN  None\n2   600000.XSHG           000922.XSHG     CSI     CN  None\n3       AAPL.US               DJIA.US   SPDJI     US  None\n4       AAPL.US                NDX.US  NASDAQ     US  None\n5       AAPL.US                SPX.US   SPDJI     US  None",
+  "output": "  order_book_id related_order_book_id  source market level\n0   600000.XSHG           000300.XSHG     CSI     CN   NaN\n1   600000.XSHG           000906.XSHG     CSI     CN   NaN\n2   600000.XSHG           000922.XSHG     CSI     CN   NaN\n3       AAPL.US               DJIA.US   SPDJI     US   NaN\n4       AAPL.US                NDX.US  NASDAQ     US   NaN\n5       AAPL.US                SPX.US   SPDJI     US   NaN",
   "script": "docs/examples/python/09_index.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_instrument_indices.2": {
   "title": "只看中证指数公司（CSI）发布的指数",
   "code": "print(lf.get_instrument_indices(\"600000.XSHG\", source=\"CSI\", as_of=\"2024-06-28\"))",
-  "output": "  order_book_id related_order_book_id source market level\n0   600000.XSHG           000300.XSHG    CSI     CN  None\n1   600000.XSHG           000906.XSHG    CSI     CN  None\n2   600000.XSHG           000922.XSHG    CSI     CN  None",
+  "output": "  order_book_id related_order_book_id source market level\n0   600000.XSHG           000300.XSHG    CSI     CN   NaN\n1   600000.XSHG           000906.XSHG    CSI     CN   NaN\n2   600000.XSHG           000922.XSHG    CSI     CN   NaN",
   "script": "docs/examples/python/09_index.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_instrument_industry.1": {
   "title": "申万一级行业",
   "code": "print(lf.get_instrument_industry([\"000001.XSHE\", \"600000.XSHG\"], source=\"SW\", level=1, as_of=\"2024-06-28\"))",
   "output": "  order_book_id related_order_book_id source market  level\n0   000001.XSHE             480000.SW     SW     CN      1\n1   600000.XSHG             480000.SW     SW     CN      1",
   "script": "docs/examples/python/08_industry.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_instrument_industry.2": {
   "title": "省略 source 与 level：全部分类体系、全部层级",
   "code": "print(lf.get_instrument_industry(\"600000.XSHG\", as_of=\"2024-06-28\"))",
   "output": "  order_book_id related_order_book_id source market  level\n0   600000.XSHG             480000.SW     SW     CN      1\n1   600000.XSHG             480300.SW     SW     CN      2\n2   600000.XSHG             480301.SW     SW     CN      3",
   "script": "docs/examples/python/08_industry.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_instrument_themes.1": {
   "title": "证券当前所属的主题",
   "code": "print(lf.get_instrument_themes([\"600000.XSHG\", \"000001.XSHE\"], source=\"THS\").head(10))",
   "output": "  order_book_id related_order_book_id source market  level\n0   000001.XSHE            300900.THS    THS     CN    NaN\n1   000001.XSHE            301636.THS    THS     CN    NaN\n2   000001.XSHE            309124.THS    THS     CN    NaN\n3   600000.XSHG            300900.THS    THS     CN    NaN\n4   600000.XSHG            301377.THS    THS     CN    NaN\n5   600000.XSHG            301490.THS    THS     CN    NaN\n6   600000.XSHG            309124.THS    THS     CN    NaN",
   "script": "docs/examples/python/10_theme.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_n_trading_dates_until.1": {
   "title": "截至周一（含）的最近 5 个交易日",
   "code": "print(lf.get_n_trading_dates_until(\"2024-01-08\", n=5))",
-  "output": "DatetimeIndex(['2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05', '2024-01-08'], dtype='datetime64[ns]', freq=None)",
+  "output": "DatetimeIndex(['2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05', '2024-01-08'], dtype='datetime64[us]', freq=None)",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_n_trading_dates_until.2": {
   "title": "截至周日：从此前最近的交易日往回数",
   "code": "print(lf.get_n_trading_dates_until(\"2024-01-07\", n=5))",
-  "output": "DatetimeIndex(['2023-12-29', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05'], dtype='datetime64[ns]', freq=None)",
+  "output": "DatetimeIndex(['2023-12-29', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05'], dtype='datetime64[us]', freq=None)",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_next_trading_date.1": {
   "title": "严格晚于输入日的下一个交易日",
   "code": "print(lf.get_next_trading_date(\"2024-01-05\"))",
   "output": "2024-01-08 00:00:00",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_next_trading_date.2": {
   "title": "n=3：往后第三个交易日",
   "code": "print(lf.get_next_trading_date(\"2024-01-05\", n=3))",
   "output": "2024-01-10 00:00:00",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_pit_financials_ex.1": {
   "title": "最新可见版本",
   "code": "print(lf.get_pit_financials_ex(\"600000.XSHG\", [\"total_operating_revenue\", \"net_income_parent\"], \"2024q1\", \"2024q3\"))",
   "output": "                       info_date  total_operating_revenue  net_income_parent  if_adjusted\norder_book_id quarter                                                                    \n600000.XSHG   2024q1  2025-04-30             4.532800e+10       1.742100e+10            1\n              2024q2  2026-08-28             8.824800e+10       2.698800e+10            1\n              2024q3  2025-10-31             1.298390e+11       3.522300e+10            1",
   "script": "docs/examples/python/07_financials.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_pit_financials_ex.2": {
   "title": "as_of：只用截至那天已披露的信息",
   "code": "print(lf.get_pit_financials_ex(\"600000.XSHG\", [\"net_income_parent\"], \"2024q1\", \"2024q3\",\n                               as_of=\"2024-11-01\", statements=\"latest\"))",
   "output": "                       info_date  net_income_parent  if_adjusted\norder_book_id quarter                                           \n600000.XSHG   2024q1  2024-04-30       1.742100e+10            0\n              2024q2  2024-10-31       2.698800e+10            0\n              2024q3  2024-10-31       3.522300e+10            0",
   "script": "docs/examples/python/07_financials.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_pit_financials_ex.3": {
   "title": "statements=\"all\"：当时可见的全部修订版本",
   "code": "print(lf.get_pit_financials_ex([\"600000.XSHG\", \"AAPL.US\"], [\"net_income_parent\"], \"2024q1\", \"2024q3\",\n                               as_of=\"2024-11-01\", statements=\"all\"))",
   "output": "                                info_date  net_income_parent  if_adjusted\norder_book_id quarter                                                    \n600000.XSHG   2024q1  2024-04-30 00:00:00       1.742100e+10            0\n              2024q2  2024-08-20 00:00:00       2.698800e+10            0\n              2024q2  2024-10-31 00:00:00       2.698800e+10            0\n              2024q3  2024-10-31 00:00:00       3.522300e+10            0\nAAPL.US       2024q1  2024-05-02 18:04:25       5.755200e+10            0\n              2024q2  2024-08-01 18:03:34       7.900000e+10            0\n              2024q3  2024-11-01 06:01:36       9.373600e+10            0",
   "script": "docs/examples/python/07_financials.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_previous_trading_date.1": {
   "title": "严格早于输入日的上一个交易日",
   "code": "print(lf.get_previous_trading_date(\"2024-01-08\"))",
   "output": "2024-01-05 00:00:00",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_previous_trading_date.2": {
   "title": "n=3：往前第三个交易日，不是减三天",
   "code": "print(lf.get_previous_trading_date(\"2024-01-08\", n=3))",
   "output": "2024-01-03 00:00:00",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_price.1": {
   "title": "单只股票的收盘价与成交量（默认前复权）",
   "code": "print(lf.get_price(\"000001.XSHE\", \"2024-03-01\", \"2024-03-11\", fields=[\"close\", \"volume\"]))",
-  "output": "                                                  permanent_id  close       volume\norder_book_id datetime                                                            \n000001.XSHE   2024-03-01  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.49  182810290.0\n              2024-03-04  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.33  165592954.0\n              2024-03-05  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.43  181731907.0\n              2024-03-06  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.33  134564016.0\n              2024-03-07  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.38  201616589.0\n              2024-03-08  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.38  111397428.0\n              2024-03-11  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.47  121067298.0",
+  "output": "                          close       volume\norder_book_id datetime                      \n000001.XSHE   2024-03-01  10.49  182810290.0\n              2024-03-04  10.33  165592954.0\n              2024-03-05  10.43  181731907.0\n              2024-03-06  10.33  134564016.0\n              2024-03-07  10.38  201616589.0\n              2024-03-08  10.38  111397428.0\n              2024-03-11  10.47  121067298.0",
   "script": "docs/examples/python/03_daybar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_price.2": {
   "title": "股票与指数混在一批",
   "code": "print(lf.get_price([\"000001.XSHE\", \"000300.XSHG\"], \"2024-03-01\", \"2024-03-05\",\n                   fields=[\"open\", \"high\", \"low\", \"close\"]))",
-  "output": "                                                  permanent_id       open       high        low      close\norder_book_id datetime                                                                                    \n000001.XSHE   2024-03-01  4ee74a3c-8e83-5289-a30a-ac65d9d22de0    10.5900    10.6000    10.4300    10.4900\n              2024-03-04  4ee74a3c-8e83-5289-a30a-ac65d9d22de0    10.4500    10.5000    10.3200    10.3300\n              2024-03-05  4ee74a3c-8e83-5289-a30a-ac65d9d22de0    10.3000    10.4700    10.2600    10.4300\n000300.XSHG   2024-03-01  b101df1d-b379-5820-a6fb-a6b375131870  3515.0587  3544.3595  3503.4590  3537.8038\n              2024-03-04  b101df1d-b379-5820-a6fb-a6b375131870  3538.3660  3548.6901  3519.7599  3540.8686\n              2024-03-05  b101df1d-b379-5820-a6fb-a6b375131870  3524.9644  3570.6935  3519.0816  3565.5143",
+  "output": "                               open       high        low      close\norder_book_id datetime                                              \n000001.XSHE   2024-03-01    10.5900    10.6000    10.4300    10.4900\n              2024-03-04    10.4500    10.5000    10.3200    10.3300\n              2024-03-05    10.3000    10.4700    10.2600    10.4300\n000300.XSHG   2024-03-01  3515.0587  3544.3595  3503.4590  3537.8038\n              2024-03-04  3538.3660  3548.6901  3519.7599  3540.8686\n              2024-03-05  3524.9644  3570.6935  3519.0816  3565.5143",
   "script": "docs/examples/python/03_daybar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_price.3": {
   "title": "复权方式：不复权、前复权、后复权",
   "code": "for adjust_type in (\"none\", \"pre\", \"post\"):\n    print(adjust_type)\n    print(lf.get_price(\"600519.XSHG\", \"2024-03-01\", \"2024-03-05\",\n                       fields=[\"close\", \"volume\"], adjust_type=adjust_type))",
-  "output": "none\n                                                  permanent_id    close   volume\norder_book_id datetime                                                          \n600519.XSHG   2024-03-01  617294d9-83c4-5b28-bc00-1e52c98e0393  1685.06  2686796\n              2024-03-04  617294d9-83c4-5b28-bc00-1e52c98e0393  1676.30  2648477\n              2024-03-05  617294d9-83c4-5b28-bc00-1e52c98e0393  1695.10  3623837\npre\n                                                  permanent_id    close     volume\norder_book_id datetime                                                            \n600519.XSHG   2024-03-01  617294d9-83c4-5b28-bc00-1e52c98e0393  1685.06  2686796.0\n              2024-03-04  617294d9-83c4-5b28-bc00-1e52c98e0393  1676.30  2648477.0\n              2024-03-05  617294d9-83c4-5b28-bc00-1e52c98e0393  1695.10  3623837.0\npost\n                                                  permanent_id         close         volume\norder_book_id datetime                                                                     \n600519.XSHG   2024-03-01  617294d9-83c4-5b28-bc00-1e52c98e0393  13610.044179  332652.297690\n              2024-03-04  617294d9-83c4-5b28-bc00-1e52c98e0393  13539.290623  327908.021088\n              2024-03-05  617294d9-83c4-5b28-bc00-1e52c98e0393  13691.136154  448667.373519",
+  "output": "none\n                            close   volume\norder_book_id datetime                    \n600519.XSHG   2024-03-01  1685.06  2686796\n              2024-03-04  1676.30  2648477\n              2024-03-05  1695.10  3623837\npre\n                            close     volume\norder_book_id datetime                      \n600519.XSHG   2024-03-01  1685.06  2686796.0\n              2024-03-04  1676.30  2648477.0\n              2024-03-05  1695.10  3623837.0\npost\n                                 close         volume\norder_book_id datetime                               \n600519.XSHG   2024-03-01  13610.044179  332652.297690\n              2024-03-04  13539.290623  327908.021088\n              2024-03-05  13691.136154  448667.373519",
   "script": "docs/examples/python/03_daybar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_price.4": {
   "title": "排除停牌日",
   "code": "print(lf.get_price(\"000001.XSHE\", \"2024-03-01\", \"2024-03-11\", fields=[\"close\"], skip_suspended=True))",
-  "output": "                                                  permanent_id  close\norder_book_id datetime                                               \n000001.XSHE   2024-03-01  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.49\n              2024-03-04  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.33\n              2024-03-05  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.43\n              2024-03-06  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.33\n              2024-03-07  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.38\n              2024-03-08  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.38\n              2024-03-11  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  10.47",
+  "output": "                          close\norder_book_id datetime         \n000001.XSHE   2024-03-01  10.49\n              2024-03-04  10.33\n              2024-03-05  10.43\n              2024-03-06  10.33\n              2024-03-07  10.38\n              2024-03-08  10.38\n              2024-03-11  10.47",
   "script": "docs/examples/python/03_daybar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_price.5": {
   "title": "美股：代码自带市场",
   "code": "print(lf.get_price([\"AAPL.US\", \"NVDA.US\"], \"2026-03-02\", \"2026-03-04\", fields=[\"close\", \"volume\"]))",
-  "output": "                                                  permanent_id   close       volume\norder_book_id datetime                                                             \nAAPL.US       2026-03-02  7acb8a29-9422-50cd-917b-fcc21842fc98  264.72   41827946.0\n              2026-03-03  7acb8a29-9422-50cd-917b-fcc21842fc98  263.75   38568921.0\n              2026-03-04  7acb8a29-9422-50cd-917b-fcc21842fc98  262.52   39803119.0\nNVDA.US       2026-03-02  de1d1cd1-b3b5-5523-961a-2478092cc51d  182.48  209095331.0\n              2026-03-03  de1d1cd1-b3b5-5523-961a-2478092cc51d  180.05  178099430.0\n              2026-03-04  de1d1cd1-b3b5-5523-961a-2478092cc51d  183.04  177731200.0",
+  "output": "                           close       volume\norder_book_id datetime                       \nAAPL.US       2026-03-02  264.72   41827946.0\n              2026-03-03  263.75   38568921.0\n              2026-03-04  262.52   39803119.0\nNVDA.US       2026-03-02  182.48  209095331.0\n              2026-03-03  180.05  178099430.0\n              2026-03-04  183.04  177731200.0",
   "script": "docs/examples/python/03_daybar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_price_coverage.1": {
   "title": "行情覆盖到哪天：按证券类型与交易所给出",
   "code": "print(lf.get_price_coverage(market=\"cn\")[\"stock\"])",
-  "output": "{'XSHE': {'start': '2000-01-04', 'end': '2026-09-23', 'raw_end': '2026-09-30', 'adjust_cutoff': '2026-09-23'}, 'XSHG': {'start': '2000-01-04', 'end': '2026-09-23', 'raw_end': '2026-09-30', 'adjust_cutoff': '2026-09-23'}}",
+  "output": "{'XBSE': {'start': '2021-11-15', 'end': '2026-09-23', 'raw_end': '2026-10-09', 'adjust_cutoff': '2026-09-23'}, 'XSHE': {'start': '2000-01-04', 'end': '2026-09-23', 'raw_end': '2026-10-09', 'adjust_cutoff': '2026-09-23'}, 'XSHG': {'start': '2000-01-04', 'end': '2026-09-23', 'raw_end': '2026-10-09', 'adjust_cutoff': '2026-09-23'}}",
   "script": "docs/examples/python/03_daybar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_price_coverage.2": {
   "title": "最近 5 个有行情的交易日：以覆盖上界为终点",
   "code": "end = lf.get_price_coverage(market=\"cn\")[\"stock\"][\"XSHE\"][\"end\"]\ndates = lf.get_n_trading_dates_until(end, n=5, market=\"cn\")\nprint(lf.get_price(\"000001.XSHE\", dates[0], dates[-1], fields=[\"close\"]))",
-  "output": "                                                  permanent_id  close\norder_book_id datetime                                               \n000001.XSHE   2026-09-17  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  11.61\n              2026-09-18  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  11.70\n              2026-09-21  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  11.73\n              2026-09-22  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  11.71\n              2026-09-23  4ee74a3c-8e83-5289-a30a-ac65d9d22de0  11.60",
+  "output": "                          close\norder_book_id datetime         \n000001.XSHE   2026-09-17  11.61\n              2026-09-18  11.70\n              2026-09-21  11.73\n              2026-09-22  11.71\n              2026-09-23  11.60",
   "script": "docs/examples/python/03_daybar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_shares.1": {
   "title": "一只股票的全部股本字段",
   "code": "print(lf.get_shares(\"600000.XSHG\").head())",
-  "output": "                          free_float_shares  issued_shares  preferred_shares  restricted_shares  shares_outstanding  tradable_shares\norder_book_id date                                                                                                                  \n600000.XSHG   2026-09-30       1.033437e+10   3.330584e+10               0.0                0.0                 NaN     3.330584e+10\n              2026-10-08       1.033437e+10   3.330584e+10               0.0                0.0                 NaN     3.330584e+10\n              2026-10-09       1.033437e+10   3.330584e+10               0.0                0.0                 NaN     3.330584e+10\n              2026-10-12       1.033437e+10   3.330584e+10               0.0                0.0                 NaN     3.330584e+10\n              2026-10-13       1.033437e+10   3.330584e+10               0.0                0.0                 NaN     3.330584e+10",
+  "output": "                          free_float_shares  issued_shares  preferred_shares  restricted_shares  shares_outstanding  tradable_shares\norder_book_id date                                                                                                                  \n600000.XSHG   2026-07-09       1.033437e+10   3.330584e+10               0.0                0.0                 NaN     3.330584e+10\n              2026-07-10       1.033437e+10   3.330584e+10               0.0                0.0                 NaN     3.330584e+10\n              2026-07-13       1.033437e+10   3.330584e+10               0.0                0.0                 NaN     3.330584e+10\n              2026-07-14       1.033437e+10   3.330584e+10               0.0                0.0                 NaN     3.330584e+10\n              2026-07-15       1.033437e+10   3.330584e+10               0.0                0.0                 NaN     3.330584e+10",
   "script": "docs/examples/python/06_shares.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_shares.2": {
   "title": "多只股票、限定窗口与字段",
   "code": "print(lf.get_shares([\"000001.XSHE\", \"600000.XSHG\"], \"2024-06-24\", \"2024-06-28\",\n                    fields=[\"issued_shares\", \"tradable_shares\"]))",
   "output": "                          issued_shares  tradable_shares\norder_book_id date                                      \n000001.XSHE   2024-06-24   1.940592e+10     1.940555e+10\n              2024-06-25   1.940592e+10     1.940555e+10\n              2024-06-26   1.940592e+10     1.940555e+10\n              2024-06-27   1.940592e+10     1.940555e+10\n              2024-06-28   1.940592e+10     1.940555e+10\n600000.XSHG   2024-06-24   2.935218e+10     2.935218e+10\n              2024-06-25   2.935218e+10     2.935218e+10\n              2024-06-26   2.935218e+10     2.935218e+10\n              2024-06-27   2.935218e+10     2.935218e+10\n              2024-06-28   2.935218e+10     2.935218e+10",
   "script": "docs/examples/python/06_shares.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_shares.3": {
   "title": "单日截面：开始日等于结束日",
   "code": "print(lf.get_shares([\"000001.XSHE\", \"600000.XSHG\"], \"2024-06-28\", \"2024-06-28\",\n                    fields=[\"tradable_shares\", \"free_float_shares\"]))",
   "output": "                          tradable_shares  free_float_shares\norder_book_id date                                          \n000001.XSHE   2024-06-28     1.940555e+10       8.160428e+09\n600000.XSHG   2024-06-28     2.935218e+10       1.080215e+10",
   "script": "docs/examples/python/06_shares.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_spinoffs.1": {
   "title": "美股分拆及其估值口径",
   "code": "print(lf.get_spinoffs(\"MMM.US\", \"2024-01-01\", \"2024-12-31\"))",
-  "output": "  order_book_id                              event_id  confirmed_by_revision                          permanent_id exchange     ex_date                    child_permanent_id child_symbol ratio_child_per_parent valuation_price valuation_basis valuation_source d_spin_per_share\n0        MMM.US  bdf361ae-83dc-53ea-9f83-1189af12d049                      1  9bb45d99-b0e7-57a1-b10d-54b76458b18a     XNYS  2024-04-01  96cc66b7-b540-58a2-b553-0b30519c2d8b         None                   None            None            None         CRSP_CIZ      17.27500000",
+  "output": "  order_book_id exchange     ex_date child_symbol ratio_child_per_parent valuation_price valuation_basis valuation_source d_spin_per_share\n0        MMM.US     XNYS  2024-04-01          NaN                   None            None             NaN         CRSP_CIZ      17.27500000",
   "script": "docs/examples/python/05_corporate_actions.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_splits.1": {
   "title": "一只 A 股的全部拆股事件：ratio_from 股变为 ratio_to 股",
   "code": "print(lf.get_splits(\"600000.XSHG\"))",
-  "output": "  order_book_id                              event_id  confirmed_by_revision                          permanent_id exchange     ex_date event_type ratio_from   ratio_to  ratio_is_reconstructed legal_form record_date payable_date effective_time\n0   600000.XSHG  8e05584c-a168-5ac7-be04-a9866c738698                      1  bb29e76c-0f22-525e-8d06-6a679c6ac4e2     XSHG  2006-05-12      SPLIT  10.000000  13.000000                   False       None  2006-05-10   2006-05-12            NaT",
+  "output": "  order_book_id exchange     ex_date event_type ratio_from   ratio_to  ratio_is_reconstructed legal_form record_date payable_date effective_time\n0   600000.XSHG     XSHG  2006-05-12      SPLIT  10.000000  13.000000                   False        NaN  2006-05-10   2006-05-12            NaT",
   "script": "docs/examples/python/05_corporate_actions.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_splits.2": {
   "title": "拆股（美股）",
   "code": "print(lf.get_splits(\"NVDA.US\", \"2024-01-01\", \"2024-12-31\"))",
-  "output": "  order_book_id                              event_id  confirmed_by_revision                          permanent_id exchange     ex_date event_type ratio_from   ratio_to  ratio_is_reconstructed legal_form record_date payable_date effective_time\n0       NVDA.US  1c2a8c58-665f-5fa1-a296-7db9f1c125f1                      1  de1d1cd1-b3b5-5523-961a-2478092cc51d     XNAS  2024-06-10      SPLIT   1.000000  10.000000                    True       None  2024-06-06   2024-06-07            NaT",
+  "output": "  order_book_id exchange     ex_date event_type ratio_from   ratio_to  ratio_is_reconstructed legal_form record_date payable_date effective_time\n0       NVDA.US     XNAS  2024-06-10      SPLIT   1.000000  10.000000                    True        NaN  2024-06-06   2024-06-07            NaT",
   "script": "docs/examples/python/05_corporate_actions.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_theme_constituents.1": {
   "title": "一个主题的成分",
   "code": "members = lf.get_theme_constituents(\"300008.THS\")\nprint(len(members), members[:5])",
   "output": "1061 ['000009.XSHE', '000021.XSHE', '000030.XSHE', '000049.XSHE', '000062.XSHE']",
   "script": "docs/examples/python/10_theme.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_theme_weights.1": {
   "title": "主题权重：由成分名单推出的等权",
   "code": "print(lf.get_theme_weights(\"300008.THS\").head())",
   "output": "  order_book_id    weight           methodology source effective_from effective_to\n0   000009.XSHE  0.000943  derived_equal_weight    THS     2026-09-22         None\n1   000021.XSHE  0.000943  derived_equal_weight    THS     2026-09-22         None\n2   000030.XSHE  0.000943  derived_equal_weight    THS     2026-09-22         None\n3   000049.XSHE  0.000943  derived_equal_weight    THS     2026-09-22         None\n4   000062.XSHE  0.000943  derived_equal_weight    THS     2026-09-22         None",
   "script": "docs/examples/python/10_theme.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_trading_dates.1": {
   "title": "区间内的 A 股交易日",
   "code": "print(lf.get_trading_dates(\"2024-01-01\", \"2024-01-31\", market=\"cn\"))",
-  "output": "DatetimeIndex(['2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05', '2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11', '2024-01-12', '2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-22', '2024-01-23', '2024-01-24', '2024-01-25', '2024-01-26', '2024-01-29', '2024-01-30', '2024-01-31'], dtype='datetime64[ns]', freq=None)",
+  "output": "DatetimeIndex(['2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05', '2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11', '2024-01-12', '2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-22', '2024-01-23', '2024-01-24', '2024-01-25', '2024-01-26', '2024-01-29', '2024-01-30', '2024-01-31'], dtype='datetime64[us]', freq=None)",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "get_trading_dates.2": {
   "title": "同一区间换成美股，交易日不同",
   "code": "print(lf.get_trading_dates(\"2024-01-01\", \"2024-01-31\", market=\"us\"))",
-  "output": "DatetimeIndex(['2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05', '2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11', '2024-01-12', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-22', '2024-01-23', '2024-01-24', '2024-01-25', '2024-01-26', '2024-01-29', '2024-01-30', '2024-01-31'], dtype='datetime64[ns]', freq=None)",
+  "output": "DatetimeIndex(['2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05', '2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11', '2024-01-12', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-22', '2024-01-23', '2024-01-24', '2024-01-25', '2024-01-26', '2024-01-29', '2024-01-30', '2024-01-31'], dtype='datetime64[us]', freq=None)",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "instruments.1": {
   "title": "单个代码：返回一个证券，查不到为 None",
-  "code": "stock = lf.instruments(\"000001.XSHE\")\nprint(stock.order_book_id, stock.name, stock.type, stock.permanent_id)",
-  "output": "000001.XSHE 平安银行 stock 4ee74a3c-8e83-5289-a30a-ac65d9d22de0",
+  "code": "stock = lf.instruments(\"000001.XSHE\")\nprint(stock.order_book_id, stock.name, stock.type, stock.market)",
+  "output": "000001.XSHE 平安银行 stock CN",
   "script": "docs/examples/python/02_instrument.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "instruments.2": {
   "title": "一个列表混合四种类型、两个市场：类型由代码决定",
   "code": "for item in lf.instruments([\"000001.XSHE\", \"000300.XSHG\", \"480000.SW\", \"300008.THS\", \"AAPL.US\", \"45.GICS\"]):\n    print(item.order_book_id, item.type, item.market, item.name)",
   "output": "000001.XSHE stock CN 平安银行\n000300.XSHG index CN 沪深300\n480000.SW industry CN 银行\n300008.THS theme CN 新能源汽车\nAAPL.US stock US Apple Inc. - Common Stock\n45.GICS industry US Information Technology",
   "script": "docs/examples/python/02_instrument.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "instruments.3": {
   "title": "as_of：按当日有效的身份解析（Meta 在 2022 年仍叫 FB.US）",
   "code": "for item in lf.instruments([\"FB.US\", \"000300.XSHG\"], as_of=\"2022-04-15\"):\n    print(item.order_book_id, item.name)",
   "output": "FB.US META PLATFORMS INC\n000300.XSHG 沪深300",
   "script": "docs/examples/python/02_instrument.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "instruments.4": {
   "title": "last_known：已退市的代码按最后一次的身份解析",
   "code": "print(lf.instruments(\"ATVI.US\"))\nprint(lf.instruments(\"ATVI.US\", last_known=True).name)",
   "output": "None\nACTIVISION BLIZZARD INC",
   "script": "docs/examples/python/02_instrument.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "is_trading_date.1": {
   "title": "周一开市",
   "code": "print(lf.is_trading_date(\"2024-01-08\", market=\"cn\"))",
   "output": "True",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "is_trading_date.2": {
   "title": "周日休市",
   "code": "print(lf.is_trading_date(\"2024-01-07\", market=\"cn\"))",
   "output": "False",
   "script": "docs/examples/python/01_calendar.py",
-  "generated": "2026-10-04",
-  "server": "192.220.24.58:8080",
-  "server_version": "0.1.3",
-  "data_version": "sha256:801e4a2ae0494a156587f5e6984903490e6132a0de36e5a5aafc2ca715bbcefc"
+  "generated": "2026-10-09",
+  "server": "libfinance.tech:8080",
+  "server_version": "0.1.4",
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "list_factor_libraries.1": {
   "title": "因子库一览",
@@ -685,9 +685,9 @@
   "output": "                           name version  factors                                        description\n0               system/alpha158  v1.0.0      158  Qlib Alpha158: the 158 fields of qlib/contrib/...\n1             system/barra-cne5  v2.0.0       42                                                   \n2  system/barra-cne5-descriptor  v1.0.0       17                                                   \n3             system/barra-cne6  v1.0.0       36                                                   \n4  system/barra-cne6-descriptor  v1.0.0       36                                                   \n5                   system/qlib  v1.0.0      158                                                   ",
   "script": "docs/examples/python/11_factors.py",
   "generated": "2026-10-09",
-  "server": "127.0.0.1:18080",
+  "server": "libfinance.tech:8080",
   "server_version": "0.1.4",
-  "data_version": null
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  },
  "list_factors.1": {
   "title": "一个库里的因子全名",
@@ -695,8 +695,8 @@
   "output": "['system/barra-cne5/SIZE@v2.0.0', 'system/barra-cne5/BETA@v2.0.0', 'system/barra-cne5/MOMENTUM@v2.0.0', 'system/barra-cne5/RESVOL@v2.0.0', 'system/barra-cne5/NLSIZE@v2.0.0', 'system/barra-cne5/BTOP@v2.0.0', 'system/barra-cne5/LIQUIDITY@v2.0.0', 'system/barra-cne5/EARNYILD@v2.0.0', 'system/barra-cne5/GROWTH@v2.0.0', 'system/barra-cne5/LEVERAGE@v2.0.0', 'system/barra-cne5/AGRICULTURE@v2.0.0', 'system/barra-cne5/BASIC_CHEMICALS@v2.0.0']",
   "script": "docs/examples/python/11_factors.py",
   "generated": "2026-10-09",
-  "server": "127.0.0.1:18080",
+  "server": "libfinance.tech:8080",
   "server_version": "0.1.4",
-  "data_version": null
+  "data_version": "sha256:6feda8cac55f54b836f3d7694baa3300e76735c5c17ccb8b761340aed5d944ff"
  }
 }

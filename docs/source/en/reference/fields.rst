@@ -44,9 +44,6 @@ The catalogue returned by :py:func:`~libfinance.all_instruments`:
         - Meaning
     *   - ``order_book_id``
         - Code, e.g. ``600000.XSHG``, ``000300.XSHG``, ``480000.SW``, ``300008.THS``
-    *   - ``permanent_id``
-        - Permanent ID: codes get renamed and reused, the permanent ID does not; use it to join one
-          security across time
     *   - ``type``
         - ``stock`` / ``index`` / ``industry`` / ``theme``
     *   - ``market``
@@ -233,7 +230,7 @@ Index weights
 
     *   - Column
         - Meaning
-    *   - ``order_book_id`` / ``permanent_id``
+    *   - ``order_book_id``
         - The constituent
     *   - ``weight``
         - Weight; sums to 1 within a day
@@ -324,3 +321,9 @@ Live quotes
 ===========
 
 ``Quote`` fields are listed in :doc:`../data/realtime`.
+
+Factors
+=======
+
+The columns of :func:`~libfinance.get_factor_exposure` are full factor names; each factor's formula and
+meaning are in :doc:`factor_dictionary`.

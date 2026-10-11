@@ -75,7 +75,7 @@ Three lenses
     *   - Industry
         - :func:`~libfinance.get_industry_constituents`
         - Pass ``as_of``; name the industry by a code such as ``480000.SW``
-    *   - Concept sectors
+    *   - Themes
         - :func:`~libfinance.get_theme_constituents`
         - Pass ``as_of``; name the theme by a code such as ``300008.THS`` (list them with
           ``all_instruments(type="theme")``)
@@ -109,7 +109,7 @@ Verifying there is no leakage
 .. warning::
 
     **Never hard-code a universe.** Index membership is rebalanced, industry
-    mappings change, concept sectors are created and retired. Re-fetch on every
+    mappings change, themes are created and retired. Re-fetch on every
     backtest date — that is what "the universe at the time" means.
 
 Rolling construction

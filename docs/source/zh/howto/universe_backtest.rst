@@ -74,7 +74,7 @@
     *   - 行业
         - :func:`~libfinance.get_industry_constituents`
         - 传 ``as_of``\ ；行业以 ``480000.SW`` 这样的代码指定
-    *   - 概念板块
+    *   - 主题板块
         - :func:`~libfinance.get_theme_constituents`
         - 传 ``as_of``\ ；主题以 ``300008.THS`` 这样的代码指定（用
           ``all_instruments(type="theme")`` 列出）
@@ -107,7 +107,7 @@
 
 ..  warning::
 
-    **别把股票池写死在代码里。** 指数成分会调样、行业归属会变、概念板块会新增和废弃。
+    **别把股票池写死在代码里。** 指数成分会调样、行业归属会变、主题会新增和废弃。
     每个回测日期都重新取一次，才是当时那个池子。
 
 滚动构造

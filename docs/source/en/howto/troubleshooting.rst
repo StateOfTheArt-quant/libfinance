@@ -102,6 +102,13 @@ Reading common errors
           days of one stock. The message states usage, limit and reset time. Wait
           for the reset, or narrow the query (fewer names, a shorter range,
           ``fields`` to fetch only the columns you need)
+    *   - ``RpcError(code=1401): 本次请求约 …，超过今日剩余额度`` (the request exceeds what is left)
+        - ``get_price`` and ``get_factor_exposure`` estimate their answer before running; this one is larger
+          than today's remaining quota, so it was neither run nor charged. Narrow it per the estimate in the
+          message and fetch in parts
+    *   - ``RpcError(code=1401): 单次请求的应答约 …，超过单次上限`` (over the per-call cap)
+        - One answer over 512 MB (the table in memory). Fewer codes, a shorter range or fewer fields /
+          factors, in several calls
     *   - ``RpcError(code=1201)`` / ``(code=1202)``
         - The server refused this call's permissions; contact the service administrator
     *   - ``Array type doesn't match type of values set``

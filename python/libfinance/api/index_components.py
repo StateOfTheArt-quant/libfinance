@@ -50,7 +50,7 @@ def get_index_weights(order_book_id: str, as_of=None) -> pd.DataFrame:
 
     :param order_book_id: 指数代码，如 ``"000300.XSHG"``
     :param as_of: 那一天的事实；省略则取指数已确认的最新日期
-    :returns: pandas.DataFrame，包含 order_book_id（成分证券）、permanent_id、weight、methodology、source（指数发布机构）、
+    :returns: pandas.DataFrame，包含 order_book_id（成分证券）、weight、methodology、source（指数发布机构）、
         basis（origin 数据源发布 / reconstructed 按编制方法重构）、date（权重所在的日子）、quality_flags。
         权重是月末快照：其余交易日取之前最近一期、按各成分的复权收益率漂移，date 为 as_of，quality_flags 带 DRIFTED。
     """

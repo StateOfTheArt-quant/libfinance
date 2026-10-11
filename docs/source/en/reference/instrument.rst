@@ -55,7 +55,7 @@ Semantics are covered in :doc:`../data/instruments`.
         before a type's published coverage raises ``CoverageError`` naming the type; narrow ``type``
         or ``source``.
     :param cached: Use the data-version cache when market is omitted; explicit market queries bypass it.
-    :returns: ``DataFrame`` with columns ``order_book_id, permanent_id, type, market, name, exchange, source``
+    :returns: ``DataFrame`` with columns ``order_book_id, type, market, name, exchange, source``
 
     **Examples**
 
@@ -92,8 +92,8 @@ Semantics are covered in :doc:`../data/instruments`.
 .. py:class:: Instrument
 
     One security. Attribute names are the :func:`~libfinance.all_instruments` columns --
-    ``order_book_id``, ``permanent_id``, ``type``, ``market``, ``name``, ``exchange``, ``source`` -- plus
+    ``order_book_id``, ``type``, ``market``, ``name``, ``exchange``, ``source`` -- plus
     the fields of its type (``listed_date`` for a stock, ``level`` for an industry node, ...).
 
-    ``order_book_id`` is the **code**; ``permanent_id`` is the identity that outlives a code; ``name``
-    is the **name**.
+    ``order_book_id`` is the **code**, and the only identifier the client sees; ``name`` is the
+    **name**.
