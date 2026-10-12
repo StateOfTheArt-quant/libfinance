@@ -16,6 +16,8 @@
       - 解决的问题
     * - :func:`~libfinance.get_shares`
       - 查询总股本、流通股本与自由流通股本的历史变化
+    * - :func:`~libfinance.get_turnover_rate`
+      - 查询逐交易日的换手率
 
 get_shares — 查询总股本、流通股本与自由流通股本的历史变化
 ----------------------------------------------------------------------
@@ -28,3 +30,26 @@ get_shares — 查询总股本、流通股本与自由流通股本的历史变�
 
 结果解读：所有数值的单位都是股。单日查询仍保留证券与日期两层索引；可流通股本（\ ``tradable_shares``\ ）与自由流通股本（\ ``free_float_shares``\ ）含义不同。
 
+get_turnover_rate — 查询逐交易日的换手率
+----------------------------------------------------------------------
+
+.. autofunction:: get_turnover_rate
+
+**示例**
+
+.. code-block:: python
+
+    import libfinance as lf
+
+    lf.get_turnover_rate(["600000.XSHG", "000001.XSHE"], "2026-09-01", "2026-09-30")   # 一段时间
+    lf.get_turnover_rate("600000.XSHG", end_date="2026-09-30")                        # 只给一个日期：那一天
+    lf.get_turnover_rate("600000.XSHG")                                               # 都不给：最近一个交易日
+
+结果解读：
+
+- **单位是小数**：0.0123 即 1.23%。
+- **分母**：当日生效的 A 股自由流通股本（\ ``free_float_shares``\ ），没有时用 A 股流通股本（\ ``tradable_shares``\ ）。
+  这与 :func:`~libfinance.get_shares` 的 ``free_float_shares`` 是同一份股本数据。
+- **分子**：未复权成交量，所以送转、拆股前后的换手率可以直接比较。
+- **缺失**：停牌日没有行；没有股本数据的证券或日子为 NaN。
+- **一致性**：与 factors-daybar 中依赖换手率的因子（\ ``system/broker-daybar/TURN20``\ 、\ ``system/barra-cne5-descriptor/STOM`` 等）读取的数值同一口径。

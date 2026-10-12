@@ -13,6 +13,8 @@
       - 按交易日查询财务衍生指标（TTM、ROE 等）
     * - :func:`~libfinance.get_shares`
       - 查询总股本、流通股本与自由流通股本的历史变化
+    * - :func:`~libfinance.get_turnover_rate`
+      - 查询逐交易日的换手率
 
 .. toctree::
     :maxdepth: 2
