@@ -13,6 +13,8 @@
       - Read derived financial metrics (TTM, ROE ...) per trading day
     * - :func:`~libfinance.get_shares`
       - Read historical share capital
+    * - :func:`~libfinance.get_turnover_rate`
+      - Read the daily turnover rate
 
 .. toctree::
     :maxdepth: 2

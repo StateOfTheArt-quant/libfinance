@@ -72,6 +72,8 @@ Example dates must fall within the coverage of your service.
           - Read derived financial metrics on each trading day
         * - :func:`~libfinance.get_shares`
           - Read historical share capital
+        * - :func:`~libfinance.get_turnover_rate`
+          - Read the daily turnover rate
 
     :doc:`fundamentals`
 
