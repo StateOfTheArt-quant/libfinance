@@ -14,6 +14,8 @@ Security-code queries infer the market on the server and accept no market argume
       - Purpose
     * - :func:`~libfinance.get_shares`
       - Read historical share capital
+    * - :func:`~libfinance.get_turnover_rate`
+      - Read the daily turnover rate
 
 Columns and units are covered in :doc:`../data/fundamentals`.
 
@@ -40,3 +42,24 @@ Columns and units are covered in :doc:`../data/fundamentals`.
 
     Reading the result: every value is in shares. A one-day query keeps both index levels; tradable shares (``tradable_shares``) and free float (``free_float_shares``) are different measures.
 
+.. py:function:: get_turnover_rate(order_book_ids, start_date=None, end_date=None)
+
+    Daily turnover rate: unadjusted volume over the A-share free float effective that day (the A-share
+    tradable shares when there is no free float). **A fraction**: 0.0123 is 1.23%.
+
+    :param order_book_ids: One code or a list
+    :param start_date: Start date; given alone, that day
+    :param end_date: End date; with neither, the latest trading day with bars in the last two weeks
+    :returns: ``DataFrame`` indexed by ``(order_book_id, date)`` with one column, ``turnover_rate``
+    :raises ValueError: for an inverted date range
+
+    A suspended session has no row; a security or day without share data is NaN. The numbers are the
+    turnover the factors of factors-daybar read (``system/broker-daybar/TURN20``,
+    ``system/barra-cne5-descriptor/STOM`` ...).
+
+    .. code-block:: python
+
+        import libfinance as lf
+
+        lf.get_turnover_rate(["600000.XSHG", "000001.XSHE"], "2026-09-01", "2026-09-30")
+        lf.get_turnover_rate("600000.XSHG")   # the latest trading day

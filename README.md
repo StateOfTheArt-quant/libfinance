@@ -163,6 +163,7 @@ get_trading_dates("2024-01-01", "2024-01-31", market="us")   # 不涉及具体�
 | 日频行情 | CN · US | `get_price` | 开高低收、成交量额、涨跌停价，可复权 |
 | 复权因子 | CN · US | `get_ex_factor` | 逐除权日的单次及累计因子 |
 | 股本 | CN · US | `get_shares` | 逐交易日的总股本与流通股本 |
+| 换手率 | CN | `get_turnover_rate` | 逐交易日的换手率（未复权成交量 ÷ A 股自由流通股本） |
 | 分红 / 拆股 / 配股 | CN · US | `get_dividends`、`get_splits`、`get_allotments` | 除权事件；配股只有 A 股 |
 | 分拆 | US | `get_spinoffs` | A 股不产生这类事件 |
 | 财务报表（PIT） | CN · US | `get_pit_financials_ex` | 按季度取，带修订历史 |

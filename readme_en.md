@@ -163,6 +163,7 @@ What is shared is the vocabulary and the calling convention; the differences in 
 | Daily bars | CN · US | `get_price` | OHLC, volume, turnover, price limits; adjustable |
 | Adjustment factors | CN · US | `get_ex_factor` | Event and cumulative factors by ex-date |
 | Shares | CN · US | `get_shares` | Per-session total and floating shares |
+| Turnover rate | CN | `get_turnover_rate` | Daily turnover (unadjusted volume / A-share free float) |
 | Dividends / splits / allotments | CN · US | `get_dividends`, `get_splits`, `get_allotments` | Ex-rights events; allotments are A-share only |
 | Spinoffs | US | `get_spinoffs` | A-shares do not produce these events |
 | Financial statements (PIT) | CN · US | `get_pit_financials_ex` | By quarter, with restatement history |

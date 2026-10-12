@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""股本：统一字段，CN 与 US 同一套（后端 shares 数据族的 get_shares_panel）。"""
+"""股本：统一字段，CN 与 US 同一套（后端 shares 数据族的 get_shares_panel）；以及由它算出的日频换手率。"""
 from typing import List, Optional, Union
 
 import pandas as pd
@@ -67,6 +67,42 @@ def get_shares(
         end_date=end_date,
         fields=fields,
         as_of=as_of_text(as_of),
+    )
+    return _indexed(frame)
+
+
+@export_as_api
+def get_turnover_rate(
+    order_book_ids: Union[str, List[str]],
+    start_date=None,
+    end_date=None,
+) -> pd.DataFrame:
+    r"""获取日频换手率。
+
+    换手率 = 当日未复权成交量 ÷ 当日生效的 A 股自由流通股本（没有自由流通股本时用 A 股流通股本），
+    是\ **小数**\ （0.01 即 1%）。与 factors-daybar 的因子（如 ``system/broker-daybar/TURN20``\ ）读取的
+    换手率同一口径（后端 financialmetrics 的 ``get_turnover_rate``\ ）。
+
+    :param order_book_ids: 单个代码或代码列表，如 ``"600000.XSHG"``
+    :param start_date: 开始日期；只给一个日期时取那一天
+    :param end_date: 结束日期；两个都省略时取最近两周内最后一个有行情的交易日
+
+    :returns: pandas.DataFrame，以 (order_book_id, date) 为索引，一列 ``turnover_rate``\ 。停牌日没有行；
+              没有股本数据的证券或日子为 NaN。
+    """
+    order_book_ids = ensure_list_of_string(order_book_ids, "order_book_ids")
+    if not order_book_ids:
+        raise ValueError("order_book_ids: at least one order book id expected")
+    if start_date is not None:
+        start_date = to_date_str(start_date)
+    if end_date is not None:
+        end_date = to_date_str(end_date)
+    if start_date is not None and end_date is not None and start_date > end_date:
+        raise ValueError(
+            "invalid date range: [{!r}, {!r}]".format(start_date, end_date)
+        )
+    frame = get_client().get_turnover_rate(
+        order_book_ids=order_book_ids, start_date=start_date, end_date=end_date,
     )
     return _indexed(frame)
 

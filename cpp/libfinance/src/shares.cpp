@@ -30,4 +30,12 @@ Table get_shares(const Codes& order_book_ids, const std::optional<DateLike>& sta
                              {"as_of", detail::iso_or_null(as_of)}});
 }
 
+Table get_turnover_rate(const Codes& order_book_ids, const std::optional<DateLike>& start_date,
+                        const std::optional<DateLike>& end_date) {
+  const Json ids = detail::order_book_ids(order_book_ids);
+  const Json start = detail::iso_or_null(start_date), end = detail::iso_or_null(end_date);
+  detail::check_date_range(start, end);
+  return detail::call_table("get_turnover_rate", {{"order_book_ids", ids}, {"start_date", start}, {"end_date", end}});
+}
+
 }  // namespace libfinance
