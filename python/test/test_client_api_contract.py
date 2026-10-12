@@ -344,6 +344,34 @@ def test_get_shares_takes_the_unified_fields_and_as_of(monkeypatch):
         shares.get_shares("600000.XSHG", fields=["total"])
 
 
+def test_get_turnover_rate_is_indexed_and_checks_its_dates(monkeypatch):
+    """financialmetrics answers a flat table; the client indexes it by (order_book_id, date) and sends dates as ISO."""
+    from datetime import date
+    import pandas as pd
+    from libfinance.api import shares
+
+    calls = []
+
+    class Client:
+        def get_turnover_rate(self, **kwargs):
+            calls.append(kwargs)
+            return pd.DataFrame([{"order_book_id": "600000.XSHG", "date": "2025-06-03", "turnover_rate": 0.0012},
+                                 {"order_book_id": "000001.XSHE", "date": "2025-06-03", "turnover_rate": None}])
+
+    monkeypatch.setattr(shares, "get_client", lambda: Client())
+    out = shares.get_turnover_rate(["600000.XSHG", "000001.XSHE"], date(2025, 6, 1), "2025-06-30")
+    assert calls == [{"order_book_ids": ["600000.XSHG", "000001.XSHE"], "start_date": "2025-06-01",
+                      "end_date": "2025-06-30"}]
+    assert list(out.index.names) == ["order_book_id", "date"] and list(out.columns) == ["turnover_rate"]
+    assert out.loc[("600000.XSHG", pd.Timestamp("2025-06-03")), "turnover_rate"] == 0.0012
+    shares.get_turnover_rate("600000.XSHG")  # no dates: the server picks the latest trading day
+    assert calls[-1] == {"order_book_ids": ["600000.XSHG"], "start_date": None, "end_date": None}
+    with pytest.raises(ValueError):
+        shares.get_turnover_rate("600000.XSHG", "2025-06-30", "2025-06-01")
+    with pytest.raises(ValueError):
+        shares.get_turnover_rate([])
+
+
 def test_as_of_keeps_a_timestamp(monkeypatch):
     import datetime
     from libfinance.utils.utils import as_of_text

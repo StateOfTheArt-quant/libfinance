@@ -232,6 +232,11 @@ const std::map<std::string, Function>& functions() {
                                      optional_date(a, "end_date"), codes(a, "fields"),
                                      optional_date(a, "as_of")));
        }},
+      {"get_turnover_rate",
+       [](const Json& a) {
+         return table(lf::get_turnover_rate(codes(a, "order_book_ids"), optional_date(a, "start_date"),
+                                            optional_date(a, "end_date")));
+       }},
       {"get_last_quotes", [](const Json& a) { return lf::get_last_quotes(strings(a, "order_book_ids")); }},
   };
   return table_of_functions;
