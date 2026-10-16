@@ -15,10 +15,11 @@ Table get_shares(const Codes& order_book_ids, const std::optional<DateLike>& sta
                  const std::optional<DateLike>& end_date = std::nullopt, const Codes& fields = {},
                  const std::optional<DateLike>& as_of = std::nullopt);
 
-//: Daily turnover rate: columns order_book_id, date, turnover_rate -- unadjusted volume / the A-share free
-//: float (else the A-share tradable shares) effective that day, a fraction (0.01 is 1%); a suspended
-//: session has no row, a day without a share count a null. One date: that day; none: the latest trading
-//: day with bars in the last two weeks.
+//: Daily CN A-share and US-stock turnover rate: columns order_book_id, date, turnover_rate.
+//: Unadjusted volume / effective free float (else tradable shares) for CN; unadjusted volume /
+//: shares outstanding on that date for US. A fraction (0.01 is 1%); a suspended session has no row,
+//: a day without a share count a null. One date: that day; none: each venue's latest trading day
+//: with bars in the last two weeks.
 Table get_turnover_rate(const Codes& order_book_ids, const std::optional<DateLike>& start_date = std::nullopt,
                         const std::optional<DateLike>& end_date = std::nullopt);
 

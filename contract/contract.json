@@ -1,6 +1,6 @@
 {
   "contract": "libfinance",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "notes": [
     "functions: what users call, the same name, parameters (order and defaults) and meaning in every client language.",
     "wire: the RPC functions a libfinance server serves; clients call only these. `returns` is how the answer is encoded.",
@@ -47,7 +47,7 @@
     "get_theme_weights": {"target": "themeweight.get_theme_weights", "params": ["order_book_id", "as_of"], "returns": "dataframe"},
 
     "get_shares": {"target": "shares.get_shares_panel", "params": ["order_book_ids", "start_date", "end_date", "fields", "as_of"], "returns": "dataframe", "note": "columns order_book_id, date, then one per unified share field"},
-    "get_turnover_rate": {"target": "financialmetrics.get_turnover_rate", "params": ["order_book_ids", "start_date", "end_date"], "returns": "dataframe", "note": "columns order_book_id, date, turnover_rate: unadjusted volume / the A-share free float (else the A-share tradable shares) effective that day, a fraction; a suspended session has no row"},
+    "get_turnover_rate": {"target": "financialmetrics.get_turnover_rate", "params": ["order_book_ids", "start_date", "end_date"], "returns": "dataframe", "note": "columns order_book_id, date, turnover_rate (a fraction): unadjusted volume / effective free float (else tradable shares) for CN A shares, or unadjusted volume / shares outstanding on that date for US stocks; a suspended session has no row"},
     "get_last_quotes": {"target": null, "params": ["order_book_ids"], "returns": "raw", "note": "{order_book_id: quote dict or null}"}
   },
   "functions": [
@@ -91,7 +91,7 @@
     {"name": "get_theme_weights", "module": "theme", "params": [{"name": "order_book_id", "type": "str"}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe: order_book_id (the member), weight, methodology, source, effective_from, effective_to", "wire": ["get_theme_weights"]},
 
     {"name": "get_shares", "module": "shares", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}, {"name": "fields", "type": "str_or_list?", "default": null}, {"name": "as_of", "type": "date?", "default": null}], "returns": "dataframe indexed (order_book_id, date): one column per unified share field", "wire": ["get_shares"], "client": "fields within free_float_shares, issued_shares, preferred_shares, restricted_shares, shares_outstanding, tradable_shares (the unified fields, every market)"},
-    {"name": "get_turnover_rate", "module": "shares", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}], "returns": "dataframe indexed (order_book_id, date): turnover_rate", "wire": ["get_turnover_rate"], "client": "a fraction (0.01 is 1%), the turnover_rate factors-daybar's factors read; one date: that day; no dates: the latest trading day with bars in the last two weeks"},
+    {"name": "get_turnover_rate", "module": "shares", "params": [{"name": "order_book_ids", "type": "str_or_list"}, {"name": "start_date", "type": "date?", "default": null}, {"name": "end_date", "type": "date?", "default": null}], "returns": "dataframe indexed (order_book_id, date): turnover_rate", "wire": ["get_turnover_rate"], "client": "CN A shares and US stocks; a fraction (0.01 is 1%); one date: that day; no dates: each venue's latest trading day with bars in the last two weeks"},
 
     {"name": "get_last_quotes", "module": "live_quote", "params": [{"name": "order_book_ids", "type": "list[str]"}], "returns": "{order_book_id: Quote?}", "wire": ["get_last_quotes"]}
   ]
