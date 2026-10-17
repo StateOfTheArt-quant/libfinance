@@ -3,6 +3,7 @@ import socket
 import struct
 import threading
 import sys
+from collections import deque
 from concurrent.futures import Future
 import time
 
@@ -142,6 +143,7 @@ class RpcClient:
     """
     request_timeout = 300
     request_attempt_count = 3
+    _expired_request_limit = 1024
 
     def __init__(self, host='127.0.0.1', port=8080):
         self.host = host
@@ -153,6 +155,11 @@ class RpcClient:
         self._id_lock = threading.Lock()
 
         self._pending = {}
+        # A timed-out request keeps running on the server: the wire protocol has no cancellation.
+        # Remember a bounded number of those ids so their eventual answers are recognized as late,
+        # rather than reported as a protocol error ("unknown request_id").
+        self._expired_requests = set()
+        self._expired_request_order = deque()
         self._pending_lock = threading.Lock()
 
         self._reader_thread = None
@@ -191,6 +198,8 @@ class RpcClient:
             for fut in self._pending.values():
                 fut.set_exception(ConnectionError("Connection closed"))
             self._pending.clear()
+            self._expired_requests.clear()
+            self._expired_request_order.clear()
 
         if self._reader_thread and self._reader_thread.is_alive():
             self._reader_thread.join(timeout=2)
@@ -209,10 +218,12 @@ class RpcClient:
                 raise ConnectionError(
                     "Not connected to server {}:{}: {}".format(self.host, self.port, error)) from error
 
-    def call_raw(self, function_name, args=None, timeout=10.0):
+    def call_raw(self, function_name, args=None, timeout=None):
         """Send an RPC request and wait synchronously for the raw envelope."""
         if args is None:
             args = {}
+        if timeout is None:
+            timeout = self.request_timeout
         self._ensure_connected()
 
         req_id = self._alloc_id()
@@ -233,12 +244,18 @@ class RpcClient:
             return future.result(timeout=timeout)
         except TimeoutError:
             with self._pending_lock:
-                self._pending.pop(req_id, None)
+                # If the reader won the race and already consumed the answer, there will be no
+                # late frame to classify. Only remember ids actually removed here.
+                if self._pending.pop(req_id, None) is not None:
+                    self._expired_requests.add(req_id)
+                    self._expired_request_order.append(req_id)
+                    while len(self._expired_request_order) > self._expired_request_limit:
+                        self._expired_requests.discard(self._expired_request_order.popleft())
             raise TimeoutError(
                 f"RPC '{function_name}' timeout after {timeout}s (req_id={req_id})"
             )
 
-    def call(self, function_name, args=None, timeout=10.0):
+    def call(self, function_name, args=None, timeout=None):
         """Send an RPC request, auto-unwrap envelope, return result or raise RpcError."""
         resp = self.call_raw(function_name, args, timeout)
         return self._unwrap_envelope(resp)
@@ -388,10 +405,13 @@ class RpcClient:
 
                     with self._pending_lock:
                         future = self._pending.pop(request_id, None)
+                        expired = request_id in self._expired_requests
+                        if expired:
+                            self._expired_requests.remove(request_id)
 
                     if future:
                         future.set_result(response_data)
-                    else:
+                    elif not expired:
                         print(
                             f"Received response for unknown request_id={request_id}",
                             file=sys.stderr,
@@ -420,12 +440,14 @@ class RpcClient:
             try:
                 response = self.call(api_name, kwargs)
                 break
+            except TimeoutError:
+                # The server keeps executing a timed-out request, so retrying it immediately only
+                # duplicates expensive work. Connection failures still use the retry path below.
+                raise
             except Exception as ex:
                 err = ex
                 if attempt_index < self.request_attempt_count - 1:
                     time.sleep(0.6)
-            except ResponseError as ex:
-                err = ex
 
         if response is None and isinstance(err, Exception):
             if "TSocket read 0 bytes" in str(err):
