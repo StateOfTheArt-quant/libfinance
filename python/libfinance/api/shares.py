@@ -79,13 +79,13 @@ def get_turnover_rate(
 ) -> pd.DataFrame:
     r"""获取日频换手率。
 
-    换手率 = 当日未复权成交量 ÷ 当日生效的 A 股自由流通股本（没有自由流通股本时用 A 股流通股本），
-    是\ **小数**\ （0.01 即 1%）。与 factors-daybar 的因子（如 ``system/broker-daybar/TURN20``\ ）读取的
-    换手率同一口径（后端 financialmetrics 的 ``get_turnover_rate``\ ）。
+    A 股换手率 = 当日未复权成交量 ÷ 当日生效的自由流通股本（没有时用流通股本）；
+    美股换手率 = 当日未复权成交量 ÷ 当日已发行股数。结果是\ **小数**\ （0.01 即 1%）。
+    A 股结果与 factors-daybar 的因子（如 ``system/broker-daybar/TURN20``\ ）读取的换手率同一口径。
 
-    :param order_book_ids: 单个代码或代码列表，如 ``"600000.XSHG"``
+    :param order_book_ids: 单个代码或代码列表，如 ``"600000.XSHG"``、``"AAPL.US"``
     :param start_date: 开始日期；只给一个日期时取那一天
-    :param end_date: 结束日期；两个都省略时取最近两周内最后一个有行情的交易日
+    :param end_date: 结束日期；两个都省略时各市场分别取最近两周内最后一个有行情的交易日
 
     :returns: pandas.DataFrame，以 (order_book_id, date) 为索引，一列 ``turnover_rate``\ 。停牌日没有行；
               没有股本数据的证券或日子为 NaN。
