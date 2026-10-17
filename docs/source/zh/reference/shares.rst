@@ -41,15 +41,15 @@ get_turnover_rate — 查询逐交易日的换手率
 
     import libfinance as lf
 
-    lf.get_turnover_rate(["600000.XSHG", "000001.XSHE"], "2026-09-01", "2026-09-30")   # 一段时间
+    lf.get_turnover_rate(["600000.XSHG", "AAPL.US"], "2026-09-01", "2026-09-30")       # 两个市场同一查询
     lf.get_turnover_rate("600000.XSHG", end_date="2026-09-30")                        # 只给一个日期：那一天
-    lf.get_turnover_rate("600000.XSHG")                                               # 都不给：最近一个交易日
+    lf.get_turnover_rate(["600000.XSHG", "AAPL.US"])                                   # 都不给：各市场最近一个交易日
 
 结果解读：
 
 - **单位是小数**：0.0123 即 1.23%。
-- **分母**：当日生效的 A 股自由流通股本（\ ``free_float_shares``\ ），没有时用 A 股流通股本（\ ``tradable_shares``\ ）。
-  这与 :func:`~libfinance.get_shares` 的 ``free_float_shares`` 是同一份股本数据。
+- **分母**：A 股使用当日生效的自由流通股本（\ ``free_float_shares``\ ），没有时用流通股本（\ ``tradable_shares``\ ）；
+  美股使用当日已发行股数。这些股本来自 :func:`~libfinance.get_shares` 的底层数据。
 - **分子**：未复权成交量，所以送转、拆股前后的换手率可以直接比较。
 - **缺失**：停牌日没有行；没有股本数据的证券或日子为 NaN。
-- **一致性**：与 factors-daybar 中依赖换手率的因子（\ ``system/broker-daybar/TURN20``\ 、\ ``system/barra-cne5-descriptor/STOM`` 等）读取的数值同一口径。
+- **一致性**：A 股结果与 factors-daybar 中依赖换手率的因子（\ ``system/broker-daybar/TURN20``\ 、\ ``system/barra-cne5-descriptor/STOM`` 等）读取的数值同一口径。
