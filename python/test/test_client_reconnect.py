@@ -8,9 +8,11 @@ connection is cut. Seen 2026-10-04 against deploy-libfinanceserver: every call a
 import socket
 import struct
 import threading
+import time
 
 import msgpack
 
+import libfinance.client as client_module
 from libfinance.client import RpcClient
 
 
@@ -61,6 +63,35 @@ class ClosingServer:
         self.listener.close()
 
 
+class DelayedServer(ClosingServer):
+    """Answers every call after a delay and records how many requests reached the server."""
+
+    def __init__(self, delay):
+        self.delay = delay
+        self.requests = 0
+        super().__init__(answers_per_connection=0)
+
+    def _serve(self):
+        try:
+            sock, _ = self.listener.accept()
+        except OSError:
+            return
+        self.connections += 1
+        try:
+            while True:
+                (length,) = struct.unpack("!I", self._recv(sock, 4))
+                meta_and_payload = self._recv(sock, length)
+                request_id = struct.unpack("!I", meta_and_payload[1:5])[0]
+                self.requests += 1
+                time.sleep(self.delay)
+                body = msgpack.packb({"status": "ok", "code": 0, "result": {"message": "pong"}})
+                sock.sendall(struct.pack("!I", 6 + len(body)) + bytes([0x02]) + struct.pack("!I", request_id)
+                             + bytes([0x00]) + body)
+        except (ConnectionError, OSError):
+            pass
+        sock.close()
+
+
 def test_a_call_after_the_server_closed_the_connection_reconnects():
     server = ClosingServer(answers_per_connection=1)
     client = RpcClient("127.0.0.1", server.port)
@@ -100,3 +131,46 @@ def test_an_unreachable_server_is_a_connection_error_not_a_hang():
         assert "Not connected to server" in str(error)
     else:
         raise AssertionError("expected ConnectionError")
+
+
+def test_default_timeout_uses_the_configured_request_timeout(monkeypatch):
+    observed = []
+
+    class ConnectedSocket:
+        def sendall(self, _frame):
+            pass
+
+    def result(_future, timeout):
+        observed.append(timeout)
+        return {"status": "ok"}
+
+    monkeypatch.setattr(client_module.Future, "result", result)
+    client = RpcClient()
+    client.running = True
+    client.sock = ConnectedSocket()
+    client.request_timeout = 17.5
+    assert client.call_raw("ping") == {"status": "ok"}
+    assert observed == [17.5]
+
+
+def test_api_timeout_is_not_retried_and_late_answer_is_not_unknown(capsys):
+    server = DelayedServer(delay=0.08)
+    client = RpcClient("127.0.0.1", server.port)
+    client.request_timeout = 0.02
+    client.connect()
+    try:
+        client.ping()
+    except TimeoutError as error:
+        assert "req_id=1" in str(error)
+    else:
+        raise AssertionError("expected TimeoutError")
+
+    # Let the reader consume the answer that the server completed after the caller timed out.
+    for _ in range(100):
+        if not client._expired_requests:
+            break
+        threading.Event().wait(0.01)
+    assert server.requests == 1
+    assert "unknown request_id" not in capsys.readouterr().err
+    client.close()
+    server.close()
