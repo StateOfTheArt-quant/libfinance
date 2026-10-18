@@ -36,7 +36,7 @@
 ## 安装
 
 ```bash
-pip install libfinance
+pip install -U libfinance
 ```
 
 从源码安装：

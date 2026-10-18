@@ -124,7 +124,7 @@ neutral" relies on: you can treat each industry separately without counting anyt
   sector moving, not selection skill. Regressing on industry dummies and keeping the residual, or ranking
   within each industry, removes that part.
 - **Risk models.** Barra CNE5's 31 industry factors are dummies of the Shenwan level-1 industries; see
-  :doc:`factors`.
+  :doc:`../reference/factors`.
 - **Rotation and comparison.** Valuations compare meaningfully only within an industry: a bank's P/E and a
   software company's P/E are different things.
 
