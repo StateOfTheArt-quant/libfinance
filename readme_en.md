@@ -36,7 +36,7 @@ The data design rests on four conventions:
 ## Install
 
 ```bash
-pip install libfinance
+pip install -U libfinance
 ```
 
 From source:
