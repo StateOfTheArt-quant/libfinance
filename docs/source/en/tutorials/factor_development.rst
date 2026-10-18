@@ -10,15 +10,13 @@ This tutorial uses the average turnover rate over the past 20 trading days to me
 1. What is a factor?
 ------------------------
 
-Academics and practitioners have long shared a question: to what extent can stock anomalies, or firm characteristics, explain cross-sectional differences in stock returns?
+Academics and practitioners have long asked why different stocks earn different returns over the same period. Can characteristics such as size, valuation, profitability, recent price changes and trading activity help us predict those differences?
 
-Put another way, if future stock returns are a function of current state variables, which state variables can predict those returns? These variables go by different names in different settings: feature, predictor, factor, alpha, indicator and determinant. They refer to the same underlying idea.
+Factor research starts with these characteristics and looks for variables related to future returns. In this tutorial, **a factor is a numerical value computed for each stock from information available at the time, used to test whether it can predict differences in future returns.** For example, using the average turnover rate over the past 20 trading days to describe trading activity gives us a candidate factor that we can evaluate.
 
-WorldQuant describes an alpha as a mathematical model that attempts to predict future price movements of financial instruments. We borrow its research approach here: turn an idea into a computable expression, then test it against historical data. See `WorldQuant: How we work <https://www.worldquant.com/how-we-work/>`__.
+These variables are often called features, predictors, factors or indicators in different research settings. Their specific meanings differ, but here they share a goal: finding clues in currently observable information that help predict future returns. WorldQuant's description of an alpha as a mathematical model that attempts to predict future price movements reflects this approach: first turn an idea into a computable expression, then test its predictive value against historical data. See `WorldQuant: How we work <https://www.worldquant.com/how-we-work/>`__.
 
-In this tutorial, **a factor is a numerical value computed for each stock from information available at the time, used to test whether it can predict differences in future returns.**
-
-We can write this as:
+We can write this tutorial's definition of a factor as:
 
 .. math::
 
