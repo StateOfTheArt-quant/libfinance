@@ -11,7 +11,7 @@
     的名字：特征（feature）、预测变量（predictor）、因子（factor）、alpha、指标（indicator）、决定因素
     （determinant）。它们说的是同一件事。
 
-    -- 教程 :doc:`../tutorials/factors`
+    -- 教程 :doc:`../tutorials/factor_development`
 
 日频因子包括 qlib 与 alpha158 的量价因子，Barra CNE5 的风格、行业、国家因子，以及 CNE5、CNE6 的原始描述符。
 因子名写\ **全名**\ ：库 ``owner/library[@rev]``\ （展开为它的全部因子）或因子 ``owner/library/factor[@rev]``\ ，
