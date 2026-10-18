@@ -12,7 +12,7 @@
     interested in which state variables can predict future stock returns. These variables go by many names:
     feature, predictor, factor, alpha, indicator, determinant. They describe the same thing.
 
-    -- Tutorial: :doc:`../tutorials/factors`
+    -- Tutorial: :doc:`../tutorials/factor_development`
 
 Daily factors comprise the qlib and alpha158 price-volume factors, the Barra CNE5 style, industry and
 country factors, and the raw CNE5 and CNE6 descriptors. Factor names are written **in full**:

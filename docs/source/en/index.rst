@@ -24,7 +24,7 @@ The data design rests on four conventions:
 
 See :doc:`concepts/security_identifiers`, :doc:`concepts/point_in_time`, :doc:`concepts/exfactor` and
 :doc:`concepts/python_cpp`.
-Tutorials: :doc:`tutorials/factors`, :doc:`tutorials/classification`.
+Tutorials: :doc:`tutorials/factor_development`, :doc:`tutorials/classification`.
 
 .. code-block:: python
 
@@ -254,7 +254,7 @@ code runs fine and your numbers are wrong.
     :titlesonly:
     :hidden:
 
-    tutorials/factors
+    tutorials/factor_development
     tutorials/classification
 
 .. toctree::
