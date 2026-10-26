@@ -4,6 +4,12 @@
 
 只记录会\ **改变已有代码行为**\ 的变更。
 
+0.1.4（2026-10-26）
+===================
+
+- C++：\ ``get_price`` 支持 Apache Arrow 21 及以后的版本（计算内核拆到了 ``libarrow_compute``\ ）：libfinance 链接它并注册内核。
+  此前会报 ``No function registered with name: sort_indices``\ 。Arrow 20 及更早版本不变。
+
 0.1.3（2026-10-10）
 ===================
 
