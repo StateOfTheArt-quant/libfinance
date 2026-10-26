@@ -5,6 +5,10 @@
 
 #include <arrow/api.h>
 #include <arrow/compute/api.h>
+#include <arrow/util/config.h>
+#if ARROW_VERSION_MAJOR >= 21
+#include <arrow/compute/initialize.h>
+#endif
 
 #include "internal.hpp"
 
@@ -64,6 +68,12 @@ void warn_beyond_coverage(const std::string& end_date) {
 //: returned as it came.
 Table to_panel(const Table& bars) {
   if (!bars || !bars->GetColumnByName("order_book_id") || !bars->GetColumnByName("session_date")) return bars;
+#if ARROW_VERSION_MAJOR >= 21
+  // Arrow 21+: the compute kernels live in libarrow_compute and are registered on first use;
+  // without this Cast / SortIndices fail with "No function registered with name".
+  static const arrow::Status compute = arrow::compute::Initialize();
+  check(compute);
+#endif
   Table table = detail::column_first(bars, "order_book_id");
 
   // datetime: session_date as a timestamp (pandas' datetime64), right after order_book_id
