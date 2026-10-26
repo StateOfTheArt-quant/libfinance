@@ -32,6 +32,7 @@ target_link_libraries(libfinance
     PRIVATE
         LZ4::lz4
         Threads::Threads
+        ${LIBFINANCE_ARROW_COMPUTE}
 )
 target_compile_options(libfinance PRIVATE -Wall -Wextra)
 
