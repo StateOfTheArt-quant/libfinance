@@ -4,6 +4,13 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
+0.1.4 (2026-10-26)
+==================
+
+- C++: ``get_price`` works with Apache Arrow 21 and later, where the compute kernels moved to
+  ``libarrow_compute``: libfinance links it and registers the kernels. Before, it failed with
+  ``No function registered with name: sort_indices``. Arrow 20 and earlier are unchanged.
+
 0.1.3 (2026-10-10)
 ==================
 
