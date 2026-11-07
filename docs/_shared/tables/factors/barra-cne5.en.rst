@@ -259,6 +259,6 @@
    * - ``COUNTRY``
      - 国家
      - ``1 for every member of the cross-section``
-     - 国家因子：截面中每只股票都是 1，代表市场整体涨跌（RQData 称 comovement）
+     - 国家因子：截面中每只股票都是 1，代表市场整体涨跌（comovement）
      - 0
      - runtime

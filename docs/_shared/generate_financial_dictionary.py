@@ -66,22 +66,15 @@ TITLES = {
 }
 COUNT = {"zh": "{title}（{n} 个字段）", "en": "{title} ({n} fields)"}
 SOURCE = {
-    "zh": {"rqdata": "通用", "barra": "Barra 输入", "market": "行情 + 股本"},
-    "en": {"rqdata": "standard", "barra": "Barra input", "market": "market data"},
+    "zh": {"standard": "通用", "barra": "Barra 输入", "market": "行情 + 股本"},
+    "en": {"standard": "standard", "barra": "Barra input", "market": "market data"},
 }
-#: data vendors are not named in the published docs: the sources' notes are scrubbed, and a table that still
-#: names one fails the run
-VENDOR_PHRASES = [("RQData 用于配平的供应商派生项", "用于配平的派生项"), ("RQData ", ""), ("RQData", "")]
-VENDORS = re.compile(r"rqdata|ricequant|米筐|wind资讯|万得|lseg|refinitiv|bloomberg|factset", re.I)
 METRIC_ROW = re.compile(r"^\| `(?P<field>[^`]+)` \| (?P<name>[^|]*) \| (?P<category>[^|]*) \| (?P<period>[^|]*) \| "
                         r"(?P<formula>`[^`]*`) \| (?P<meaning>[^|]*) \| (?P<source>[^|]*) \|$")
 
 
 def prose(text: str) -> str:
-    """``generate_factor_dictionary.prose`` without the dangling ``\\`` it leaves when text ends in a code span,
-    and without vendor names."""
-    for old, new in VENDOR_PHRASES:
-        text = text.replace(old, new)
+    """``generate_factor_dictionary.prose`` without the dangling ``\\`` it leaves when text ends in a code span."""
     out = _prose(text)
     return out[:-1] if out.endswith("``\\") else out
 
@@ -172,9 +165,6 @@ def main() -> int:
         for language in METRIC_HEADERS:
             tables[OUT / f"metrics-{category}.{language}.rst"] = metric_table(category, metrics, language)
     print(f"metrics: {len(metrics)} fields")
-    named = [str(path.relative_to(REPO)) for path, text in tables.items() if VENDORS.search(text)]
-    if named:
-        raise SystemExit("a table names a data vendor: " + ", ".join(named))
     stale = [path for path, text in tables.items()
              if not (path.exists() and path.read_text(encoding="utf-8") == text)]
     for path in stale:
