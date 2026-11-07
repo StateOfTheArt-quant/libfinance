@@ -243,6 +243,7 @@ code runs fine and your numbers are wrong.
 
     reference/fields
     reference/factor_dictionary
+    reference/financial_dictionary
     reference/index_meta
     reference/industry_meta
     reference/theme_meta
