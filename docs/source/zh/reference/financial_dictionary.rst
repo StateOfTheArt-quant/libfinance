@@ -30,18 +30,9 @@
 符号：费用、支出、现金流出一律以正数表示，收益、流入为正；净额科目按"净增加"口径，减少为负。
 报告期按期末的名义月末归入自然季度，52/53 周财年的期末 2023-07-01 归 ``2023q2``\ 。
 
-利润表
-------
-
 ..  include:: ../../../_shared/tables/financials/income_statement.zh.rst
 
-资产负债表
-----------
-
 ..  include:: ../../../_shared/tables/financials/balance_sheet.zh.rst
-
-现金流量表
-----------
 
 ..  include:: ../../../_shared/tables/financials/cash_flow_statement.zh.rst
 
@@ -75,27 +66,12 @@
 来源："通用"为常用财务衍生指标；"Barra 输入"为 Barra CNE5 / CNE6 描述符的财务输入；"行情 + 股本"为估值与每股字段。
 公式中的名字是上文的报表字段。
 
-估值
-----
-
 ..  include:: ../../../_shared/tables/financials/metrics-valuation.zh.rst
-
-经营
-----
 
 ..  include:: ../../../_shared/tables/financials/metrics-operating.zh.rst
 
-现金流
-------
-
 ..  include:: ../../../_shared/tables/financials/metrics-cashflow.zh.rst
 
-财务
-----
-
 ..  include:: ../../../_shared/tables/financials/metrics-financial.zh.rst
-
-成长
-----
 
 ..  include:: ../../../_shared/tables/financials/metrics-growth.zh.rst

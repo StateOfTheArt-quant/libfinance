@@ -35,18 +35,9 @@ Signs: expenses, costs and cash outflows are positive, as are income and inflows
 negative when they decrease. A report period falls in the calendar quarter of its nominal month end: a 52/53-week
 period ending 2023-07-01 is ``2023q2``.
 
-Income statement
-----------------
-
 ..  include:: ../../../_shared/tables/financials/income_statement.en.rst
 
-Balance sheet
--------------
-
 ..  include:: ../../../_shared/tables/financials/balance_sheet.en.rst
-
-Cash flow statement
--------------------
 
 ..  include:: ../../../_shared/tables/financials/cash_flow_statement.en.rst
 
@@ -82,27 +73,12 @@ time zone): values step on announcement days and stay flat in between. A metric 
 Source: "standard" is a common financial metric; "Barra input" is a financial input of the Barra CNE5 / CNE6
 descriptors; "market data" is a valuation or per-share field. Names in the formulas are the statement fields above.
 
-Valuation
----------
-
 ..  include:: ../../../_shared/tables/financials/metrics-valuation.en.rst
-
-Operating
----------
 
 ..  include:: ../../../_shared/tables/financials/metrics-operating.en.rst
 
-Cash flow
----------
-
 ..  include:: ../../../_shared/tables/financials/metrics-cashflow.en.rst
 
-Financial
----------
-
 ..  include:: ../../../_shared/tables/financials/metrics-financial.en.rst
-
-Growth
-------
 
 ..  include:: ../../../_shared/tables/financials/metrics-growth.en.rst
