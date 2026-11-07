@@ -70,7 +70,7 @@ Barra CNE5 风格因子的计算
 3. 正交化：RESVOL 对 BETA、SIZE 回归取残差，NLSIZE 取 SIZE³ 对 SIZE 的残差；
 4. 再标准化一次。
 
-返回的是标准化之后的暴露，与 RQData ``get_factor_exposure(..., model="v1")`` 的口径一致。
+返回的是标准化之后的暴露。
 缩尾的结果是：市值最大的若干只股票 SIZE 相同（都落在同一个上界）。
 
 输入与口径

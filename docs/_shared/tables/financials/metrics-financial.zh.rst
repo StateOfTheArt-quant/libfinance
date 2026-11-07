@@ -15,25 +15,25 @@
      - lf
      - ``liabilities / assets``
      - 总负债 / 总资产
-     - RQData 同名
+     - 通用
    * - ``current_ratio_lf``
      - 流动比率
      - lf
      - ``current_assets / current_liabilities``
      - 流动资产 / 流动负债
-     - RQData 同名
+     - 通用
    * - ``quick_ratio_lf``
      - 速动比率
      - lf
      - ``(current_assets - inventory) / current_liabilities``
      - （流动资产 − 存货）/ 流动负债
-     - RQData 同名
+     - 通用
    * - ``working_capital_lf``
      - 营运资本
      - lf
      - ``current_assets - current_liabilities``
      - 流动资产 − 流动负债
-     - RQData 同名
+     - 通用
    * - ``common_equity_lf``
      - 普通股权益
      - lf

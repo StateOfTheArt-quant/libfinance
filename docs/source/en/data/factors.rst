@@ -79,7 +79,7 @@ How the Barra CNE5 style factors are computed
    the residual of SIZE³ on SIZE;
 4. Standardized once more.
 
-The result is the standardized exposure, as RQData's ``get_factor_exposure(..., model="v1")``.
+The result is the standardized exposure.
 Winsorization means the few largest stocks share the same SIZE (they sit on the same bound).
 
 Inputs and conventions

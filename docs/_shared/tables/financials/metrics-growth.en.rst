@@ -15,25 +15,25 @@
      - growth
      - ``revenue / revenue[year_ago] - 1``
      - 当前值 / 上年同期 − 1
-     - RQData
+     - standard
    * - ``net_profit_growth_lyr``
      - 净利润同比增长率
      - growth
      - ``net_income / net_income[year_ago] - 1``
      - 当前值 / 上年同期 − 1
-     - RQData
+     - standard
    * - ``total_assets_growth_lyr``
      - 总资产同比增长率
      - growth
      - ``assets / assets[year_ago] - 1``
      - 当前值 / 上年同期 − 1
-     - RQData
+     - standard
    * - ``equity_growth_lyr``
      - 权益同比增长率
      - growth
      - ``equity_total / equity_total[year_ago] - 1``
      - 当前值 / 上年同期 − 1
-     - RQData
+     - standard
    * - ``eps_growth_5y``
      - EPS 5 年增长
      - annual_5y

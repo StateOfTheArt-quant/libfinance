@@ -460,12 +460,12 @@
      - US
      - \-
    * - ``other_items_affecting_pretax_income``
-     - 影响利润总额的其他科目（RQData 平衡项）
+     - 影响利润总额的其他科目（平衡项）
      - 期间
      - 元（报告币种）
      - 全部
      - CN
-     - RQData 用于配平的供应商派生项，不是报表行
+     - 用于配平的派生项，不是报表行
    * - ``pretax_income``
      - 利润总额
      - 期间
@@ -481,7 +481,7 @@
      - CN、US
      - IFRS：\ ``ifrs-full:IncomeTaxExpenseContinuingOperations``
    * - ``other_items_affecting_net_income``
-     - 影响净利润的其他科目（RQData 平衡项）
+     - 影响净利润的其他科目（平衡项）
      - 期间
      - 元（报告币种）
      - 全部

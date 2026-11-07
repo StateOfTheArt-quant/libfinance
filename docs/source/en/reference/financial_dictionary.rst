@@ -55,7 +55,7 @@ Financial metrics
 
 A session's value is the metric of the latest report visible at the end of that day (in the security's market
 time zone): values step on announcement days and stay flat in between. A metric the latest report cannot give
-(missing input, zero denominator) is ``NaN``; an older report never stands in. The categories are RQData's.
+(missing input, zero denominator) is ``NaN``; an older report never stands in.
 
 ..  list-table::
     :header-rows: 1
@@ -79,7 +79,7 @@ time zone): values step on announcement days and stay flat in between. A metric 
     *   - daily
         - Valuation and per-share fields from the session's unadjusted close, issued shares and float shares; CN only
 
-Source: "RQData" has RQData's name and definition; "Barra input" is a financial input of the Barra CNE5 / CNE6
+Source: "standard" is a common financial metric; "Barra input" is a financial input of the Barra CNE5 / CNE6
 descriptors; "market data" is a valuation or per-share field. Names in the formulas are the statement fields above.
 
 Valuation

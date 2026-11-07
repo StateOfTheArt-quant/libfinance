@@ -33,9 +33,9 @@ from generate_factor_dictionary import literal, prose as _prose
 REPO = pathlib.Path(__file__).resolve().parents[2]
 OUT = REPO / "docs" / "_shared" / "tables" / "financials"
 
-#: statement tables in RQData's order: income statement, balance sheet, cash flow statement
+#: statement tables in order: income statement, balance sheet, cash flow statement
 STATEMENTS = ["income_statement", "balance_sheet", "cash_flow_statement"]
-#: metric categories in RQData's order
+#: metric categories in order
 CATEGORIES = ["valuation", "operating", "cashflow", "financial", "growth"]
 
 STATEMENT_HEADERS = {
@@ -57,15 +57,22 @@ INDUSTRY = {
 }
 METRIC_PERIOD_EN = {"日频": "daily"}
 SOURCE = {
-    "zh": {"rqdata": "RQData 同名", "barra": "Barra 输入", "market": "行情 + 股本"},
-    "en": {"rqdata": "RQData", "barra": "Barra input", "market": "market data"},
+    "zh": {"rqdata": "通用", "barra": "Barra 输入", "market": "行情 + 股本"},
+    "en": {"rqdata": "standard", "barra": "Barra input", "market": "market data"},
 }
+#: data vendors are not named in the published docs: the sources' notes are scrubbed, and a table that still
+#: names one fails the run
+VENDOR_PHRASES = [("RQData 用于配平的供应商派生项", "用于配平的派生项"), ("RQData ", ""), ("RQData", "")]
+VENDORS = re.compile(r"rqdata|ricequant|米筐|wind资讯|万得|lseg|refinitiv|bloomberg|factset", re.I)
 METRIC_ROW = re.compile(r"^\| `(?P<field>[^`]+)` \| (?P<name>[^|]*) \| (?P<category>[^|]*) \| (?P<period>[^|]*) \| "
                         r"(?P<formula>`[^`]*`) \| (?P<meaning>[^|]*) \| (?P<source>[^|]*) \|$")
 
 
 def prose(text: str) -> str:
-    """``generate_factor_dictionary.prose`` without the dangling ``\\`` it leaves when text ends in a code span."""
+    """``generate_factor_dictionary.prose`` without the dangling ``\\`` it leaves when text ends in a code span,
+    and without vendor names."""
+    for old, new in VENDOR_PHRASES:
+        text = text.replace(old, new)
     out = _prose(text)
     return out[:-1] if out.endswith("``\\") else out
 
@@ -148,6 +155,9 @@ def main() -> int:
         for language in METRIC_HEADERS:
             tables[OUT / f"metrics-{category}.{language}.rst"] = metric_table(category, metrics, language)
     print(f"metrics: {len(metrics)} fields")
+    named = [str(path.relative_to(REPO)) for path, text in tables.items() if VENDORS.search(text)]
+    if named:
+        raise SystemExit("a table names a data vendor: " + ", ".join(named))
     stale = [path for path, text in tables.items()
              if not (path.exists() and path.read_text(encoding="utf-8") == text)]
     for path in stale:

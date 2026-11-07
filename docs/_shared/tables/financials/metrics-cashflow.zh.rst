@@ -15,19 +15,19 @@
      - lf
      - ``cfo / net_income``
      - 经营活动现金流量净额 / 净利润
-     - RQData 同名
+     - 通用
    * - ``operating_cashflow_ttm``
      - 经营现金流 TTM
      - ttm
      - ``cfo``
      - 最近四季经营活动现金流量净额
-     - RQData 同名
+     - 通用
    * - ``operating_cashflow_mrq``
      - 经营现金流（单季）
      - single_quarter
      - ``cfo``
      - 最近单季经营活动现金流量净额
-     - RQData 同名
+     - 通用
    * - ``cashflow_variability_5y``
      - 现金流波动（5 年）
      - annual_5y

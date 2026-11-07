@@ -15,73 +15,73 @@
      - lf
      - ``revenue``
      - 本期营业收入（年初至今）
-     - RQData
+     - standard
    * - ``net_profit_lf``
      - 净利润（最新期）
      - lf
      - ``net_income``
      - 本期净利润（年初至今）
-     - RQData
+     - standard
    * - ``gross_margin_lf``
      - 毛利率
      - lf
      - ``gross_profit / revenue``
      - 毛利润 / 营业收入
-     - RQData
+     - standard
    * - ``net_margin_lf``
      - 净利率
      - lf
      - ``net_income / revenue``
      - 净利润 / 营业收入
-     - RQData
+     - standard
    * - ``roa_lf``
      - 总资产收益率
      - average
      - ``net_income / avg(assets)``
      - 分母为本期与上一季度末总资产平均
-     - RQData
+     - standard
    * - ``roe_lf``
      - 净资产收益率
      - average
      - ``net_income_parent / avg(equity_parent)``
      - 分母为本期与上一季度末归母权益平均
-     - RQData
+     - standard
    * - ``revenue_ttm``
      - 营业收入 TTM
      - ttm
      - ``revenue``
      - 最近四季营业收入
-     - RQData
+     - standard
    * - ``net_profit_ttm``
      - 净利润 TTM
      - ttm
      - ``net_income``
      - 最近四季净利润
-     - RQData
+     - standard
    * - ``revenue_lyr``
      - 营业收入（上一财年）
      - lyr
      - ``revenue``
      - 最近一个有效财年的营业收入
-     - RQData
+     - standard
    * - ``net_profit_lyr``
      - 净利润（上一财年）
      - lyr
      - ``net_income``
      - 最近一个有效财年的净利润
-     - RQData
+     - standard
    * - ``revenue_mrq``
      - 营业收入（单季）
      - single_quarter
      - ``revenue``
      - 最近单季营业收入
-     - RQData
+     - standard
    * - ``net_profit_mrq``
      - 净利润（单季）
      - single_quarter
      - ``net_income``
      - 最近单季净利润
-     - RQData
+     - standard
    * - ``gross_profit_ttm``
      - 毛利润 TTM
      - ttm
