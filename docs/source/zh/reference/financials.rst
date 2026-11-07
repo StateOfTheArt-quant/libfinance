@@ -7,6 +7,7 @@
 
 季度区间决定查哪几期报告，\ ``as_of`` 决定当时已知哪些版本。
 回测应设置 ``as_of``\ ；字段与因子名以所连接服务支持的目录为准。详见 :doc:`../data/fundamentals`\ 。
+财务报表字段与财务衍生指标的中文名、单位与公式见 :doc:`financial_dictionary`\ 。
 
 .. list-table::
     :header-rows: 1

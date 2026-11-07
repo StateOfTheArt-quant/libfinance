@@ -246,6 +246,7 @@ code runs fine and your numbers are wrong.
     reference/index_meta
     reference/industry_meta
     reference/theme_meta
+    reference/financial_dictionary
     reference/errors
 
 .. toctree::

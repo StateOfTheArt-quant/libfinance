@@ -23,6 +23,7 @@ docs/
     _static/            图片与 CSS
     tables/             代码表（指数、行业、主题）的 CSV 与行业树 HTML，两棵树各引用一次
     generate_catalogs.py  从服务重新生成 tables/ 下的代码表，见下
+    generate_financial_dictionary.py  从数据族仓库生成 tables/financials/ 下的财务数据字典，见下
     fix_cjk_markup.py   中文排版修正脚本，见下
   source/zh/          中文树；API 参考用 autodoc，与 docstring 单一来源
   source/en/          英文树；API 参考手写（docstring 是中文，不能 autodoc）
@@ -84,3 +85,20 @@ $ python docs/_shared/generate_catalogs.py [--host <服务地址> --port <端口
 不要手改 CSV。CSV 没有表头，列顺序与页面上 `csv-table` 的 `:header:` 一一对应，改列要两棵树一起改。
 行业是可逐级展开的树（`catalog_industry_*.html`，由同名 CSV 渲染）；只改了树的样式时，加 `--render-only`
 从现有 CSV 重新渲染，不需要连服务。
+
+## 更新财务数据字典
+
+`reference/financial_dictionary.rst` 引用 `_shared/tables/financials/*.rst`。这些表由脚本从两个数据族仓库生成：
+
+- 报表字段来自 financialstatement-release 的 `docs/field-dictionary/*.csv`；
+- 财务衍生指标来自 financialmetrics 的 `docs/data-dictionary.md`。
+
+概念目录或公式目录更新后，在仓库根目录运行：
+
+```bash
+$ python docs/_shared/generate_financial_dictionary.py \
+      --statements <financialstatement-release>/docs/field-dictionary \
+      --metrics <financialmetrics>/docs/data-dictionary.md
+```
+
+加 `--check` 只检查是否过期，过期时退出码为 1。不要手改生成的表。

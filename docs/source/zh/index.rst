@@ -236,6 +236,7 @@ A 股；美股没有涨跌停，也没有提供成交额。
     reference/index_meta
     reference/industry_meta
     reference/theme_meta
+    reference/financial_dictionary
     reference/errors
 
 .. toctree::
