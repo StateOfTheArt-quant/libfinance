@@ -246,8 +246,8 @@ code runs fine and your numbers are wrong.
     reference/index_meta
     reference/industry_meta
     reference/theme_meta
-    reference/errors
     reference/financial_dictionary
+    reference/errors
 
 .. toctree::
     :maxdepth: 1
