@@ -170,4 +170,4 @@ API 参考
 字段与使用支持
 ----------------------------------------
 
-:doc:`fields` · :doc:`errors` · :doc:`financial_dictionary`
+:doc:`fields` · :doc:`financial_dictionary` · :doc:`errors`

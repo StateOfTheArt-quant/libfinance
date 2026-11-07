@@ -170,4 +170,4 @@ Example dates must fall within the coverage of your service.
 Lookup and troubleshooting
 ----------------------------------------
 
-:doc:`fields` · :doc:`errors` · :doc:`financial_dictionary`
+:doc:`fields` · :doc:`financial_dictionary` · :doc:`errors`
