@@ -465,7 +465,7 @@
      - reporting currency
      - all
      - CN
-     - vendor 用于配平的供应商派生项，不是报表行
+     - 用于配平的派生项，不是报表行
    * - ``pretax_income``
      - Profit before tax
      - duration

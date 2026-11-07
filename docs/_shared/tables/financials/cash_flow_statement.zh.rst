@@ -586,7 +586,7 @@
      - CN、US
      - IFRS：\ ``ifrs-full:EffectOfExchangeRateChangesOnCashAndCashEquivalents``
    * - ``other_items_affecting_cash``
-     - 影响现金及现金等价物的其他科目（vendor 平衡项）
+     - 影响现金及现金等价物的其他科目（平衡项）
      - 期间
      - 元（报告币种）
      - 全部
