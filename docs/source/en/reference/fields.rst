@@ -136,7 +136,7 @@ returns two columns:
     *   - ``if_adjusted``
         - ``0`` originally reported, ``1`` restated
 
-Available field and factor names come from the server and vary by deployment.
+Available field and factor names come from the server and vary by deployment; the fields' and financial metrics' meanings, units and formulas are in :doc:`financial_dictionary`.
 
 Indices, industries and themes
 ==============================
