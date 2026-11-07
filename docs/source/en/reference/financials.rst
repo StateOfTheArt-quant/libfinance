@@ -5,6 +5,7 @@ Financial data
 .. currentmodule:: libfinance
 
 Security-code queries infer the market on the server and accept no market argument. Unsupported markets raise an error.
+The statement fields and financial metrics, with their units and formulas, are listed in :doc:`financial_dictionary`.
 
 .. list-table::
     :header-rows: 1
