@@ -4,6 +4,7 @@
 
 这些是**静态**检查，不需要服务端。钉住的是几个曾经真的坏过的点。
 """
+import datetime
 import inspect
 import pathlib
 
@@ -148,6 +149,8 @@ def test_get_price_coverage_is_by_type_and_venue(monkeypatch):
     monkeypatch.setattr(module, "get_client", lambda: Client())
     monkeypatch.setattr(cache, "current_data_version", lambda: "coverage-test")
     module.get_price_coverage.clear()
+    module._daybar_coverage.clear()
+    module._adjust_cutoff.clear()
     try:
         assert module.get_price_coverage("cn") == {
             "stock": {"XSHG": {"start": "2000-01-04", "end": "2026-09-08", "raw_end": "2026-09-10",
@@ -155,8 +158,31 @@ def test_get_price_coverage_is_by_type_and_venue(monkeypatch):
             "index": {"XSHG": {"start": "2005-01-04", "end": "2026-09-10", "raw_end": "2026-09-10"}},
         }
         assert calls == [("daybar.coverage", {"type": None}), ("exfactor.coverage", {"market": "CN"})]
+        # the US coverage reuses the one daybar.coverage answer: only its adjust cutoff is asked
+        calls.clear()
+        answers["exfactor.coverage"] = {"market": "US", "cutoff": "2026-09-09"}
+        module.get_price_coverage("us")
+        assert calls == [("exfactor.coverage", {"market": "US"})]
     finally:
         module.get_price_coverage.clear()
+        module._daybar_coverage.clear()
+        module._adjust_cutoff.clear()
+
+
+def test_a_historical_get_price_asks_for_no_coverage(monkeypatch):
+    """An end_date well before today cannot be past the latest session: no coverage round trips."""
+    from libfinance.api import get_price as module
+
+    asked = []
+    monkeypatch.setattr(module, "get_price_coverage", lambda market: asked.append(market) or {})
+    module._warn_beyond_coverage("2015-06-30", ["600000.XSHG"])
+    assert asked == []
+    today = datetime.date.today().isoformat()
+    module._warn_beyond_coverage(today, ["600000.XSHG", "000001.XSHE"])
+    assert asked == ["cn"]
+    asked.clear()
+    module._warn_beyond_coverage(today, ["AAPL.US"])
+    assert asked == ["us"]
 
 
 def test_instruments_resolve_mixed_codes_in_input_order(monkeypatch):
