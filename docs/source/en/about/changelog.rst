@@ -4,6 +4,16 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
+0.1.7 (2026-11-11)
+==================
+
+- Python: ``get_price`` checks its ``end_date`` against the price coverage, and warns, only when ``end_date`` is within
+  the last 10 days; an older one cannot be past the coverage, so no round trip is spent on the check. A request past
+  the coverage is still refused by the server with the reason.
+- Python: reference data cached by data version (the trading calendar, price coverage, ...) confirms the server's data
+  version in the background instead of making the call wait one more round trip; after a data switch the next call at
+  the latest uses the new version.
+
 0.1.4 (2026-10-26)
 ==================
 
