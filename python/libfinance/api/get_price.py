@@ -23,6 +23,26 @@ FREQUENCIES = ("1d",)
 ADJUST_TYPES = ("pre", "post", "none")
 #: 有日线的证券类型。
 TYPES = ("stock", "index")
+#: 交易所后缀 -> 市场；不认识的后缀两个市场都核对。
+_CN_VENUES = ("XSHG", "XSHE", "XBSE")
+#: end_date 早于"今天 − 这么多天"时不核对覆盖：最新已收盘交易日不会比它更早，除非数据断更
+#: 十天以上——那时服务端照样拒绝并给出原因。核对要 2–3 个往返（每个约 185 ms，2026-11-11 实测），
+#: 不该让查历史区间的每次 get_price 都付。
+_COVERAGE_CHECK_DAYS = 10
+
+
+@versioned_cache
+def _daybar_coverage():
+    """daybar 全部类型与市场的覆盖；与市场无关，所以 cn、us 共用这一次。"""
+    return get_client().call("daybar.coverage", {"type": None}) or {}
+
+
+@versioned_cache
+def _adjust_cutoff(market):
+    try:
+        return (get_client().call("exfactor.coverage", {"market": market}) or {}).get("cutoff")
+    except Exception:
+        return None
 
 
 @export_as_api
@@ -52,11 +72,8 @@ def get_price_coverage(market: str = "cn") -> dict:
     :returns: dict，``{类型: {场所: {start, end, raw_end[, adjust_cutoff]}}}``\ 。
     """
     wanted = ensure_string(market, "market").upper()
-    coverage = get_client().call("daybar.coverage", {"type": None}) or {}
-    try:
-        cutoff = (get_client().call("exfactor.coverage", {"market": wanted}) or {}).get("cutoff")
-    except Exception:
-        cutoff = None
+    coverage = _daybar_coverage()
+    cutoff = _adjust_cutoff(wanted)
 
     out = {}
     for code_type in TYPES:
@@ -78,14 +95,27 @@ def get_price_coverage(market: str = "cn") -> dict:
     return out
 
 
-def _warn_beyond_coverage(end_date):
+def _markets_of(ids):
+    suffixes = {code.rpartition(".")[2].upper() for code in ids}
+    if suffixes <= set(_CN_VENUES):
+        return ("cn",)
+    if not suffixes & set(_CN_VENUES):
+        return ("us",)
+    return ("cn", "us")
+
+
+def _warn_beyond_coverage(end_date, ids=()):
     """end_date 超出行情覆盖时先说清楚，而不是让调用方拿到一句 RPC 报错。
 
     服务端拒绝把"数据还没到"伪装成"那天没交易"；这里不改写请求，只提前说出原因与上界。
+    只在 end_date 接近今天时核对，且只核对所查代码所在的市场。
     """
+    recent = (datetime.date.today() - datetime.timedelta(days=_COVERAGE_CHECK_DAYS)).isoformat()
+    if str(end_date) < recent:
+        return
     latest = None
     try:
-        for market in ("cn", "us"):
+        for market in _markets_of(ids) if ids else ("cn", "us"):
             for venues in get_price_coverage(market).values():
                 for item in venues.values():
                     if item.get("end") and (latest is None or item["end"] > latest):
@@ -152,7 +182,7 @@ def get_price(
         raise ValueError("start_date must not be after end_date")
     # 分档限制会把 start_date 夹到边界——结果可能是一张空表，先说出来。
     warn_if_clamped("get_price", start_date)
-    _warn_beyond_coverage(end_date)
+    _warn_beyond_coverage(end_date, ids)
 
     frame = get_client().get_price(order_book_ids=list(dict.fromkeys(ids)),
                                    start_date=start_date,

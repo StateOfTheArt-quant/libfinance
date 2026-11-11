@@ -17,6 +17,11 @@ r"""按**服务端数据版本**缓存参考数据。
 
 ``data_version`` 为 None 时（服务端还没有 current，或旧版服务端不报这个字段）退回
 TTL 语义，不把 None 当成某个固定版本 —— 那样会把"未知"缓存成"没变"。
+
+**问版本不占调用的往返**\ （stale-while-revalidate）：已经知道一个版本时，过期了也先用它答这次调用，
+同时在后台再问一次；下一次调用就用上新版本。服务端在 0.2 ms 内答 ping，可用户离服务端一个往返
+（实测 2026-11-11 约 185 ms），交互式使用里两次调用几乎总隔着 2 秒以上——原先这一问让大多数调用
+多付一个往返。只有还不知道任何版本时（第一次）才同步等它。
 """
 import threading
 import time
@@ -29,27 +34,51 @@ _FALLBACK_TTL = 300.0
 _lock = threading.Lock()
 _version = None
 _version_checked_at = 0.0
+_refreshing = False
 _caches = []
+
+
+def _ask_version():
+    """问服务端一次；探活失败返回 None（缓存不该让查询失败，退回 TTL 就是了）。"""
+    try:
+        from libfinance.client import get_client
+
+        pong = get_client().call("ping", {}, timeout=5.0)
+        return pong.get("data_version") if isinstance(pong, dict) else None
+    except Exception:
+        return None
+
+
+def _refresh_in_background():
+    global _version, _version_checked_at, _refreshing
+    try:
+        value = _ask_version()
+        with _lock:
+            _version, _version_checked_at = value, time.time()
+    finally:
+        with _lock:
+            _refreshing = False
 
 
 def current_data_version(force=False):
     r"""服务端当前的数据版本；拿不到时返回 None。
 
-    结果在 ``_VERSION_POLL_SECONDS`` 内复用：同一次 ``get_price`` 里的几次查表不必
-    各问一次。探活失败\ **不抛**——缓存不该让查询失败，退回 TTL 就是了。
+    ``_VERSION_POLL_SECONDS`` 内直接复用。过期而手里已有一个版本时，先返回它、在后台再问一次
+    （不让这次调用多等一个往返）；还没有任何版本或 ``force`` 时同步问。
     """
-    global _version, _version_checked_at
+    global _version, _version_checked_at, _refreshing
     now = time.time()
     with _lock:
-        if not force and now - _version_checked_at < _VERSION_POLL_SECONDS:
+        fresh = now - _version_checked_at < _VERSION_POLL_SECONDS
+        if not force and fresh:
             return _version
-    try:
-        from libfinance.client import get_client
-
-        pong = get_client().call("ping", {}, timeout=5.0)
-        value = pong.get("data_version") if isinstance(pong, dict) else None
-    except Exception:
-        value = None
+        if not force and _version is not None:
+            if not _refreshing:
+                _refreshing = True
+                threading.Thread(target=_refresh_in_background, name="libfinance-data-version",
+                                 daemon=True).start()
+            return _version
+    value = _ask_version()
     with _lock:
         _version, _version_checked_at = value, time.time()
     return value
