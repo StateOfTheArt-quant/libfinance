@@ -34,6 +34,9 @@ class RpcClient {
   //: answer is {"type": "arrow" | "pandas", "data": ...}; see as_table). Connection failures are
   //: retried twice; what the server refuses throws RpcError at once.
   Json call(const std::string& function, const Json& args) const;
+  //: Logs in; later calls get the account's level, and a reconnect logs in again by itself.
+  //: Returns {"status": "successful", "level", "user_id"}; throws LoginError when refused.
+  Json login(const std::string& username, const std::string& password);
 
  private:
   struct Connection;
@@ -42,6 +45,9 @@ class RpcClient {
 
 //: The process-wide client, connected on first use.
 RpcClient& get_client();
+
+//: Logs the process-wide client in (Python's libfinance.login); see RpcClient::login.
+Json login(const std::string& username, const std::string& password);
 
 //: A table answer as an arrow::Table: Arrow IPC from the C++ server, or pandas' orient=table JSON
 //: from the Python one. Anything else throws std::invalid_argument.

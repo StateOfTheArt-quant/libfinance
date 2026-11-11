@@ -157,6 +157,14 @@ Json RpcClient::call(const std::string& function, const Json& args) const {
   }
 }
 
+Json RpcClient::login(const std::string& username, const std::string& password) {
+  return connection_->wire.login(Json{{"username", username}, {"password", password}});
+}
+
+Json login(const std::string& username, const std::string& password) {
+  return get_client().login(username, password);
+}
+
 std::string default_host() {
   const char* host = std::getenv("LIBFINANCE_HOST");
   return host != nullptr && *host != '\0' ? host : "libfinance.tech";

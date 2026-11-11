@@ -29,6 +29,13 @@ class RpcError : public std::runtime_error {
   std::string kind_;
 };
 
+//: The server refused a login: wrong user name or password, or login is not enabled there
+//: (Python's PermissionError from libfinance.login).
+class LoginError : public std::runtime_error {
+ public:
+  using std::runtime_error::runtime_error;
+};
+
 //: A calendar query outside the release's confirmed range. It is not "no trading that day":
 //: nobody has published that day yet, so any answer would be a guess.
 class CalendarCoverageError : public std::invalid_argument {

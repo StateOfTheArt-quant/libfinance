@@ -13,3 +13,6 @@ libfinance_test(test_types test_types.cpp)
 libfinance_test(test_tables test_tables.cpp)
 libfinance_test(test_quote_protocol test_quote_protocol.cpp)
 libfinance_test(test_quote_api test_quote_api.cpp)
+libfinance_test(test_login test_login.cpp)
+# its loopback server reads the client's LZ4-framed requests
+target_link_libraries(test_login PRIVATE LZ4::lz4)

@@ -174,3 +174,81 @@ def test_api_timeout_is_not_retried_and_late_answer_is_not_unknown(capsys):
     assert "unknown request_id" not in capsys.readouterr().err
     client.close()
     server.close()
+
+
+class LoginServer(ClosingServer):
+    """Keeps the level on the connection, as the server does: a new connection starts anonymous.
+
+    Answers ``login`` (password "right" -> level 100) and ``whoami`` (this connection's level); closes
+    each connection after ``answers_per_connection`` frames.
+    """
+
+    def __init__(self, answers_per_connection=100):
+        self.logins = []
+        super().__init__(answers_per_connection=answers_per_connection)
+
+    def _serve(self):
+        while True:
+            try:
+                sock, _ = self.listener.accept()
+            except OSError:
+                return
+            self.connections += 1
+            level = 0
+            try:
+                for _ in range(self.per_connection):
+                    (length,) = struct.unpack("!I", self._recv(sock, 4))
+                    meta_and_payload = self._recv(sock, length)
+                    request_id = struct.unpack("!I", meta_and_payload[1:5])[0]
+                    request = client_module.decode_payload(meta_and_payload[5], meta_and_payload[6:])
+                    if request["function"] == "login":
+                        args = request["args"]
+                        self.logins.append(args["username"])
+                        if args["password"] == "right":
+                            level = 100
+                            result = {"status": "successful", "level": level, "user_id": 7}
+                        else:
+                            result = {"status": "failed", "message": "Invalid username or password"}
+                    else:
+                        result = {"level": level, "connection": self.connections}
+                    body = msgpack.packb({"status": "ok", "code": 0, "result": result})
+                    sock.sendall(struct.pack("!I", 6 + len(body)) + bytes([0x02]) + struct.pack("!I", request_id)
+                                 + bytes([0x00]) + body)
+            except ConnectionError:
+                pass
+            sock.close()
+
+
+def _wait_closed(client):
+    for _ in range(100):
+        if not client.running:
+            return
+        threading.Event().wait(0.02)
+
+
+def test_login_raises_the_level_and_survives_a_reconnect():
+    """The level lives on the connection: after a drop the client logs in again before the next call,
+    rather than carrying on anonymously without anyone noticing."""
+    server = LoginServer(answers_per_connection=2)
+    client = RpcClient("127.0.0.1", server.port)
+    assert client.login("admin", "right")["level"] == 100 and client.auth_level == 100
+    assert client.call("whoami") == {"level": 100, "connection": 1}
+    _wait_closed(client)
+    assert client.call("whoami") == {"level": 100, "connection": 2}
+    assert server.logins == ["admin", "admin"]
+    client.close()
+    server.close()
+
+
+def test_a_wrong_password_is_an_error_and_stays_anonymous():
+    server = LoginServer()
+    client = RpcClient("127.0.0.1", server.port)
+    try:
+        client.login("admin", "wrong")
+    except PermissionError as error:
+        assert "Invalid username or password" in str(error)
+    else:
+        raise AssertionError("expected PermissionError")
+    assert client.auth_level == 0 and client.call("whoami")["level"] == 0
+    client.close()
+    server.close()

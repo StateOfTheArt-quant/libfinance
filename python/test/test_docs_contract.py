@@ -36,7 +36,10 @@ _EN = _REPO / "docs" / "source" / "en"
 #: ``init_client`` 是部署期的入口：服务地址在生产环境里配好，使用者直接调取数函数
 #: 就行，不需要也不应该在自己的代码里指定服务地址。它仍然导出（自建服务、测试、
 #: CI 要用），只是不进用户文档。
-_NOT_API = {"__version__", "init_client"}
+#:
+#: ``login`` 目前只给管理员取私有数据（如全部因子库）用，暂不对外介绍（2026-11-11 决定），
+#: 所以同样不进用户文档。
+_NOT_API = {"__version__", "init_client", "login"}
 
 #: 中文树用 autodoc 指令引用对象。
 _AUTODOC = re.compile(
@@ -168,3 +171,18 @@ def test_names_used_by_examples_are_documented():
     en = _documented(_EN, _PY_DIRECTIVE)
     missing = sorted(n for n in used if n not in zh or n not in en)
     assert not missing, "example/ 用到但文档没覆盖的接口: {}".format(missing)
+
+
+def test_login_stays_out_of_the_docs_for_now():
+    """``login`` is for administrators reading private data; it is not introduced to users yet.
+
+    The realtime pages keep their own ``on_rsp_login`` / ``QuoteApi.login(token)``: that is the quote
+    gateway's ticket handshake, not this account login.
+    """
+    pattern = re.compile(r"libfinance\.login|(?<![\w.])login\(\s*(?:username|['\"]|user)|init_client.*login")
+    for root in (_ZH, _EN, _REPO / "README.md", _REPO / "readme_en.md", _REPO / "python" / "README.md"):
+        paths = [root] if root.is_file() else sorted(root.rglob("*"))
+        for path in paths:
+            if path.is_file() and path.suffix in (".rst", ".md", ".py", ".txt"):
+                hits = [line for line in path.read_text(encoding="utf-8").splitlines() if pattern.search(line)]
+                assert not hits, "{} mentions the account login: {}".format(path, hits[:2])

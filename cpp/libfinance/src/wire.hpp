@@ -35,8 +35,14 @@ class Connection {
   //: One request and its answer, unwrapped: the result, or RpcError with the server's code, message
   //: and kind. Calls are serialized; a broken connection is re-opened on the next call.
   Json call(const std::string& function, const Json& args);
+  //: Logs this connection in ({"username", "password"}) and keeps the arguments: the server holds the
+  //: caller's level on the connection, so a re-opened one logs in again before its first request.
+  //: Returns the server's answer ({"status": "successful", "level", "user_id"}); throws LoginError.
+  Json login(const Json& args);
 
  private:
+  Json exchange(const std::string& function, const Json& args);
+  Json log_in(const Json& args);
   void open();
   void close();
   void send_frame(uint8_t type, uint32_t request_id, uint8_t flags, const std::string& payload);
@@ -47,6 +53,7 @@ class Connection {
   int timeout_seconds_;
   int socket_ = -1;
   uint32_t next_id_ = 0;
+  Json login_;  // null until login() succeeds
   std::mutex lock_;
 };
 
