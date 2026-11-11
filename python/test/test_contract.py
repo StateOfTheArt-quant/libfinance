@@ -31,7 +31,9 @@ def test_function_matches_the_contract(name):
 
 
 def test_every_exported_function_is_in_the_contract():
-    exported = {name for name in libfinance.__all__ if callable(getattr(libfinance, name))} - {"init_client"}
+    # init_client and login set up the session (where to connect, as whom), not a data function: the
+    # contract lists what each client language serves, the server's native login is not part of it
+    exported = {name for name in libfinance.__all__ if callable(getattr(libfinance, name))} - {"init_client", "login"}
     assert exported - set(_FUNCTIONS) == set()
 
 

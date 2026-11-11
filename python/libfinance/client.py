@@ -169,6 +169,11 @@ class RpcClient:
 
         self._connect_lock = threading.Lock()
 
+        # login 的账号：登录只对当前这条连接生效（服务端把等级记在连接上），所以重连后要再登录一次，
+        # 否则调用者会不知不觉退回匿名档。只在内存里，不落盘。
+        self._credentials = None
+        self.auth_level = 0
+
     def connect(self):
         if self.sock:
             self.close()
@@ -217,6 +222,32 @@ class RpcClient:
             except OSError as error:
                 raise ConnectionError(
                     "Not connected to server {}:{}: {}".format(self.host, self.port, error)) from error
+            if self._credentials is not None:
+                try:
+                    self._login(*self._credentials)
+                except Exception:
+                    # 登不上就不留这条连接：带着匿名档继续答，比报错更难察觉
+                    self.close()
+                    raise
+
+    def login(self, username, password, timeout=None):
+        """以账号登录，之后的调用按账号等级取数；断线重连后自动重新登录。
+
+        :return: 服务端的答复，``{"status": "successful", "level": .., "user_id": ..}``
+        :raises PermissionError: 账号或密码不对，或服务端没有开启登录
+        """
+        self._ensure_connected()
+        result = self._login(username, password, timeout)
+        self._credentials = (username, password)
+        return result
+
+    def _login(self, username, password, timeout=None):
+        result = self.call("login", {"username": username, "password": password}, timeout)
+        if not isinstance(result, dict) or result.get("status") != "successful":
+            message = result.get("message") if isinstance(result, dict) else result
+            raise PermissionError("libfinance login failed: {}".format(message))
+        self.auth_level = result.get("level", 0)
+        return result
 
     def call_raw(self, function_name, args=None, timeout=None):
         """Send an RPC request and wait synchronously for the raw envelope."""
@@ -482,6 +513,11 @@ def init_client(host: str = _DEFAULT_HOST, port: int = _DEFAULT_PORT):
     if _CLIENT is None:
         _CLIENT = RpcClient(host, port)
         _CLIENT.connect()
+
+def login(username: str, password: str):
+    """以账号登录默认客户端（第一次调用时自动连接）。见 :meth:`RpcClient.login`。"""
+    return get_client().login(username, password)
+
 
 def get_client():
     global _CLIENT
