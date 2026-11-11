@@ -146,7 +146,33 @@ bool Connection::read_frame(uint8_t& type, uint32_t& request_id, uint8_t& flags,
 
 Json Connection::call(const std::string& function, const Json& args) {
   std::lock_guard<std::mutex> guard(lock_);
+  if (socket_ < 0) {
+    open();
+    if (!login_.is_null()) log_in(login_);  // a new connection starts anonymous
+  }
+  return exchange(function, args);
+}
+
+Json Connection::login(const Json& args) {
+  std::lock_guard<std::mutex> guard(lock_);
   if (socket_ < 0) open();
+  Json answer = log_in(args);
+  login_ = args;
+  return answer;
+}
+
+Json Connection::log_in(const Json& args) {
+  Json answer = exchange("login", args);
+  if (!answer.is_object() || answer.value("status", "") != "successful") {
+    const Json message = answer.is_object() ? answer.value("message", Json("refused")) : answer;
+    // not left open at the anonymous level: carrying on there is harder to notice than an error
+    if (!login_.is_null()) close();
+    throw LoginError("libfinance login failed: " + (message.is_string() ? message.get<std::string>() : message.dump()));
+  }
+  return answer;
+}
+
+Json Connection::exchange(const std::string& function, const Json& args) {
   try {
     const uint32_t id = ++next_id_;
     const std::vector<uint8_t> packed = Json::to_msgpack(Json{{"function", function}, {"args", args}});
