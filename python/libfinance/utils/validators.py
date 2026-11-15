@@ -8,12 +8,27 @@ from libfinance.utils.utils import listify, to_date, is_panel_removed, to_date_i
 def ensure_list_of_string(s, name=""):
     if isinstance(s, string_types):
         return [s]
+    # list(600000) 会抛出 "'int' object is not iterable"，说不清是哪个参数、要的是什么
+    if s is None or isinstance(s, (bytes, int, float)) or not hasattr(s, "__iter__"):
+        raise ValueError("{}: expect string or list of string, got {!r}".format(name, s))
 
     result = list(s)
     for v in result:
         if not isinstance(v, string_types):
             raise ValueError("{}: expect string or list of string, got {!r}".format(name, v))
     return result
+
+
+def ensure_codes(s, name="order_book_ids"):
+    """一个代码或代码列表，原样返回（单个字符串仍是字符串）；None、空列表、非字符串元素报 ValueError。
+
+    给把代码原样转给服务端的接口用：不改变线上形状，只拦住"没给代码"——否则服务端答一张空表，
+    看起来像"没有数据"。
+    """
+    codes = ensure_list_of_string(s, name)
+    if not codes:
+        raise ValueError("{}: at least one order book id expected".format(name))
+    return s if isinstance(s, string_types) else codes
 
 
 def ensure_list(s, expect_type, name=""):

@@ -13,7 +13,7 @@ import pandas as pd
 from libfinance.client import get_client
 from libfinance.utils.decorators import export_as_api
 from libfinance.utils.utils import to_date_str
-from libfinance.utils.validators import ensure_string
+from libfinance.utils.validators import ensure_codes, ensure_string
 
 
 @export_as_api
@@ -41,6 +41,7 @@ def get_instrument_industry(order_book_ids, source: Optional[str] = None, level:
     :returns: pandas.DataFrame，包含 order_book_id、related_order_book_id（行业代码，如 ``480000.SW``\ ）、
               source、market 和 level。
     """
+    order_book_ids = ensure_codes(order_book_ids)
     return get_client().get_instrument_industry(
         order_book_ids=order_book_ids, source=source, level=level,
         as_of=to_date_str(as_of) if as_of is not None else None)

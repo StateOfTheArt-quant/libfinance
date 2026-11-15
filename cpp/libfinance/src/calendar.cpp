@@ -45,6 +45,18 @@ std::shared_ptr<const Calendar> sessions(const std::string& market, std::initial
   return found;
 }
 
+//: n 是"第几个交易日"。它会被转成 size_t 参与下标运算：0 返回日期本身，负数从数组另一端取值，
+//: 在第一个交易日处甚至越界读（实测返回 1970-01-01）。必须是正数。
+void check_positive(int n) {
+  if (n < 1) throw std::invalid_argument("n: a positive integer expected, got " + std::to_string(n));
+}
+
+//: 颠倒的区间是调用错误（与 get_price 一致），不是"没有交易日"，更不是负数个。
+void check_ordered(const DateLike& start_date, const DateLike& end_date) {
+  if (start_date.date() > end_date.date())
+    throw std::invalid_argument("start_date " + start_date.iso() + " is after end_date " + end_date.iso());
+}
+
 size_t lower_bound(const std::vector<Date>& sessions, Date date) {
   return static_cast<size_t>(std::lower_bound(sessions.begin(), sessions.end(), date) - sessions.begin());
 }
@@ -63,6 +75,7 @@ CalendarCoverage get_calendar_coverage(const std::string& market) {
 }
 
 std::vector<Date> get_trading_dates(const DateLike& start_date, const DateLike& end_date, const std::string& market) {
+  check_ordered(start_date, end_date);
   const auto found = sessions(market, {start_date.date(), end_date.date()});
   const size_t left = lower_bound(found->sessions, start_date.date());
   const size_t right = upper_bound(found->sessions, end_date.date());
@@ -71,6 +84,7 @@ std::vector<Date> get_trading_dates(const DateLike& start_date, const DateLike& 
 }
 
 Date get_previous_trading_date(const DateLike& date, int n, const std::string& market) {
+  check_positive(n);
   const auto found = sessions(market, {date.date()});
   const size_t position = lower_bound(found->sessions, date.date());
   if (static_cast<long>(position) < n)
@@ -80,6 +94,7 @@ Date get_previous_trading_date(const DateLike& date, int n, const std::string& m
 }
 
 Date get_next_trading_date(const DateLike& date, int n, const std::string& market) {
+  check_positive(n);
   const auto found = sessions(market, {date.date()});
   const size_t position = upper_bound(found->sessions, date.date());
   if (position + static_cast<size_t>(n) > found->sessions.size())
@@ -95,6 +110,7 @@ bool is_trading_date(const DateLike& date, const std::string& market) {
 }
 
 std::vector<Date> get_n_trading_dates_until(const DateLike& date, int n, const std::string& market) {
+  check_positive(n);
   const auto found = sessions(market, {date.date()});
   const size_t position = upper_bound(found->sessions, date.date());
   const size_t first = static_cast<long>(position) >= n ? position - static_cast<size_t>(n) : 0;
@@ -102,6 +118,7 @@ std::vector<Date> get_n_trading_dates_until(const DateLike& date, int n, const s
 }
 
 int count_trading_dates(const DateLike& start_date, const DateLike& end_date, const std::string& market) {
+  check_ordered(start_date, end_date);
   const auto found = sessions(market, {start_date.date(), end_date.date()});
   return static_cast<int>(upper_bound(found->sessions, end_date.date())) -
          static_cast<int>(lower_bound(found->sessions, start_date.date()));

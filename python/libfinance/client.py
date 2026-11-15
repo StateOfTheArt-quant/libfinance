@@ -5,6 +5,8 @@ import threading
 import sys
 from collections import deque
 from concurrent.futures import Future
+# Before Python 3.11 Future.result() raises concurrent.futures.TimeoutError, which is not the builtin.
+from concurrent.futures import TimeoutError as _FutureTimeout
 import time
 
 import msgpack
@@ -150,9 +152,16 @@ class RpcClient:
         self.port = port
         self.sock = None
         self.running = False
+        # The process that opened the connection. After os.fork() the child inherits the socket but not
+        # the reader thread: its answers would be read by the parent, and the two processes' request ids
+        # collide, so one could be handed the other's answer. _ensure_own_process() gives a child its own.
+        self._pid = os.getpid()
 
         self._next_id = 0
         self._id_lock = threading.Lock()
+        # Frames from several threads must not interleave on the stream: sendall() of a frame larger than
+        # the socket buffer is several send() calls, and another thread's bytes could land in between.
+        self._send_lock = threading.Lock()
 
         self._pending = {}
         # A timed-out request keeps running on the server: the wire protocol has no cancellation.
@@ -209,9 +218,44 @@ class RpcClient:
         if self._reader_thread and self._reader_thread.is_alive():
             self._reader_thread.join(timeout=2)
 
+    def _ensure_own_process(self):
+        """After os.fork(): forget the parent's connection without touching it, then start afresh.
+
+        The inherited socket is the parent's live connection, so it is neither shut down nor used (a
+        shutdown would cut the parent off too); closing the child's copy of the descriptor is harmless.
+        The locks may have been held by a parent thread at fork time and are replaced as well.
+        """
+        if self._pid == os.getpid():
+            return
+        self._pid = os.getpid()
+        inherited, self.sock = self.sock, None
+        if inherited is not None:
+            try:
+                os.close(inherited.detach())   # the child's descriptor only; no shutdown()
+            except OSError:
+                pass
+        self.running = False
+        self._reader_thread = None
+        self._id_lock = threading.Lock()
+        self._send_lock = threading.Lock()
+        self._pending_lock = threading.Lock()
+        self._last_recv_lock = threading.Lock()
+        self._connect_lock = threading.Lock()
+        self._pending = {}
+        self._expired_requests = set()
+        self._expired_request_order = deque()
+
+    def _send(self, frame):
+        with self._send_lock:
+            sock = self.sock
+            if sock is None:
+                raise ConnectionError("Not connected to server {}:{}".format(self.host, self.port))
+            sock.sendall(frame)
+
     def _ensure_connected(self):
         """Reopen a connection the server (or the network) closed. One caller reconnects; the others
         that raced it find it open."""
+        self._ensure_own_process()
         if self.running:
             return
         with self._connect_lock:
@@ -265,7 +309,7 @@ class RpcClient:
 
         frame = encode_rpc_request(req_id, function_name, args)
         try:
-            self.sock.sendall(frame)
+            self._send(frame)
         except socket.error as e:
             with self._pending_lock:
                 self._pending.pop(req_id, None)
@@ -273,7 +317,7 @@ class RpcClient:
 
         try:
             return future.result(timeout=timeout)
-        except TimeoutError:
+        except (TimeoutError, _FutureTimeout):
             with self._pending_lock:
                 # If the reader won the race and already consumed the answer, there will be no
                 # late frame to classify. Only remember ids actually removed here.
@@ -305,7 +349,7 @@ class RpcClient:
 
         frame = encode_rpc_request(req_id, function_name, args)
         try:
-            self.sock.sendall(frame)
+            self._send(frame)
         except socket.error as e:
             with self._pending_lock:
                 self._pending.pop(req_id, None)
@@ -314,11 +358,12 @@ class RpcClient:
         return future
 
     def send_ping(self):
+        self._ensure_own_process()
         if not self.running:
             return
         frame = encode_control_frame(FrameType.PING)
         try:
-            self.sock.sendall(frame)
+            self._send(frame)
         except socket.error:
             pass
 
@@ -420,7 +465,7 @@ class RpcClient:
                 if frame_type == FrameType.PING:
                     pong = encode_control_frame(FrameType.PONG, request_id)
                     try:
-                        self.sock.sendall(pong)
+                        self._send(pong)
                     except socket.error:
                         pass
 
@@ -432,7 +477,10 @@ class RpcClient:
                         response_data = decode_payload(flags, payload)
                     except Exception as e:
                         print(f"Failed to decode response payload: {e}", file=sys.stderr)
-                        response_data = {"status": "error", "error": f"decode failed: {e}"}
+                        # "message" is what _unwrap_envelope reports; under any other key the caller
+                        # only ever saw "Unknown error".
+                        response_data = {"status": "error", "code": RpcErrorCode.DECODE_FAILED,
+                                         "message": f"cannot decode the answer: {e}"}
 
                     with self._pending_lock:
                         future = self._pending.pop(request_id, None)
@@ -463,29 +511,32 @@ class RpcClient:
             self._pending.clear()
 
     def __getattr__(self, api_name):
+        # Only public names are remote functions. A private or dunder name that is not an attribute is
+        # a typo or a probe (hasattr, copy, pickle): it must be an AttributeError, not a silent RPC.
+        if api_name.startswith("_"):
+            raise AttributeError("{!r} object has no attribute {!r}".format(type(self).__name__, api_name))
         return lambda **kwargs: self(api_name, **kwargs)
-    
+
     def __call__(self, api_name, **kwargs):
-        err, response = None, None
+        """Call a server function. Only a call that never got the server's answer is retried.
+
+        * RpcError -- the server answered and refused (unknown field, coverage, bad argument): the same
+          request gets the same refusal, so it is raised at once instead of being sent 3 times with
+          1.2 s of sleeps.
+        * TimeoutError -- the server keeps executing a timed-out request; retrying duplicates the work.
+        * ConnectionError / OSError -- the request may never have arrived: retried on a new connection.
+        """
+        err = None
         for attempt_index in range(self.request_attempt_count):
             try:
-                response = self.call(api_name, kwargs)
-                break
-            except TimeoutError:
-                # The server keeps executing a timed-out request, so retrying it immediately only
-                # duplicates expensive work. Connection failures still use the retry path below.
+                return self.call(api_name, kwargs)
+            except (RpcError, TimeoutError, _FutureTimeout):
                 raise
-            except Exception as ex:
+            except OSError as ex:
                 err = ex
                 if attempt_index < self.request_attempt_count - 1:
                     time.sleep(0.6)
-
-        if response is None and isinstance(err, Exception):
-            if "TSocket read 0 bytes" in str(err):
-                raise Exception("连接被关闭，请减少数据查询量或检查网络后重试")
-            raise err
-
-        return response
+        raise err
 
 
 # 默认懒连接参数。**先读环境变量，读不到才用内置值**：

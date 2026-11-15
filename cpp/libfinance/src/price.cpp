@@ -33,6 +33,8 @@ void check(const arrow::Status& status) {
 Json fields_argument(const Codes& fields) {
   if (!fields.given()) return Json();
   std::vector<std::string> asked = detail::list_of(fields, "fields"), once, repeated;
+  // 空列表不是"全部字段"（那是不给），而是一张没有列的表——几乎一定是调用方的错
+  if (asked.empty()) throw std::invalid_argument("fields: at least one field expected (omit it for all fields)");
   for (const auto& name : asked) {
     if (!contains(once, name)) once.push_back(name);
     else if (!contains(repeated, name)) repeated.push_back(name);
@@ -44,10 +46,23 @@ Json fields_argument(const Codes& fields) {
 // ---------------------------------------------------------------- warnings before the call
 
 //: `_warn_beyond_coverage`: an end_date past the bars is refused by the server; say why first.
-void warn_beyond_coverage(const std::string& end_date) {
+//: 所查代码所在的市场（Python 的 _markets_of）：交易所后缀 XSHG/XSHE/XBSE 是 cn，其余是 us。
+std::vector<std::string> markets_of(const std::vector<std::string>& ids) {
+  bool cn = false, us = false;
+  for (const auto& id : ids) {
+    const std::string venue = id.substr(id.rfind('.') + 1);
+    (venue == "XSHG" || venue == "XSHE" || venue == "XBSE" ? cn : us) = true;
+  }
+  std::vector<std::string> out;
+  if (cn) out.emplace_back("cn");
+  if (us) out.emplace_back("us");
+  return out;
+}
+
+void warn_beyond_coverage(const std::string& end_date, const std::vector<std::string>& ids) {
   std::string latest;
   try {
-    for (const char* market : {"cn", "us"})
+    for (const auto& market : markets_of(ids))
       for (const auto& [type, venues] : get_price_coverage(market).items())
         for (const auto& [venue, entry] : venues.items()) {
           const Json end = entry.value("end", Json());
@@ -96,6 +111,61 @@ Table to_panel(const Table& bars) {
   return sorted->table();
 }
 
+//: 结果为空，或第一行晚于 start_date（可能被分档限制夹紧）。
+bool starts_after(const Table& panel, const std::string& start) {
+  if (!panel) return false;
+  if (panel->num_rows() == 0) return true;
+  const auto column = panel->GetColumnByName("datetime");
+  if (!column) return false;
+  const int64_t start_ms = static_cast<int64_t>(DateLike(start).date().days_since_epoch()) * 86400000LL;
+  for (const auto& chunk : column->chunks()) {
+    const auto& values = static_cast<const arrow::TimestampArray&>(*chunk);
+    for (int64_t i = 0; i < values.length(); ++i)
+      if (values.IsValid(i) && values.Value(i) <= start_ms) return false;
+  }
+  return true;
+}
+
+//: `_warn_unknown_codes`: when a code has no row at all, tell "misspelt / not listed that day" from "no bars
+//: in this window". instruments is asked only then, so a normal call pays no extra round trip.
+void warn_unknown_codes(const Table& panel, const std::vector<std::string>& ids, const std::string& end) {
+  if (!panel) return;
+  const auto column = panel->GetColumnByName("order_book_id");
+  if (!column) return;
+  std::vector<std::string> present;
+  for (const auto& chunk : column->chunks()) {
+    if (chunk->type_id() != arrow::Type::STRING) return;
+    const auto& values = static_cast<const arrow::StringArray&>(*chunk);
+    for (int64_t i = 0; i < values.length(); ++i) {
+      if (!values.IsValid(i)) continue;
+      const std::string code = values.GetString(i);
+      if (present.empty() || present.back() != code)  // sorted by order_book_id
+        if (!contains(present, code)) present.push_back(code);
+    }
+  }
+  std::vector<std::string> missing;
+  for (const auto& code : ids)
+    if (!contains(present, code)) missing.push_back(code);
+  if (missing.empty()) return;
+  std::vector<std::string> unknown;
+  try {
+    const Json found =
+        detail::call("instruments", {{"order_book_ids", missing}, {"as_of", end}, {"last_known", true}});
+    for (const auto& code : missing) {
+      bool known = false;
+      if (found.is_array())
+        for (const Json& item : found)
+          if (item.is_object() && item.value("order_book_id", Json()) == code) known = true;
+      if (!known) unknown.push_back(code);
+    }
+  } catch (const std::exception&) {
+    return;
+  }
+  if (!unknown.empty())
+    detail::warn("get_price: " + detail::py_list(unknown) + " 在 " + end +
+                 " 不是已知的证券代码，结果中没有它们的行（不是停牌或缺数据）。用 instruments() 核对代码。");
+}
+
 }  // namespace
 
 Table get_price(const Codes& order_book_ids, const DateLike& start_date, const DateLike& end_date,
@@ -108,11 +178,12 @@ Table get_price(const Codes& order_book_ids, const DateLike& start_date, const D
   detail::check_items_in({adjust_type}, kAdjustTypes, "adjust_type");
   const std::string start = start_date.iso(), end = end_date.iso();
   if (start > end) throw std::invalid_argument("start_date must not be after end_date");
-  detail::warn_if_clamped("get_price", start);
-  warn_beyond_coverage(end);
-
+  // 分档夹紧、超出覆盖两项提示都要先取元数据（冷启动 4 个串行往返），而它们只在结果不完整时才有意义：
+  // 放到查询之后，只在需要时做。成功且从 start_date 起就有数据的调用只付 1 个往返。
   // daybar routes the codes (stocks and indexes alike) by instrument as of end_date
-  const Table bars = detail::call_table("get_price", {{"order_book_ids", ids},
+  Table bars;
+  try {
+    bars = detail::call_table("get_price", {{"order_book_ids", ids},
                                                      {"start_date", start},
                                                      {"end_date", end},
                                                      {"frequency", frequency},
@@ -121,7 +192,15 @@ Table get_price(const Codes& order_book_ids, const DateLike& start_date, const D
                                                      {"include_now", include_now},
                                                      {"adjust_type", adjust_type},
                                                      {"adjust_orig", detail::iso_or_null(adjust_orig)}});
-  return to_panel(bars);
+  } catch (const RpcError& error) {
+    if (error.kind() == "CoverageError" || error.message().find("outside coverage") != std::string::npos)
+      warn_beyond_coverage(end, ids);   // 说出覆盖上界，再把服务端的拒绝原样抛出
+    throw;
+  }
+  Table panel = to_panel(bars);
+  if (starts_after(panel, start)) detail::warn_if_clamped("get_price", start);
+  warn_unknown_codes(panel, ids, end);
+  return panel;
 }
 
 Json get_price_coverage(const std::string& market) {

@@ -33,7 +33,8 @@ void check_items_in(const std::vector<std::string>& items, const std::vector<std
 }
 
 Json as_given(const Codes& values) {
-  if (!values.given()) return Json();
+  // 不给代码 / 空列表：服务端会答一张空表，看起来像"没有所属行业/指数/主题"。在发出前说清楚。
+  order_book_ids(values);
   return values.single() ? Json(values.values().front()) : Json(values.values());
 }
 
