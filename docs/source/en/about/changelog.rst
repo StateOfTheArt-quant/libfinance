@@ -13,7 +13,7 @@ Unreleased
 - **After fork() a child uses a connection of its own.** It used to share the parent's: either process could read the
   other's answers, so a call could wait until its timeout or be handed the answer to the other's query. Python and C++.
 - C++: calls on one ``RpcClient`` from several threads run in parallel (a pool of up to 8 connections by default); they
-  used to queue. The constructor and ``init_client`` take ``timeout_seconds`` and ``max_connections``, both defaulted:
+  used to queue. The constructor takes ``timeout_seconds`` and ``max_connections``, both defaulted:
   source compatible, callers must be rebuilt. Connecting is bounded at 5 s (it was 300 s).
 - C++: ``LIBFINANCE_PORT`` that is not a number in 1..65535 throws ``std::invalid_argument`` (``abc`` used to mean port 0).
 - Python: results cached by data version (``all_instruments``, ``get_price_coverage``) are handed out as copies; the
