@@ -12,7 +12,7 @@ from typing import List, Optional, Union
 
 import pandas as pd
 
-from libfinance.client import get_client
+from libfinance.client import RpcError, get_client
 from libfinance.utils.cache import versioned_cache, warn_if_clamped
 from libfinance.utils.decorators import export_as_api
 from libfinance.utils.utils import to_date_str
@@ -174,26 +174,78 @@ def get_price(
         raise ValueError("skip_suspended: a bool expected, got {!r}".format(skip_suspended))
     if fields is not None:
         fields = ensure_list_of_string(fields, "fields")
+        if not fields:
+            # 空列表不是"全部字段"（那是 None），而是一张没有列的表——几乎一定是调用方的错
+            raise ValueError("fields: at least one field expected (None means all fields)")
         if len(set(fields)) < len(fields):
             warnings.warn("duplicated fields: %s" % [f for f in fields if fields.count(f) > 1])
             fields = list(dict.fromkeys(fields))
     start_date, end_date = to_date_str(start_date), to_date_str(end_date)
     if start_date > end_date:
         raise ValueError("start_date must not be after end_date")
-    # 分档限制会把 start_date 夹到边界——结果可能是一张空表，先说出来。
-    warn_if_clamped("get_price", start_date)
-    _warn_beyond_coverage(end_date, ids)
+    # 两项提示（分档夹紧、超出覆盖）都要先取元数据（describe_capabilities、daybar.coverage、
+    # exfactor.coverage、ping），冷启动时是 4 个串行往返（跨公网约 0.8 s）。它们只在"结果不完整"时
+    # 才有意义，所以放到查询之后、只在需要时做：成功且从 start_date 起就有数据的调用只付 1 个往返。
+    try:
+        frame = get_client().get_price(order_book_ids=list(dict.fromkeys(ids)),
+                                       start_date=start_date,
+                                       end_date=end_date,
+                                       frequency=frequency,
+                                       fields=fields,
+                                       skip_suspended=skip_suspended,
+                                       include_now=include_now,
+                                       adjust_type=adjust_type,
+                                       adjust_orig=to_date_str(adjust_orig) if adjust_orig is not None else None)
+    except RpcError as error:
+        if _is_coverage_refusal(error):
+            _warn_beyond_coverage(end_date, ids)   # 说出覆盖上界，再把服务端的拒绝原样抛出
+        raise
+    panel = _to_panel(frame)
+    if _starts_after(panel, start_date):
+        # 分档限制会把 start_date 夹到边界——结果可能是空表或缺了开头，说出来
+        warn_if_clamped("get_price", start_date)
+    _warn_unknown_codes(panel, ids, end_date)
+    return panel
 
-    frame = get_client().get_price(order_book_ids=list(dict.fromkeys(ids)),
-                                   start_date=start_date,
-                                   end_date=end_date,
-                                   frequency=frequency,
-                                   fields=fields,
-                                   skip_suspended=skip_suspended,
-                                   include_now=include_now,
-                                   adjust_type=adjust_type,
-                                   adjust_orig=to_date_str(adjust_orig) if adjust_orig is not None else None)
-    return _to_panel(frame)
+
+def _warn_unknown_codes(panel, ids, end_date):
+    """某个代码一行都没有时，分清"写错了/当日不存在"与"这段时间没有行情"。
+
+    只在出现无行代码时才多问一次 instruments（正常调用不付这个往返）；问不到就不说话。
+    """
+    if not isinstance(panel, pd.DataFrame) or "order_book_id" not in (panel.index.names or ()):
+        return
+    present = set(panel.index.get_level_values("order_book_id").unique())
+    missing = [code for code in dict.fromkeys(ids) if code not in present]
+    if not missing:
+        return
+    try:
+        found = get_client().instruments(order_book_ids=missing, as_of=end_date, last_known=True) or []
+        known = {item.get("order_book_id") for item in found}
+    except Exception:
+        return
+    unknown = [code for code in missing if code not in known]
+    if unknown:
+        warnings.warn(
+            "get_price: {} 在 {} 不是已知的证券代码，结果中没有它们的行（不是停牌或缺数据）。"
+            "用 instruments() 核对代码。".format(unknown, end_date),
+            stacklevel=3,
+        )
+
+
+def _is_coverage_refusal(error):
+    return error.kind == "CoverageError" or "outside coverage" in str(error.message)
+
+
+def _starts_after(panel, start_date):
+    """结果为空，或第一行晚于 start_date（可能被分档限制夹紧）。"""
+    if not isinstance(panel, pd.DataFrame):
+        return False
+    if panel.empty:
+        return True
+    if "datetime" not in (panel.index.names or ()):
+        return False
+    return panel.index.get_level_values("datetime").min() > pd.Timestamp(start_date)
 
 
 def _to_panel(frame):

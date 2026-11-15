@@ -20,19 +20,27 @@ std::string default_host();
 int default_port();
 
 //: Connects the process-wide client, unless one is already connected (Python's init_client).
-void init_client(const std::string& host = default_host(), int port = default_port());
+//: `timeout_seconds` bounds each request (a timed-out request is not retried: the server keeps
+//: executing it); `max_connections` is how many requests the client keeps in flight at once.
+void init_client(const std::string& host = default_host(), int port = default_port(), int timeout_seconds = 300,
+                 int max_connections = 8);
 
-//: One connection to a libfinance server; calls from many threads share it.
+//: A client of one libfinance server; calls from many threads share it and run in parallel, each on
+//: one of up to `max_connections` connections (opened as needed, the first one by the constructor,
+//: which throws RpcError when the server cannot be reached within 5 s).
+//:
+//: After fork() the child gets connections of its own: the parent's are left to the parent (sharing
+//: them would let either process read the other's answers).
 class RpcClient {
  public:
-  RpcClient(const std::string& host, int port);
+  RpcClient(const std::string& host, int port, int timeout_seconds = 300, int max_connections = 8);
   ~RpcClient();
   RpcClient(const RpcClient&) = delete;
   RpcClient& operator=(const RpcClient&) = delete;
 
   //: Calls a server function with keyword arguments and returns its result, as it came (a table
   //: answer is {"type": "arrow" | "pandas", "data": ...}; see as_table). Connection failures are
-  //: retried twice; what the server refuses throws RpcError at once.
+  //: retried twice on a fresh connection; a timeout and what the server refuses throw RpcError at once.
   Json call(const std::string& function, const Json& args) const;
   //: Logs in; later calls get the account's level, and a reconnect logs in again by itself.
   //: Returns {"status": "successful", "level", "user_id"}; throws LoginError when refused.

@@ -3,6 +3,8 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <fcntl.h>
+#include <poll.h>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -81,13 +83,31 @@ void Connection::open() {
   for (addrinfo* address = found; address != nullptr; address = address->ai_next) {
     const int fd = ::socket(address->ai_family, address->ai_socktype, address->ai_protocol);
     if (fd < 0) continue;
-    timeval timeout{timeout_seconds_, 0};
-    setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-    setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
-    if (::connect(fd, address->ai_addr, address->ai_addrlen) == 0) {
+    // 建连单独限时（kConnectSeconds）：blocking connect() 受 SO_SNDTIMEO 约束，原先等于请求超时 300 s，
+    // 网络黑洞时第一个调用要卡 5 分钟。非阻塞 connect + poll，连上后再恢复阻塞并设请求超时。
+    const int flags = fcntl(fd, F_GETFL, 0);
+    fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+    int status = ::connect(fd, address->ai_addr, address->ai_addrlen);
+    if (status != 0 && errno == EINPROGRESS) {
+      pollfd ready{fd, POLLOUT, 0};
+      const int polled = ::poll(&ready, 1, kConnectSeconds * 1000);
+      int error = 0;
+      socklen_t length = sizeof(error);
+      if (polled == 1 && getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &length) == 0 && error == 0) {
+        status = 0;
+      } else {
+        errno = polled == 0 ? ETIMEDOUT : (error != 0 ? error : errno);
+      }
+    }
+    if (status == 0) {
+      fcntl(fd, F_SETFL, flags);
+      timeval timeout{timeout_seconds_, 0};
+      setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+      setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
       const int on = 1;
       setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on));
       socket_ = fd;
+      pid_ = ::getpid();
       return;
     }
     reason = std::strerror(errno);
@@ -146,6 +166,12 @@ bool Connection::read_frame(uint8_t& type, uint32_t& request_id, uint8_t& flags,
 
 Json Connection::call(const std::string& function, const Json& args) {
   std::lock_guard<std::mutex> guard(lock_);
+  if (socket_ >= 0 && pid_ != ::getpid()) {
+    // fork 之后：这条 socket 是父进程的活连接。只关子进程这份描述符（不 shutdown，父进程不受影响），
+    // 重新建连——否则父子进程会互相读走对方的应答，request_id 还会撞号。
+    ::close(socket_);
+    socket_ = -1;
+  }
   if (socket_ < 0) {
     open();
     if (!login_.is_null()) log_in(login_);  // a new connection starts anonymous
@@ -155,6 +181,10 @@ Json Connection::call(const std::string& function, const Json& args) {
 
 Json Connection::login(const Json& args) {
   std::lock_guard<std::mutex> guard(lock_);
+  if (socket_ >= 0 && pid_ != ::getpid()) {  // fork 之后，同 call()
+    ::close(socket_);
+    socket_ = -1;
+  }
   if (socket_ < 0) open();
   Json answer = log_in(args);
   login_ = args;

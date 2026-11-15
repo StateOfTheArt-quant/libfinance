@@ -4,6 +4,35 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
+Unreleased
+==========
+
+- **Only a call that got no answer from the server is retried.** Python used to treat a refusal by the server (unknown
+  field, outside coverage, bad argument) as a network error: it was sent 3 times with 1.2 s of sleeps. It is now raised
+  at once as ``RpcError``. In C++ a timeout is no longer retried (the server is still executing that request).
+- **After fork() a child uses a connection of its own.** It used to share the parent's: either process could read the
+  other's answers, so a call could wait until its timeout or be handed the answer to the other's query. Python and C++.
+- C++: calls on one ``RpcClient`` from several threads run in parallel (a pool of up to 8 connections by default); they
+  used to queue. The constructor and ``init_client`` take ``timeout_seconds`` and ``max_connections``, both defaulted:
+  source compatible, callers must be rebuilt. Connecting is bounded at 5 s (it was 300 s).
+- C++: ``LIBFINANCE_PORT`` that is not a number in 1..65535 throws ``std::invalid_argument`` (``abc`` used to mean port 0).
+- Python: results cached by data version (``all_instruments``, ``get_price_coverage``) are handed out as copies; the
+  cached object itself used to be returned, so a caller's in-place change altered every later answer. Concurrent first
+  calls ask the server once.
+- Trading calendar: ``n`` of ``get_previous_trading_date`` / ``get_next_trading_date`` / ``get_n_trading_dates_until``
+  must be a positive integer (``n=0`` answered the day itself, a negative one indexed from the other end of the
+  calendar); a reversed range or a ``None`` date is an error (``count_trading_dates`` answered a negative count,
+  ``get_trading_dates`` an empty range). ``ValueError`` in Python, ``std::invalid_argument`` in C++.
+- ``get_price``: an empty ``fields`` list is an error (omit it for all fields); a code with no row at all that is not a
+  known instrument is warned about; the tier-limit and coverage warnings are now given after the query, when the answer
+  is incomplete or refused, so a normal call spends no round trip on them.
+- ``get_instrument_industry`` / ``get_instrument_indices`` / ``get_instrument_themes``: no code or an empty list is an
+  error (it answered an empty table).
+- Python: ``as_of`` of ``get_pit_financials_ex`` takes a ``date`` / ``Timestamp`` (it raised ``TypeError``); a quarter
+  must look like ``2026q1``, so ``2023q5`` is refused before the request.
+- Python: a missing attribute of ``RpcClient`` whose name starts with an underscore is an ``AttributeError`` (any name
+  used to become a remote call); an answer that cannot be decoded gives ``RpcError`` the reason.
+
 0.1.7 (2026-11-11)
 ==================
 

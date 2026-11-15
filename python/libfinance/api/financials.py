@@ -6,13 +6,14 @@ r"""财务数据：PIT 财报（financialstatement）与财务衍生指标（fin
 "当时能看到的"还是"现在最新的"那一版。\ ``get_financial_metrics`` 按\ **交易日**\ 给指标：每天的值来自
 那天收盘后能看到的最新报告，本身就是 point-in-time 的。
 """
+import re
 from typing import List, Union
 
 import pandas as pd
 
 from libfinance.client import get_client
 from libfinance.utils.decorators import export_as_api
-from libfinance.utils.utils import to_date_str
+from libfinance.utils.utils import as_of_text, to_date_str
 from libfinance.utils.validators import ensure_list_of_string, ensure_string, ensure_string_in
 
 #: 服务端支持的报表口径。取值来自上游 financialmetrics/query.py:196 的白名单
@@ -20,10 +21,14 @@ from libfinance.utils.validators import ensure_list_of_string, ensure_string, en
 STATEMENTS = ("latest", "all")
 
 
+_QUARTER = re.compile(r"^\d{4}q[1-4]$")
+
+
 def _quarter(value, name):
-    """季度形如 ``2026q1``。这里只做形状检查，取值范围由服务端判定。"""
+    """季度形如 ``2026q1``（也接受 ``2026-Q1``）。年份与季度号在客户端就核对：
+    '2023q5'、'q' 这类输入发到服务端只会白付一个往返再被拒绝。"""
     text = ensure_string(value, name).lower().replace("-", "")
-    if "q" not in text:
+    if not _QUARTER.match(text):
         raise ValueError("{}: expected a quarter like '2026q1', got {!r}".format(name, value))
     return text
 
@@ -62,7 +67,8 @@ def get_pit_financials_ex(
         order_book_ids=ids, fields=fields,
         start_quarter=_quarter(start_quarter, "start_quarter"),
         end_quarter=_quarter(end_quarter, "end_quarter"),
-        as_of=as_of, statements=statements,
+        # as_of_text：date / Timestamp 直接塞进 msgpack 会抛 TypeError("Cannot serialize ...")
+        as_of=as_of_text(as_of), statements=statements,
     )
     return _indexed(frame, "quarter")
 

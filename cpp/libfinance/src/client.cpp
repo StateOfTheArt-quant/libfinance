@@ -1,9 +1,15 @@
 #include "libfinance/client.hpp"
 
+#include <cerrno>
 #include <cstdlib>
 #include <iostream>
+#include <algorithm>
+#include <atomic>
+#include <condition_variable>
 #include <mutex>
 #include <thread>
+
+#include <unistd.h>
 
 #include <arrow/api.h>
 #include <arrow/io/memory.h>
@@ -135,12 +141,119 @@ Table from_arrow_ipc(const Json::binary_t& bytes) {
 
 // ---------------------------------------------------------------- RpcClient
 
+// 一个 wire::Connection 一次只能有一个请求在途（同步收发、不按 request_id 分发）。原先 RpcClient 只有一条
+// 连接，多线程共用时所有请求排队：8 个并发 200 ms 的请求要 1.6 s，跨公网时整个进程的吞吐被钉在 1/RTT。
+// 现在是一个连接池：每个请求借一条空闲连接，没有空闲的就新开（最多 max_connections 条），用完归还。
+// 协议、服务端都不用改；单线程调用者仍只有一条连接。
+
 struct RpcClient::Connection {
-  wire::Connection wire;
-  Connection(const std::string& host, int port) : wire(host, port) {}
+  struct Lent {
+    std::unique_ptr<wire::Connection> wire;
+    int generation = -1;  // 已以第几次 login() 的账号登录；-1 为匿名
+  };
+  struct Pool {
+    std::mutex lock;
+    std::condition_variable returned;
+    std::vector<Lent> idle;
+    int open = 0;
+  };
+
+  Connection(std::string host_, int port_, int timeout_, int max_)
+      : host(std::move(host_)), port(port_), timeout(timeout_), max_open(std::max(1, max_)), pool(new Pool), pid(::getpid()) {}
+
+  ~Connection() {
+    // fork 之后被替换掉的旧池子故意不删（见 current_pool），这里只删本进程的
+    if (pid.load() == ::getpid()) delete pool.load();
+  }
+
+  //: 本进程的池子。fork 后子进程第一次用到时换一个新池子：父进程的连接（及其可能正被父进程某个线程
+  //: 持有的锁）留给父进程，旧池子不析构——析构会关掉、甚至等待那些锁。
+  Pool& current_pool() {
+    const pid_t me = ::getpid();
+    if (pid.load() != me) {
+      pool.store(new Pool);
+      pid.store(me);
+    }
+    return *pool.load();
+  }
+
+  Lent acquire() {
+    Pool& p = current_pool();
+    Lent lent;
+    {
+      std::unique_lock<std::mutex> guard(p.lock);
+      p.returned.wait(guard, [&] { return !p.idle.empty() || p.open < max_open; });
+      if (!p.idle.empty()) {
+        lent = std::move(p.idle.back());
+        p.idle.pop_back();
+      } else {
+        ++p.open;
+      }
+    }
+    if (!lent.wire) {
+      try {
+        lent.wire = std::make_unique<wire::Connection>(host, port, timeout);
+      } catch (...) {
+        std::lock_guard<std::mutex> guard(p.lock);
+        --p.open;
+        p.returned.notify_one();
+        throw;
+      }
+    }
+    // login() 之后借出的连接：先以该账号登录（服务端把等级记在连接上）
+    std::pair<int, Json> account;
+    {
+      std::lock_guard<std::mutex> guard(login_lock);
+      account = {generation, credentials};
+    }
+    if (lent.generation != account.first && !account.second.is_null()) {
+      try {
+        lent.wire->login(account.second);
+      } catch (...) {
+        give_back(std::move(lent));
+        throw;
+      }
+      lent.generation = account.first;
+    }
+    return lent;
+  }
+
+  void give_back(Lent lent) {
+    Pool& p = current_pool();
+    std::lock_guard<std::mutex> guard(p.lock);
+    p.idle.push_back(std::move(lent));
+    p.returned.notify_one();
+  }
+
+  //: 借一条连接、用完自动归还（异常时也归还：wire::Connection 遇到传输错误会自行关闭、下次重开）
+  class Lease {
+   public:
+    explicit Lease(Connection& owner) : owner_(owner), lent_(owner.acquire()) {}
+    ~Lease() { owner_.give_back(std::move(lent_)); }
+    wire::Connection* operator->() { return lent_.wire.get(); }
+    Lent& lent() { return lent_; }
+
+   private:
+    Connection& owner_;
+    Lent lent_;
+  };
+
+  const std::string host;
+  const int port;
+  const int timeout;
+  const int max_open;
+  std::atomic<Pool*> pool;
+  std::atomic<pid_t> pid;
+
+  std::mutex login_lock;
+  Json credentials;   // null until login() succeeds
+  int generation = 0;
 };
 
-RpcClient::RpcClient(const std::string& host, int port) : connection_(std::make_unique<Connection>(host, port)) {}
+RpcClient::RpcClient(const std::string& host, int port, int timeout_seconds, int max_connections)
+    : connection_(std::make_unique<Connection>(host, port, timeout_seconds, max_connections)) {
+  Connection::Lease first(*connection_);  // 构造时就连：连不上的服务端在这里报错（与原先一致）
+}
 
 RpcClient::~RpcClient() = default;
 
@@ -148,17 +261,25 @@ Json RpcClient::call(const std::string& function, const Json& args) const {
   constexpr int kAttempts = 3;
   for (int attempt = 1;; ++attempt) {
     try {
-      return connection_->wire.call(function, args);
-    } catch (const wire::TransportError&) {
-      // a call that never got the server's answer (connection, timeout) is worth another try
-      if (attempt == kAttempts) throw;
+      Connection::Lease lease(*connection_);
+      return lease->call(function, args);
+    } catch (const wire::TransportError& error) {
+      // 超时不重试：服务端仍在执行这个请求，重发只会让同一个重查询再跑一遍（最坏 3 × 300 s）
+      if (error.code() == wire::kTimeout || attempt == kAttempts) throw;
+      // 连接、协议错误：请求可能没到服务端，在新连接上再试
       std::this_thread::sleep_for(std::chrono::milliseconds(600));
     }
   }
 }
 
 Json RpcClient::login(const std::string& username, const std::string& password) {
-  return connection_->wire.login(Json{{"username", username}, {"password", password}});
+  const Json args{{"username", username}, {"password", password}};
+  Connection::Lease lease(*connection_);
+  Json answer = lease->login(args);   // 账号不对时抛 LoginError，已保存的账号不变
+  std::lock_guard<std::mutex> guard(connection_->login_lock);
+  connection_->credentials = args;
+  lease.lent().generation = ++connection_->generation;  // 其余连接在下次借出时登录
+  return answer;
 }
 
 Json login(const std::string& username, const std::string& password) {
@@ -172,12 +293,19 @@ std::string default_host() {
 
 int default_port() {
   const char* port = std::getenv("LIBFINANCE_PORT");
-  return port != nullptr && *port != '\0' ? std::atoi(port) : 8080;
+  if (port == nullptr || *port == '\0') return 8080;
+  // std::atoi("abc") 是 0、atoi("8080x") 是 8080：一个写错的变量会变成连不上 port 0，报的错与真正原因无关
+  char* end = nullptr;
+  errno = 0;
+  const long value = std::strtol(port, &end, 10);
+  if (errno != 0 || end == port || *end != '\0' || value < 1 || value > 65535)
+    throw std::invalid_argument(std::string("LIBFINANCE_PORT: a port number 1..65535 expected, got '") + port + "'");
+  return static_cast<int>(value);
 }
 
-void init_client(const std::string& host, int port) {
+void init_client(const std::string& host, int port, int timeout_seconds, int max_connections) {
   std::lock_guard<std::mutex> guard(client_lock);
-  if (!client) client = std::make_unique<RpcClient>(host, port);
+  if (!client) client = std::make_unique<RpcClient>(host, port, timeout_seconds, max_connections);
 }
 
 RpcClient& get_client() {
@@ -235,28 +363,79 @@ void register_cache(std::function<void()> clear) {
   caches.push_back(std::move(clear));
 }
 
-std::optional<std::string> current_data_version() {
-  static std::mutex lock;
-  static std::optional<std::string> version;
-  static std::chrono::steady_clock::time_point checked_at;
-  static bool checked = false;
-  const auto now = std::chrono::steady_clock::now();
-  {
-    std::lock_guard<std::mutex> guard(lock);
-    if (checked && now - checked_at < std::chrono::seconds(2)) return version;
-  }
-  std::optional<std::string> value;
+namespace {
+
+std::optional<std::string> ask_data_version() {
   try {  // a cache must never make a query fail: without a version it falls back to a TTL
     const Json pong = call("ping", Json::object());
     if (pong.is_object() && pong.contains("data_version") && pong["data_version"].is_string())
-      value = pong["data_version"].get<std::string>();
+      return pong["data_version"].get<std::string>();
   } catch (const std::exception&) {
   }
-  std::lock_guard<std::mutex> guard(lock);
-  version = value;
-  checked_at = std::chrono::steady_clock::now();
-  checked = true;
-  return version;
+  return std::nullopt;
+}
+
+struct VersionState {
+  std::mutex lock;
+  std::mutex asking;  // 没有版本时只让一个线程同步去问，其余等它的答案
+  std::optional<std::string> version;
+  std::chrono::steady_clock::time_point checked_at;
+  bool checked = false;
+  bool refreshing = false;
+};
+
+VersionState& version_state() {
+  // 不析构：后台刷新线程可能比 main 活得久。fork 后换一份：父进程的刷新线程不在子进程里，
+  // 它的 refreshing 标记永远不会清掉，持有的锁也永远不会释放。
+  static std::atomic<VersionState*> state{new VersionState};
+  static std::atomic<pid_t> owner{::getpid()};
+  if (owner.load() != ::getpid()) {
+    state.store(new VersionState);
+    owner.store(::getpid());
+  }
+  return *state.load();
+}
+
+}  // namespace
+
+//: Python 的 stale-while-revalidate：2 秒内直接复用；过期但已知一个版本时，先用它答这次调用、
+//: 在后台再问（原先每次过期都同步 ping，交互式使用里几乎每个调用多付一个往返）；
+//: 还不知道任何版本时才同步问，并发的同步询问合并成一次。
+std::optional<std::string> current_data_version() {
+  VersionState& state = version_state();
+  const auto now = std::chrono::steady_clock::now();
+  std::chrono::steady_clock::time_point asked_at;
+  {
+    std::lock_guard<std::mutex> guard(state.lock);
+    if (state.checked && now - state.checked_at < std::chrono::seconds(2)) return state.version;
+    if (state.checked && state.version) {
+      if (!state.refreshing) {
+        state.refreshing = true;
+        std::thread([&state] {
+          const auto value = ask_data_version();
+          std::lock_guard<std::mutex> guard(state.lock);
+          state.version = value;
+          state.checked_at = std::chrono::steady_clock::now();
+          state.refreshing = false;
+        }).detach();
+      }
+      return state.version;
+    }
+    asked_at = state.checked_at;
+  }
+  std::lock_guard<std::mutex> asking(state.asking);
+  {
+    std::lock_guard<std::mutex> guard(state.lock);
+    if (state.checked && state.checked_at != asked_at &&
+        std::chrono::steady_clock::now() - state.checked_at < std::chrono::seconds(2))
+      return state.version;
+  }
+  const auto value = ask_data_version();
+  std::lock_guard<std::mutex> guard(state.lock);
+  state.version = value;
+  state.checked_at = std::chrono::steady_clock::now();
+  state.checked = true;
+  return state.version;
 }
 
 }  // namespace detail

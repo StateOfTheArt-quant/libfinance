@@ -7,6 +7,8 @@
 //   PING from the server is answered with PONG.
 #pragma once
 
+#include <sys/types.h>
+
 #include <mutex>
 #include <string>
 
@@ -24,6 +26,8 @@ class TransportError : public RpcError {
 constexpr int kConnectionFailed = -1;
 constexpr int kTimeout = -2;
 constexpr int kProtocolError = -3;
+//: 建连的时限（秒），与请求超时分开：Python 客户端同为 5 s。
+constexpr int kConnectSeconds = 5;
 
 class Connection {
  public:
@@ -52,6 +56,7 @@ class Connection {
   int port_;
   int timeout_seconds_;
   int socket_ = -1;
+  pid_t pid_ = 0;  // 打开 socket_ 的进程；fork 后的子进程不能沿用父进程的连接
   uint32_t next_id_ = 0;
   Json login_;  // null until login() succeeds
   std::mutex lock_;

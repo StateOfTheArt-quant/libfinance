@@ -23,8 +23,11 @@ TTL 语义，不把 None 当成某个固定版本 —— 那样会把"未知"缓
 （实测 2026-11-11 约 185 ms），交互式使用里两次调用几乎总隔着 2 秒以上——原先这一问让大多数调用
 多付一个往返。只有还不知道任何版本时（第一次）才同步等它。
 """
+import copy
+import os
 import threading
 import time
+from concurrent.futures import Future
 
 #: 向服务端问一次版本的最小间隔（秒）。ping 很便宜，但没必要每次调用都问。
 _VERSION_POLL_SECONDS = 2.0
@@ -32,6 +35,8 @@ _VERSION_POLL_SECONDS = 2.0
 _FALLBACK_TTL = 300.0
 
 _lock = threading.Lock()
+#: 同步问版本时只让一个线程去问，其余等它的答案（冷启动时 N 个线程不发 N 个 ping）。
+_sync_lock = threading.Lock()
 _version = None
 _version_checked_at = 0.0
 _refreshing = False
@@ -64,7 +69,7 @@ def current_data_version(force=False):
     r"""服务端当前的数据版本；拿不到时返回 None。
 
     ``_VERSION_POLL_SECONDS`` 内直接复用。过期而手里已有一个版本时，先返回它、在后台再问一次
-    （不让这次调用多等一个往返）；还没有任何版本或 ``force`` 时同步问。
+    （不让这次调用多等一个往返）；还没有任何版本或 ``force`` 时同步问——并发的同步询问合并成一次。
     """
     global _version, _version_checked_at, _refreshing
     now = time.time()
@@ -78,15 +83,37 @@ def current_data_version(force=False):
                 threading.Thread(target=_refresh_in_background, name="libfinance-data-version",
                                  daemon=True).start()
             return _version
-    value = _ask_version()
-    with _lock:
-        _version, _version_checked_at = value, time.time()
-    return value
+        asked_at = _version_checked_at
+    with _sync_lock:
+        with _lock:
+            # 排在前面的线程已经问过了：直接用它的答案
+            if _version_checked_at != asked_at and time.time() - _version_checked_at < _VERSION_POLL_SECONDS:
+                return _version
+        value = _ask_version()
+        with _lock:
+            _version, _version_checked_at = value, time.time()
+        return value
+
+
+def _private_copy(value):
+    """缓存里的对象是所有调用者共享的：交出去的必须是副本，否则调用方的原地修改
+    （df.drop(inplace=True)、加列、dict.clear()）会改掉之后每个调用者拿到的结果。"""
+    if hasattr(value, "iloc") and hasattr(value, "copy"):      # pandas DataFrame / Series
+        return value.copy(deep=True)
+    if isinstance(value, (dict, list, set)):
+        return copy.deepcopy(value)
+    return value                                              # 不可变值（None、str、tuple……）
 
 
 def versioned_cache(func):
-    """按数据版本缓存。版本变了自动失效，版本不可用时退回 5 分钟 TTL。"""
+    """按数据版本缓存。版本变了自动失效，版本不可用时退回 5 分钟 TTL。
+
+    * 每次返回副本（见 _private_copy）。
+    * 同一个 key 并发未命中只回源一次（single-flight）：其余线程等第一个的结果，
+      冷启动时 N 个线程不会把同一个全表查询发 N 遍。
+    """
     store = {}
+    inflight = {}
     lock = threading.Lock()
 
     def wrapper(*args, **kwargs):
@@ -98,29 +125,49 @@ def versioned_cache(func):
             if hit is not None:
                 cached_version, cached_at, value = hit
                 if version is not None and cached_version == version:
-                    return value
+                    return _private_copy(value)
                 if version is None and cached_version is None and now - cached_at < _FALLBACK_TTL:
-                    return value
-        value = func(*args, **kwargs)
+                    return _private_copy(value)
+            flight = inflight.get(key)
+            owner = flight is None or flight[0] != version
+            if owner:
+                future = Future()
+                inflight[key] = (version, future)
+            else:
+                future = flight[1]
+        if not owner:
+            return _private_copy(future.result())
+        try:
+            value = func(*args, **kwargs)
+        except BaseException as error:
+            with lock:
+                if inflight.get(key, (None, None))[1] is future:
+                    del inflight[key]
+            future.set_exception(error)
+            raise
         with lock:
             store[key] = (version, now, value)
-        return value
+            if inflight.get(key, (None, None))[1] is future:
+                del inflight[key]
+        future.set_result(value)
+        return _private_copy(value)
 
     def clear():
         with lock:
             store.clear()
 
+    def reset_after_fork():
+        nonlocal lock, inflight
+        lock = threading.Lock()   # 可能在 fork 那一刻被父进程的某个线程持有
+        inflight = {}             # 父进程的回源线程不会出现在子进程里
+
+    from functools import update_wrapper
+
+    update_wrapper(wrapper, func)
     wrapper.clear = clear
+    wrapper.reset_after_fork = reset_after_fork
     wrapper.__wrapped__ = func
     _caches.append(wrapper)
-    try:
-        from functools import update_wrapper
-
-        update_wrapper(wrapper, func)
-        wrapper.clear = clear
-        wrapper.__wrapped__ = func
-    except Exception:
-        pass
     return wrapper
 
 
@@ -131,6 +178,21 @@ def clear_all():
         c.clear()
     with _lock:
         _version, _version_checked_at = None, 0.0
+
+
+def _reset_after_fork():
+    """os.fork() 之后子进程里只有发起 fork 的那个线程：父进程线程持有的锁永远不会释放，
+    "后台刷新进行中" 也永远不会结束。缓存的数据本身可以继承。"""
+    global _lock, _sync_lock, _refreshing
+    _lock = threading.Lock()
+    _sync_lock = threading.Lock()
+    _refreshing = False
+    for c in _caches:
+        c.reset_after_fork()
+
+
+if hasattr(os, "register_at_fork"):
+    os.register_at_fork(after_in_child=_reset_after_fork)
 
 
 # ---------------------------------------------------------------------------

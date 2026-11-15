@@ -12,7 +12,7 @@ import pandas as pd
 from libfinance.client import get_client
 from libfinance.utils.decorators import export_as_api
 from libfinance.utils.utils import to_date_str
-from libfinance.utils.validators import ensure_string
+from libfinance.utils.validators import ensure_codes, ensure_string
 
 
 def _as_of(as_of):
@@ -40,6 +40,7 @@ def get_instrument_indices(order_book_ids, source: Optional[str] = None, as_of=N
     :param as_of: 那一天的事实；省略则取数据已确认的最新日期
     :returns: pandas.DataFrame，包含 order_book_id、related_order_book_id（指数代码）、source、market 和 level。
     """
+    order_book_ids = ensure_codes(order_book_ids)
     return get_client().get_instrument_indices(
         order_book_ids=order_book_ids, source=source, as_of=_as_of(as_of))
 

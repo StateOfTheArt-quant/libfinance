@@ -4,6 +4,30 @@
 
 只记录会\ **改变已有代码行为**\ 的变更。
 
+未发布
+======
+
+- **只重试没得到服务端答复的调用。**\ Python 原先把服务端的拒绝（未知字段、超出覆盖、参数错误）当作网络错误，重发 3 次并等待
+  1.2 秒；现在立即抛出 ``RpcError``\ 。C++ 的超时不再重试（服务端仍在执行那次请求）。
+- **fork 之后子进程使用自己的连接。**\ 此前子进程沿用父进程的连接：两个进程会读走对方的答复，请求可能一直等到超时，
+  甚至拿到对方那次查询的结果。Python 与 C++ 相同。
+- C++：\ ``RpcClient`` 的多线程调用并行执行（连接池，默认最多 8 条连接），此前全部排队。构造函数与 ``init_client``
+  新增带默认值的 ``timeout_seconds``\ 、\ ``max_connections``\ ：源码兼容，调用方需重新编译。建连限时 5 秒（此前 300 秒）。
+- C++：\ ``LIBFINANCE_PORT`` 不是 1–65535 的数字时抛 ``std::invalid_argument``\ （此前 ``abc`` 被当作端口 0）。
+- Python：按数据版本缓存的结果（\ ``all_instruments``\ 、\ ``get_price_coverage``\ ）每次返回副本；此前返回缓存对象本身，
+  调用方的原地修改会改变之后每次调用的结果。并发的首次调用只向服务端查询一次。
+- 交易日历：\ ``get_previous_trading_date`` / ``get_next_trading_date`` / ``get_n_trading_dates_until`` 的 ``n`` 必须是正整数
+  （此前 ``n=0`` 返回当日，负数从日历另一端取值）；起止颠倒、日期为 ``None`` 时报错（此前 ``count_trading_dates`` 返回负数，
+  ``get_trading_dates`` 返回空）。Python 抛 ``ValueError``\ ，C++ 抛 ``std::invalid_argument``\ 。
+- ``get_price``\ ：\ ``fields`` 为空列表时报错（省略才表示全部字段）；某个代码没有任何行且不是已知证券时给出警告；
+  分档限制与行情覆盖的提示改为在查询之后、结果不完整或被拒绝时才给出，正常调用不再为它们多花往返。
+- ``get_instrument_industry`` / ``get_instrument_indices`` / ``get_instrument_themes``\ ：不给代码或给空列表时报错
+  （此前返回空表）。
+- Python：\ ``get_pit_financials_ex`` 的 ``as_of`` 接受 ``date`` / ``Timestamp``\ （此前抛 ``TypeError``\ ）；季度须形如 ``2026q1``\ ，
+  ``2023q5`` 之类在发出请求前报错。
+- Python：\ ``RpcClient`` 上以下划线开头的不存在属性抛 ``AttributeError``\ （此前任何属性名都变成一次远程调用）；
+  答复无法解码时 ``RpcError`` 带上原因。
+
 0.1.7（2026-11-11）
 ===================
 

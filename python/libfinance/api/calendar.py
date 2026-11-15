@@ -20,6 +20,7 @@ r"""交易日历。
 它无从选路会直接报错；给个默认值让既有调用继续工作，要美股传 ``market="us"``\ 。
 """
 import json
+import operator
 
 import pandas as pd
 
@@ -38,7 +39,32 @@ class CalendarCoverageError(ValueError):
 
 
 def _to_timestamp(d):
-    return pd.Timestamp(d).replace(hour=0, minute=0, second=0, microsecond=0)
+    # None 会变成 NaT：NaT 与任何日期比较都是 False，既绕过覆盖区间检查，又让 searchsorted 给出
+    # 一个看似正常的空结果。日期是必填的，缺了就说出来。
+    if d is None:
+        raise ValueError("a date is required, got None")
+    value = pd.Timestamp(d)
+    if pd.isna(value):
+        raise ValueError("a date is required, got {!r}".format(d))
+    return value.replace(hour=0, minute=0, second=0, microsecond=0)
+
+
+def _positive_n(n):
+    """n 是"第几个交易日"：必须是正整数。0 会返回日期本身，负数会让下标从数组另一端取值。"""
+    if isinstance(n, bool) or not hasattr(n, "__index__"):   # int / numpy 整数；拒绝 float、bool
+        raise ValueError("n: a positive integer expected, got {!r}".format(n))
+    n = operator.index(n)
+    if n < 1:
+        raise ValueError("n: a positive integer expected, got {}".format(n))
+    return n
+
+
+def _ordered(start_date, end_date):
+    start_date, end_date = _to_timestamp(start_date), _to_timestamp(end_date)
+    if start_date > end_date:
+        # 与 get_price 一致：颠倒的区间是调用错误，不是"没有交易日"（更不是负数个）
+        raise ValueError("start_date {} is after end_date {}".format(start_date.date(), end_date.date()))
+    return start_date, end_date
 
 
 @ttl_cache(24 * 3600)
@@ -101,7 +127,7 @@ def get_trading_dates(start_date, end_date, market=DEFAULT_MARKET):
 
     :returns: pandas.DatetimeIndex，包含起止日期之间的交易日（含两端）。
     """
-    start_date, end_date = _to_timestamp(start_date), _to_timestamp(end_date)
+    start_date, end_date = _ordered(start_date, end_date)
     sessions = _sessions(market, start_date, end_date)
     left = sessions.searchsorted(start_date)
     right = sessions.searchsorted(end_date, side="right")
@@ -118,6 +144,7 @@ def get_previous_trading_date(date, n=1, market=DEFAULT_MARKET):
 
     :returns: pandas.Timestamp，严格早于输入日期的第 n 个交易日。
     """
+    n = _positive_n(n)
     date = _to_timestamp(date)
     sessions = _sessions(market, date)
     pos = sessions.searchsorted(date)
@@ -142,6 +169,7 @@ def get_next_trading_date(date, n=1, market=DEFAULT_MARKET):
 
     :returns: pandas.Timestamp，严格晚于输入日期的第 n 个交易日。
     """
+    n = _positive_n(n)
     date = _to_timestamp(date)
     sessions = _sessions(market, date)
     pos = sessions.searchsorted(date, side="right")
@@ -180,6 +208,7 @@ def get_n_trading_dates_until(date, n, market=DEFAULT_MARKET):
 
     :returns: pandas.DatetimeIndex，截至该日的最近 n 个交易日；历史不足 n 个时返回已有日期。
     """
+    n = _positive_n(n)
     date = _to_timestamp(date)
     sessions = _sessions(market, date)
     pos = sessions.searchsorted(date, side="right")
@@ -198,7 +227,7 @@ def count_trading_dates(start_date, end_date, market=DEFAULT_MARKET):
 
     :returns: int，区间内的交易日数量（含两端）。
     """
-    start_date, end_date = _to_timestamp(start_date), _to_timestamp(end_date)
+    start_date, end_date = _ordered(start_date, end_date)
     sessions = _sessions(market, start_date, end_date)
     return int(
         sessions.searchsorted(end_date, side="right") - sessions.searchsorted(start_date)
