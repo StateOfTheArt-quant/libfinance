@@ -4,8 +4,8 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
-Unreleased
-==========
+0.1.8 (2026-11-14)
+==================
 
 - **Only a call that got no answer from the server is retried.** Python used to treat a refusal by the server (unknown
   field, outside coverage, bad argument) as a network error: it was sent 3 times with 1.2 s of sleeps. It is now raised
