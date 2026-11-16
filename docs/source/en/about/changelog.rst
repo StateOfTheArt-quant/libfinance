@@ -4,8 +4,8 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
-Unreleased
-==========
+0.1.9 (2026-11-16)
+==================
 
 - **Corporate-action amounts and ratios are ``float64`` by default.** The ``cash_per_share``, ``ratio_from``,
   ``subscription_price``, ... columns of ``get_dividends`` / ``get_splits`` / ``get_allotments`` / ``get_spinoffs``

@@ -4,8 +4,8 @@
 
 只记录会\ **改变已有代码行为**\ 的变更。
 
-未发布
-======
+0.1.9（2026-11-16）
+===================
 
 - **公司行动的金额与比例列默认是 ``float64``\ 。**\ ``get_dividends`` / ``get_splits`` / ``get_allotments`` /
   ``get_spinoffs`` 的 ``cash_per_share``\ 、\ ``ratio_from``\ 、\ ``subscription_price`` 等列此前在 Python 中是元素为
