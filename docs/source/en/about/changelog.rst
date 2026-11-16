@@ -4,7 +4,7 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
-0.1.10 (unreleased)
+0.1.10 (2026-11-16)
 ===================
 
 - **The ``decimal`` parameter added in 0.1.9 is removed.** ``get_dividends`` / ``get_splits`` / ``get_allotments`` /
