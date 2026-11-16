@@ -9,8 +9,7 @@ r"""公司行动：分红、拆股、配股、分拆。
 服务端从代码确定市场；传入 A 股代码会得到不支持该市场的错误。
 
 金额与比例列（\ ``cash_per_share``\ 、\ ``ratio_from``\ 、\ ``subscription_price`` ……）在服务端是定点小数。
-默认转成 ``float64``\ ，可以直接与 ``get_price`` 的价格混算；\ ``decimal=True`` 保留 ``decimal.Decimal``
-（object 列，十进制精确，适合与公告原值逐分核对）。
+返回时转成 ``float64``\ ，可以直接与 ``get_price`` 的价格混算。
 """
 import decimal as _decimal
 from typing import List, Optional, Union
@@ -23,13 +22,13 @@ from libfinance.utils.utils import as_of_text, to_date_str
 from libfinance.utils.validators import ensure_list_of_string
 
 
-def _amounts(frame, keep_decimal):
-    r"""定点小数列转 float64（\ ``keep_decimal`` 时原样返回）。
+def _amounts(frame):
+    r"""定点小数列转 float64。
 
     列由 Arrow schema 认出（\ ``deserialize_arrow`` 记在 ``attrs["decimal_columns"]``\ ，空表也认得出）；
     再兜底认值全是 ``Decimal`` 的 object 列。
     """
-    if keep_decimal or not isinstance(frame, pd.DataFrame):
+    if not isinstance(frame, pd.DataFrame):
         return frame
     names = set(frame.attrs.get("decimal_columns") or ())
     for name in frame.columns:
@@ -71,7 +70,6 @@ def get_dividends(
     start_date=None, end_date=None,
     fields: Optional[Union[str, List[str]]] = None,
     as_of=None,
-    decimal: bool = False,
 ) -> pd.DataFrame:
     r"""获取分红事件。
 
@@ -81,10 +79,9 @@ def get_dividends(
     :param fields: 需要的字段，省略则全部
     :param as_of: 以该时点\ **已知**\ 的信息为准（可见性口径），省略则取最新
 
-    :param decimal: 金额与比例列保留 ``decimal.Decimal``\ （默认转成 ``float64``\ ）
     :returns: pandas.DataFrame，分红事件及除息日、每股现金分红等字段；无匹配事件时为空表。
     """
-    return _amounts(get_client().get_dividends(**_args(order_book_ids, start_date, end_date, fields, as_of)), decimal)
+    return _amounts(get_client().get_dividends(**_args(order_book_ids, start_date, end_date, fields, as_of)))
 
 
 @export_as_api
@@ -93,7 +90,6 @@ def get_splits(
     start_date=None, end_date=None,
     fields: Optional[Union[str, List[str]]] = None,
     as_of=None,
-    decimal: bool = False,
 ) -> pd.DataFrame:
     r"""获取拆股（送转）事件。
 
@@ -103,10 +99,9 @@ def get_splits(
     :param fields: 返回字段列表，省略则全部
     :param as_of: 只使用截至该时点已知的信息，省略取最新
 
-    :param decimal: 金额与比例列保留 ``decimal.Decimal``\ （默认转成 ``float64``\ ）
     :returns: pandas.DataFrame，拆股事件；ratio_from 股变为 ratio_to 股，无匹配事件时为空表。
     """
-    return _amounts(get_client().get_splits(**_args(order_book_ids, start_date, end_date, fields, as_of)), decimal)
+    return _amounts(get_client().get_splits(**_args(order_book_ids, start_date, end_date, fields, as_of)))
 
 
 @export_as_api
@@ -115,7 +110,6 @@ def get_allotments(
     start_date=None, end_date=None,
     fields: Optional[Union[str, List[str]]] = None,
     as_of=None,
-    decimal: bool = False,
 ) -> pd.DataFrame:
     r"""获取配股事件。
 
@@ -125,10 +119,9 @@ def get_allotments(
     :param fields: 返回字段列表，省略则全部
     :param as_of: 只使用截至该时点已知的信息，省略取最新
 
-    :param decimal: 金额与比例列保留 ``decimal.Decimal``\ （默认转成 ``float64``\ ）
     :returns: pandas.DataFrame，配股事件及相关比例、价格；无匹配事件时为空表。
     """
-    return _amounts(get_client().get_allotments(**_args(order_book_ids, start_date, end_date, fields, as_of)), decimal)
+    return _amounts(get_client().get_allotments(**_args(order_book_ids, start_date, end_date, fields, as_of)))
 
 
 @export_as_api
@@ -137,7 +130,6 @@ def get_spinoffs(
     start_date=None, end_date=None,
     fields: Optional[Union[str, List[str]]] = None,
     as_of=None,
-    decimal: bool = False,
 ) -> pd.DataFrame:
     r"""获取美股分拆事件。估值价格需连同估值依据和来源一起阅读。
 
@@ -147,7 +139,6 @@ def get_spinoffs(
     :param fields: 返回字段列表，省略则全部
     :param as_of: 只使用截至该时点已知的信息，省略取最新
 
-    :param decimal: 金额与比例列保留 ``decimal.Decimal``\ （默认转成 ``float64``\ ）
     :returns: pandas.DataFrame，美股分拆事件，含 valuation_price、valuation_basis 和 valuation_source 等估值字段。
     """
-    return _amounts(get_client().get_spinoffs(**_args(order_book_ids, start_date, end_date, fields, as_of)), decimal)
+    return _amounts(get_client().get_spinoffs(**_args(order_book_ids, start_date, end_date, fields, as_of)))

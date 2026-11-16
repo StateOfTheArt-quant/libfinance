@@ -79,27 +79,27 @@ Table decimals_to_float64(const Table& table) {
 }  // namespace detail
 
 Table get_dividends(const Codes& order_book_ids, const std::optional<DateLike>& start_date,
-                    const std::optional<DateLike>& end_date, const Codes& fields, const std::optional<DateLike>& as_of, bool decimal) {
+                    const std::optional<DateLike>& end_date, const Codes& fields, const std::optional<DateLike>& as_of) {
   const Table table = detail::call_table("get_dividends", arguments(order_book_ids, start_date, end_date, fields, as_of));
-  return decimal ? table : detail::decimals_to_float64(table);
+  return detail::decimals_to_float64(table);
 }
 
 Table get_splits(const Codes& order_book_ids, const std::optional<DateLike>& start_date,
-                 const std::optional<DateLike>& end_date, const Codes& fields, const std::optional<DateLike>& as_of, bool decimal) {
+                 const std::optional<DateLike>& end_date, const Codes& fields, const std::optional<DateLike>& as_of) {
   const Table table = detail::call_table("get_splits", arguments(order_book_ids, start_date, end_date, fields, as_of));
-  return decimal ? table : detail::decimals_to_float64(table);
+  return detail::decimals_to_float64(table);
 }
 
 Table get_allotments(const Codes& order_book_ids, const std::optional<DateLike>& start_date,
-                     const std::optional<DateLike>& end_date, const Codes& fields, const std::optional<DateLike>& as_of, bool decimal) {
+                     const std::optional<DateLike>& end_date, const Codes& fields, const std::optional<DateLike>& as_of) {
   const Table table = detail::call_table("get_allotments", arguments(order_book_ids, start_date, end_date, fields, as_of));
-  return decimal ? table : detail::decimals_to_float64(table);
+  return detail::decimals_to_float64(table);
 }
 
 Table get_spinoffs(const Codes& order_book_ids, const std::optional<DateLike>& start_date,
-                   const std::optional<DateLike>& end_date, const Codes& fields, const std::optional<DateLike>& as_of, bool decimal) {
+                   const std::optional<DateLike>& end_date, const Codes& fields, const std::optional<DateLike>& as_of) {
   const Table table = detail::call_table("get_spinoffs", arguments(order_book_ids, start_date, end_date, fields, as_of));
-  return decimal ? table : detail::decimals_to_float64(table);
+  return detail::decimals_to_float64(table);
 }
 
 }  // namespace libfinance
