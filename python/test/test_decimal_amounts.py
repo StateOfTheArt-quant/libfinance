@@ -51,7 +51,7 @@ def test_amounts_are_float64_by_default(server, name):
     assert frame["bonus_per_share"].dtype == "float64" and frame["bonus_per_share"].isna().all()
     assert frame["cash_per_share"].iloc[0] == pytest.approx(0.285)
     assert (frame["cash_per_share"] * 1.5).iloc[0] == pytest.approx(0.4275)     # mixes with get_price's floats
-    assert frame["order_book_id"].dtype == object
+    assert not pd.api.types.is_numeric_dtype(frame["order_book_id"])          # only the decimals are converted
     assert "decimal" not in server[-1][1]                                        # not sent to the server
 
 
@@ -72,4 +72,4 @@ def test_a_frame_without_the_schema_note_is_converted_by_its_values():
     """An answer that did not come through deserialize_arrow (pandas JSON, a cached copy without attrs)."""
     frame = pd.DataFrame({"ratio": [decimal.Decimal("1.3"), None], "currency": ["CNY", "CNY"]})
     out = corporate_actions._amounts(frame, keep_decimal=False)
-    assert out["ratio"].dtype == "float64" and out["currency"].dtype == object
+    assert out["ratio"].dtype == "float64" and not pd.api.types.is_numeric_dtype(out["currency"])
