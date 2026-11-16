@@ -27,9 +27,8 @@ are split and merged. Unsupported markets raise an error, not a partial result.
 
 Amount and ratio columns (``cash_per_share``, ``ratio_from``, ``subscription_price``, ...) are fixed-point
 decimals on the server and ``float64`` in the result, so they combine with :py:func:`get_price`'s prices.
-``decimal=True`` keeps them as ``decimal.Decimal``: exact to the cent, for checking against an announcement.
 
-.. py:function:: get_dividends(order_book_ids, start_date=None, end_date=None, fields=None, as_of=None, decimal=False)
+.. py:function:: get_dividends(order_book_ids, start_date=None, end_date=None, fields=None, as_of=None)
 
     Cash dividend events.
 
@@ -38,8 +37,6 @@ decimals on the server and ``float64`` in the result, so they combine with :py:f
     :param end_date: End date; omit for the latest
     :param fields: Which columns; omit for all
     :param as_of: Use the information **known** at that point; omit for the latest
-    :param decimal: Keep the amount and ratio columns as ``decimal.Decimal`` (exact, ``object`` columns);
-        by default they are ``float64``
     :returns: ``DataFrame`` of events
 
     Key columns: ``ex_date`` (the price gap happens here), ``record_date``,
@@ -52,7 +49,7 @@ decimals on the server and ``float64`` in the result, so they combine with :py:f
 
     Reading the result: in turn, the full history, a window with chosen fields, events known by a given day, and both markets in one call; ``order_book_id`` tells the securities apart and ``cash_per_share`` is the cash dividend per share.
 
-.. py:function:: get_splits(order_book_ids, start_date=None, end_date=None, fields=None, as_of=None, decimal=False)
+.. py:function:: get_splits(order_book_ids, start_date=None, end_date=None, fields=None, as_of=None)
 
     Splits and bonus issues. Arguments as for :py:func:`get_dividends`.
 
@@ -65,7 +62,7 @@ decimals on the server and ``float64`` in the result, so they combine with :py:f
 
     Reading the result: ``ratio_from`` shares become ``ratio_to`` shares (10 to 13 is 3 bonus shares per 10). China's routine bonus and transfer shares are recorded with dividends (``bonus_per_share``, ``transfer_per_share``); China split events come mostly from the 2005–2006 share-structure reform.
 
-.. py:function:: get_allotments(order_book_ids, start_date=None, end_date=None, fields=None, as_of=None, decimal=False)
+.. py:function:: get_allotments(order_book_ids, start_date=None, end_date=None, fields=None, as_of=None)
 
     Rights issues. Arguments as for :py:func:`get_dividends`.
 
@@ -75,7 +72,7 @@ decimals on the server and ``float64`` in the result, so they combine with :py:f
 
     Reading the result: A narrower window can return an empty DataFrame. This is different from a failed query.
 
-.. py:function:: get_spinoffs(order_book_ids, start_date=None, end_date=None, fields=None, as_of=None, decimal=False)
+.. py:function:: get_spinoffs(order_book_ids, start_date=None, end_date=None, fields=None, as_of=None)
 
     Spin-off events, **US only**. Arguments as for :py:func:`get_dividends`.
 

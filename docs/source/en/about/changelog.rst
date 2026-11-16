@@ -4,6 +4,13 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
+0.1.10 (unreleased)
+===================
+
+- **The ``decimal`` parameter added in 0.1.9 is removed.** ``get_dividends`` / ``get_splits`` / ``get_allotments`` /
+  ``get_spinoffs`` have their 0.1.8 signatures again; amount and ratio columns are always ``float64``. Code passing
+  ``decimal=`` must drop it.
+
 0.1.9 (2026-11-16)
 ==================
 

@@ -1,4 +1,4 @@
-"""Corporate-action amounts: fixed-point decimals on the wire, float64 in the client unless decimal=True."""
+"""Corporate-action amounts: fixed-point decimals on the wire, float64 in the client."""
 import decimal
 
 import pandas as pd
@@ -52,14 +52,6 @@ def test_amounts_are_float64_by_default(server, name):
     assert frame["cash_per_share"].iloc[0] == pytest.approx(0.285)
     assert (frame["cash_per_share"] * 1.5).iloc[0] == pytest.approx(0.4275)     # mixes with get_price's floats
     assert not pd.api.types.is_numeric_dtype(frame["order_book_id"])          # only the decimals are converted
-    assert "decimal" not in server[-1][1]                                        # not sent to the server
-
-
-@pytest.mark.parametrize("name", FUNCTIONS)
-def test_decimal_true_keeps_the_exact_values(server, name):
-    frame = getattr(corporate_actions, name)("000001.XSHE", decimal=True)
-    assert frame["cash_per_share"].iloc[0] == decimal.Decimal("0.285")
-    assert isinstance(frame["cash_per_share"].iloc[0], decimal.Decimal)
 
 
 def test_an_empty_answer_has_float64_amount_columns(server):
@@ -71,5 +63,5 @@ def test_an_empty_answer_has_float64_amount_columns(server):
 def test_a_frame_without_the_schema_note_is_converted_by_its_values():
     """An answer that did not come through deserialize_arrow (pandas JSON, a cached copy without attrs)."""
     frame = pd.DataFrame({"ratio": [decimal.Decimal("1.3"), None], "currency": ["CNY", "CNY"]})
-    out = corporate_actions._amounts(frame, keep_decimal=False)
+    out = corporate_actions._amounts(frame)
     assert out["ratio"].dtype == "float64" and not pd.api.types.is_numeric_dtype(out["currency"])

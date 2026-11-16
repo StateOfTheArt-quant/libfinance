@@ -9,8 +9,7 @@
 分拆仅适用于美股。返回事件表，具体字段见 :doc:`fields`\ 。
 
 金额与比例列（\ ``cash_per_share``\ 、\ ``ratio_from``\ 、\ ``subscription_price`` 等）在服务端是定点小数，
-返回时是 ``float64``\ ，可以直接与 :func:`~libfinance.get_price` 的价格混算；\ ``decimal=True`` 保留
-``decimal.Decimal``\ （十进制精确，适合与公告原值逐分核对）。
+返回时是 ``float64``\ ，可以直接与 :func:`~libfinance.get_price` 的价格混算。
 
 .. list-table::
     :header-rows: 1
