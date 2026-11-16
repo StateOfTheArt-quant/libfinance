@@ -13,7 +13,6 @@ LIBFINANCE_HOST=127.0.0.1 LIBFINANCE_PORT=8080 \
 
 | 用例 | 差异 | 性质 |
 |---|---|---|
-| `get_dividends`、`get_splits`、`get_allotments` | 定点小数列：Python 为 `Decimal`，C++ 的 `libfinance-call` 输出字符串 | 表示不同，数值相同；比对需按数值归一 |
 | `get_index_weights` | 列表列 `quality_flags`：C++ 的 `libfinance-call` 输出 `list<element: string>[...]` 字样 | 工具的序列化缺口 |
 | `get_last_quotes` | Python 为 `Quote` 对象，C++ 为字典 | 表示不同 |
 | `get_financial_metrics` | 行序：Python 按代码排序，C++ 保持请求顺序 | **行为差异**，需在一侧修正 |
