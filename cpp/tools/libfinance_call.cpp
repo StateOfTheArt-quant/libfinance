@@ -152,22 +152,26 @@ const std::map<std::string, Function>& functions() {
       {"get_dividends",
        [](const Json& a) {
          return table(lf::get_dividends(codes(a, "order_book_ids"), optional_date(a, "start_date"),
-                                        optional_date(a, "end_date"), codes(a, "fields"), optional_date(a, "as_of")));
+                                        optional_date(a, "end_date"), codes(a, "fields"), optional_date(a, "as_of"),
+                                        flag(a, "decimal", false)));
        }},
       {"get_splits",
        [](const Json& a) {
          return table(lf::get_splits(codes(a, "order_book_ids"), optional_date(a, "start_date"),
-                                     optional_date(a, "end_date"), codes(a, "fields"), optional_date(a, "as_of")));
+                                     optional_date(a, "end_date"), codes(a, "fields"), optional_date(a, "as_of"),
+                                        flag(a, "decimal", false)));
        }},
       {"get_allotments",
        [](const Json& a) {
          return table(lf::get_allotments(codes(a, "order_book_ids"), optional_date(a, "start_date"),
-                                         optional_date(a, "end_date"), codes(a, "fields"), optional_date(a, "as_of")));
+                                         optional_date(a, "end_date"), codes(a, "fields"), optional_date(a, "as_of"),
+                                        flag(a, "decimal", false)));
        }},
       {"get_spinoffs",
        [](const Json& a) {
          return table(lf::get_spinoffs(codes(a, "order_book_ids"), optional_date(a, "start_date"),
-                                       optional_date(a, "end_date"), codes(a, "fields"), optional_date(a, "as_of")));
+                                       optional_date(a, "end_date"), codes(a, "fields"), optional_date(a, "as_of"),
+                                        flag(a, "decimal", false)));
        }},
       // exfactor
       {"get_ex_factor",

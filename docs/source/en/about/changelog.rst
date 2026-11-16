@@ -4,6 +4,16 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
+Unreleased
+==========
+
+- **Corporate-action amounts and ratios are ``float64`` by default.** The ``cash_per_share``, ``ratio_from``,
+  ``subscription_price``, ... columns of ``get_dividends`` / ``get_splits`` / ``get_allotments`` / ``get_spinoffs``
+  used to be ``object`` columns of ``decimal.Decimal`` in Python (multiplying them by a ``get_price`` price raised
+  ``TypeError``, nothing vectorised) and Arrow decimal columns in C++. Both clients now hand out ``float64``. The new
+  ``decimal=True`` keeps the previous type (exact, for checking against an announcement to the cent). The server
+  and the wire are unchanged.
+
 0.1.8 (2026-11-14)
 ==================
 

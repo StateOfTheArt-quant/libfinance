@@ -53,3 +53,33 @@ TEST(AsTable, RefusesOtherAnswers) {
   EXPECT_THROW(libfinance::as_table(Json{{"status", "ok"}}), std::invalid_argument);
   EXPECT_EQ(libfinance::as_table(Json()), nullptr);
 }
+
+namespace libfinance::detail {
+Table decimals_to_float64(const Table& table);  // libfinance/src/corporate_actions.cpp
+}
+
+// Corporate-action amounts are fixed-point decimals on the wire; they are handed out as float64 by default.
+TEST(CorporateActions, DecimalColumnsBecomeFloat64) {
+  arrow::Decimal128Builder amounts(arrow::decimal128(18, 4));
+  ASSERT_TRUE(amounts.Append(arrow::Decimal128(12345)).ok());  // 1.2345
+  ASSERT_TRUE(amounts.AppendNull().ok());
+  arrow::StringBuilder codes;
+  ASSERT_TRUE(codes.Append("000001.XSHE").ok());
+  ASSERT_TRUE(codes.Append("600000.XSHG").ok());
+  std::shared_ptr<arrow::Array> amount_array, code_array;
+  ASSERT_TRUE(amounts.Finish(&amount_array).ok());
+  ASSERT_TRUE(codes.Finish(&code_array).ok());
+  auto schema = arrow::schema({arrow::field("order_book_id", arrow::utf8()),
+                               arrow::field("cash_per_share", arrow::decimal128(18, 4))});
+  auto table = arrow::Table::Make(schema, {code_array, amount_array});
+
+  auto converted = libfinance::detail::decimals_to_float64(table);
+  ASSERT_EQ(converted->schema()->field(0)->type()->id(), arrow::Type::STRING);
+  ASSERT_EQ(converted->schema()->field(1)->type()->id(), arrow::Type::DOUBLE);
+  auto values = std::static_pointer_cast<arrow::DoubleArray>(converted->column(1)->chunk(0));
+  EXPECT_DOUBLE_EQ(values->Value(0), 1.2345);
+  EXPECT_TRUE(values->IsNull(1));
+
+  auto plain = arrow::Table::Make(arrow::schema({arrow::field("order_book_id", arrow::utf8())}), {code_array});
+  EXPECT_EQ(libfinance::detail::decimals_to_float64(plain), plain);  // nothing to convert: the same table
+}

@@ -26,7 +26,12 @@ def deserialize_arrow(data):
     """A table answer of the C++ server: Arrow IPC stream bytes -> DataFrame."""
     import pyarrow as pa
 
-    return pa.ipc.open_stream(data).read_all().to_pandas()
+    table = pa.ipc.open_stream(data).read_all()
+    frame = table.to_pandas()
+    # decimal128/256 columns arrive as object columns of decimal.Decimal; name them so an API can convert them
+    # (an empty answer has no values to recognise them by)
+    frame.attrs["decimal_columns"] = [field.name for field in table.schema if pa.types.is_decimal(field.type)]
+    return frame
 
 
 # ==========================================

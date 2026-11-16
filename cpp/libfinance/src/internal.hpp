@@ -22,6 +22,8 @@ namespace libfinance::detail {
 Json call(const std::string& function, const Json& args);
 //: A call whose answer is a table.
 Table call_table(const std::string& function, const Json& args);
+//: The corporate-action tables: their decimal128/256 columns as float64 (values to the nearest double).
+Table decimals_to_float64(const Table& table);
 //: warnings.warn(message).
 void warn(const std::string& message);
 //: `limits_for`: this caller's limits on a function (describe_capabilities); {} when unknown.

@@ -4,6 +4,15 @@
 
 只记录会\ **改变已有代码行为**\ 的变更。
 
+未发布
+======
+
+- **公司行动的金额与比例列默认是 ``float64``\ 。**\ ``get_dividends`` / ``get_splits`` / ``get_allotments`` /
+  ``get_spinoffs`` 的 ``cash_per_share``\ 、\ ``ratio_from``\ 、\ ``subscription_price`` 等列此前在 Python 中是元素为
+  ``decimal.Decimal`` 的 object 列，与 ``get_price`` 的价格相乘抛 ``TypeError``\ ，也不能向量化计算；C++ 中是 Arrow 的
+  decimal 列。现在两端都给 ``float64``\ 。新参数 ``decimal=True`` 保留原来的类型（十进制精确，适合与公告逐分核对）。
+  服务端与传输不变。
+
 0.1.8（2026-11-14）
 ===================
 
