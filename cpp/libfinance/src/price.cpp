@@ -2,6 +2,10 @@
 #include "libfinance/price.hpp"
 
 #include <algorithm>
+#include <cerrno>
+#include <cstdlib>
+#include <exception>
+#include <future>
 
 #include <arrow/api.h>
 #include <arrow/compute/api.h>
@@ -166,6 +170,79 @@ void warn_unknown_codes(const Table& panel, const std::vector<std::string>& ids,
                  " 不是已知的证券代码，结果中没有它们的行（不是停牌或缺数据）。用 instruments() 核对代码。");
 }
 
+// ---------------------------------------------------------------- a large query, split (PERF-03)
+
+//: 一个连接上一份答复的目标行数，与 Python 的 _ROWS_PER_PART 相同。跨境链路上每个 TCP 连接前 1–2 MB 很快、
+//: 之后降到 50–80 KB/s（2026-11-17 实测）；日线压缩后约 45 B/行，1 万行约 0.45 MB，落在快的那一段里。
+constexpr int64_t kRowsPerPart = 10000;
+
+//: 一次查询最多切成几份：LIBFINANCE_PARALLEL（默认 8，与 Python 的 client.PARALLEL_CONNECTIONS 相同）。
+//: 各份经 RpcClient 的连接池并行，池小于份数时多出的排队等连接。
+int64_t parallel_parts() {
+  const char* text = std::getenv("LIBFINANCE_PARALLEL");
+  if (text == nullptr || *text == '\0') return 8;
+  char* end = nullptr;
+  errno = 0;
+  const long value = std::strtol(text, &end, 10);
+  if (errno != 0 || end == text || *end != '\0') return 8;
+  return std::clamp<long>(value, 1, 1024);
+}
+
+//: 区间内的工作日数（pandas 的 bdate_range），至少 1。
+int64_t weekdays(const std::string& start, const std::string& end) {
+  const int32_t first = DateLike(start).date().days_since_epoch(), last = DateLike(end).date().days_since_epoch();
+  int64_t count = 0;
+  for (int32_t day = first; day <= last; ++day)
+    if (((day % 7 + 7) % 7 + 3) % 7 < 5) ++count;  // 1970-01-01 is a Thursday; Monday is 0
+  return std::max<int64_t>(1, count);
+}
+
+//: `_parts`：按估计行数（代码数 × 工作日）把代码切成几份；小查询不切。
+std::vector<std::vector<std::string>> split_codes(const std::vector<std::string>& ids, const std::string& start,
+                                                  const std::string& end) {
+  const int64_t n = static_cast<int64_t>(ids.size());
+  if (n <= 1) return {ids};
+  const int64_t wanted = (n * weekdays(start, end) + kRowsPerPart - 1) / kRowsPerPart;
+  const int64_t count = std::max<int64_t>(1, std::min({parallel_parts(), wanted, n}));
+  const int64_t size = (n + count - 1) / count;
+  std::vector<std::vector<std::string>> parts;
+  for (int64_t first = 0; first < n; first += size)
+    parts.emplace_back(ids.begin() + first, ids.begin() + std::min(n, first + size));
+  return parts;
+}
+
+//: `_fetch`：每份一个请求、并行，等全部结束；有拒绝时抛出按顺序的第一个。合并后经 to_panel 排序，
+//: 与一次查询相同；某份不是表或各份的列对不上时，按一次查询的结果给。
+Table fetch_bars(const std::vector<std::string>& ids, const Json& args, const std::string& start,
+                 const std::string& end) {
+  const auto query = [&args](const std::vector<std::string>& codes) {
+    Json part = args;
+    part["order_book_ids"] = codes;
+    return detail::call_table("get_price", part);
+  };
+  const auto parts = split_codes(ids, start, end);
+  if (parts.size() == 1) return query(ids);
+  std::vector<std::future<Table>> pending;
+  for (const auto& codes : parts) pending.push_back(std::async(std::launch::async, query, std::cref(codes)));
+  std::vector<Table> tables;
+  std::exception_ptr first_error;
+  for (auto& part : pending) {
+    try {
+      tables.push_back(part.get());
+    } catch (...) {
+      if (!first_error) first_error = std::current_exception();
+    }
+  }
+  if (first_error) std::rethrow_exception(first_error);
+  for (const auto& table : tables)
+    if (!table) return query(ids);
+  arrow::ConcatenateTablesOptions options;
+  options.unify_schemas = true;
+  auto merged = arrow::ConcatenateTables(tables, options);
+  if (!merged.ok()) return query(ids);
+  return *merged;
+}
+
 }  // namespace
 
 Table get_price(const Codes& order_book_ids, const DateLike& start_date, const DateLike& end_date,
@@ -183,15 +260,17 @@ Table get_price(const Codes& order_book_ids, const DateLike& start_date, const D
   // daybar routes the codes (stocks and indexes alike) by instrument as of end_date
   Table bars;
   try {
-    bars = detail::call_table("get_price", {{"order_book_ids", ids},
-                                                     {"start_date", start},
-                                                     {"end_date", end},
-                                                     {"frequency", frequency},
-                                                     {"fields", fields_argument(fields)},
-                                                     {"skip_suspended", skip_suspended},
-                                                     {"include_now", include_now},
-                                                     {"adjust_type", adjust_type},
-                                                     {"adjust_orig", detail::iso_or_null(adjust_orig)}});
+    bars = fetch_bars(ids,
+                      {{"order_book_ids", ids},
+                       {"start_date", start},
+                       {"end_date", end},
+                       {"frequency", frequency},
+                       {"fields", fields_argument(fields)},
+                       {"skip_suspended", skip_suspended},
+                       {"include_now", include_now},
+                       {"adjust_type", adjust_type},
+                       {"adjust_orig", detail::iso_or_null(adjust_orig)}},
+                      start, end);
   } catch (const RpcError& error) {
     if (error.kind() == "CoverageError" || error.message().find("outside coverage") != std::string::npos)
       warn_beyond_coverage(end, ids);   // 说出覆盖上界，再把服务端的拒绝原样抛出

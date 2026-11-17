@@ -49,6 +49,26 @@ TEST(AsTable, ReadsArrowIpc) {
   EXPECT_TRUE(table->Equals(*source));
 }
 
+TEST(AsTable, TheTableOutlivesTheAnswer) {
+  arrow::StringBuilder ids;
+  ASSERT_TRUE(ids.AppendValues({"600000.XSHG", "000001.XSHE"}).ok());
+  const auto source = arrow::Table::Make(arrow::schema({arrow::field("order_book_id", arrow::utf8())}),
+                                         {ids.Finish().ValueOrDie()});
+  auto sink = arrow::io::BufferOutputStream::Create().ValueOrDie();
+  auto writer = arrow::ipc::MakeStreamWriter(sink, source->schema()).ValueOrDie();
+  ASSERT_TRUE(writer->WriteTable(*source).ok());
+  ASSERT_TRUE(writer->Close().ok());
+  const auto buffer = sink->Finish().ValueOrDie();
+  Json answer = {{"type", "arrow"},
+                 {"data", Json::binary(std::vector<uint8_t>(buffer->data(), buffer->data() + buffer->size()))}};
+  const auto table = libfinance::as_table(answer);
+  // the answer's bytes are gone (overwritten here, freed in a real call): the table must not read them
+  auto& bytes = answer["data"].get_binary();
+  std::fill(bytes.begin(), bytes.end(), 0);
+  ASSERT_TRUE(table);
+  EXPECT_TRUE(table->Equals(*source));
+}
+
 TEST(AsTable, RefusesOtherAnswers) {
   EXPECT_THROW(libfinance::as_table(Json{{"status", "ok"}}), std::invalid_argument);
   EXPECT_EQ(libfinance::as_table(Json()), nullptr);

@@ -126,15 +126,17 @@ Table from_pandas_json(const std::string& text) {
 }
 
 Table from_arrow_ipc(const Json::binary_t& bytes) {
-  auto buffer = std::make_shared<arrow::Buffer>(bytes.data(), static_cast<int64_t>(bytes.size()));
+  // The reader slices its arrays out of this buffer without copying, so the buffer must own its bytes:
+  // the table outlives the answer. (CombineChunks used to be relied on for the copy, but it hands a
+  // single-chunk column back as it is, and the table then read the freed answer.)
+  auto buffer = arrow::Buffer::FromString(std::string(bytes.begin(), bytes.end()));
   auto reader = arrow::ipc::RecordBatchStreamReader::Open(std::make_shared<arrow::io::BufferReader>(buffer));
   if (!reader.ok()) throw std::invalid_argument("libfinance: " + reader.status().ToString());
   auto table = (*reader)->ToTable();
   if (!table.ok()) throw std::invalid_argument("libfinance: " + table.status().ToString());
-  // the buffer borrows `bytes`; copy out so the table outlives the answer
-  auto owned = (*table)->CombineChunks();
-  if (!owned.ok()) throw std::invalid_argument("libfinance: " + owned.status().ToString());
-  return *owned;
+  auto combined = (*table)->CombineChunks();
+  if (!combined.ok()) throw std::invalid_argument("libfinance: " + combined.status().ToString());
+  return *combined;
 }
 
 }  // namespace
