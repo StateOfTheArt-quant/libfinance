@@ -4,6 +4,16 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
+0.1.11 (2026-11-17)
+===================
+
+- **A large ``get_price`` runs on several connections.** A query estimated above 10 000 rows is split by code into
+  parts that run on up to ``LIBFINANCE_PARALLEL`` (default 8) connections carrying the same login, and the parts are
+  merged; the result is identical to one query. ``LIBFINANCE_PARALLEL=1`` keeps every call on one connection. Python.
+- **A long answer no longer loses its connection.** While an answer is arriving both clients send a PONG every 10 s;
+  on a slow link the server used to close the connection under a large answer ("Server closed connection.") and the
+  query was retried from scratch. Python and C++; works with the existing server.
+
 0.1.10 (2026-11-16)
 ===================
 
