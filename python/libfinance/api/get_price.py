@@ -12,7 +12,8 @@ from typing import List, Optional, Union
 
 import pandas as pd
 
-from libfinance.client import RpcError, get_client
+from libfinance import client as _client_module
+from libfinance.client import RpcClient, RpcError, get_client
 from libfinance.utils.cache import versioned_cache, warn_if_clamped
 from libfinance.utils.decorators import export_as_api
 from libfinance.utils.utils import to_date_str
@@ -29,6 +30,11 @@ _CN_VENUES = ("XSHG", "XSHE", "XBSE")
 #: 十天以上——那时服务端照样拒绝并给出原因。核对要 2–3 个往返（每个约 185 ms，2026-11-11 实测），
 #: 不该让查历史区间的每次 get_price 都付。
 _COVERAGE_CHECK_DAYS = 10
+#: 一个连接上一份答复的目标行数。跨境链路上每个连接前 1–2 MB 很快、之后降到 50–80 KB/s（PERF-03，
+#: 2026-11-17 实测）；日线压缩后约 45 B/行，1 万行约 0.45 MB，落在快的那一段里（2 万行一份、4 条连接时 80 s，
+#: 1 万行、8 条 33–43 s，一条连接 180–240 s）。估计更大的查询按代码
+#: 切成几份，分别走 client.PARALLEL_CONNECTIONS 条连接，结果合并后与一次查询相同（_to_panel 会排序）。
+_ROWS_PER_PART = 10000
 
 
 @versioned_cache
@@ -187,15 +193,15 @@ def get_price(
     # exfactor.coverage、ping），冷启动时是 4 个串行往返（跨公网约 0.8 s）。它们只在"结果不完整"时
     # 才有意义，所以放到查询之后、只在需要时做：成功且从 start_date 起就有数据的调用只付 1 个往返。
     try:
-        frame = get_client().get_price(order_book_ids=list(dict.fromkeys(ids)),
-                                       start_date=start_date,
-                                       end_date=end_date,
-                                       frequency=frequency,
-                                       fields=fields,
-                                       skip_suspended=skip_suspended,
-                                       include_now=include_now,
-                                       adjust_type=adjust_type,
-                                       adjust_orig=to_date_str(adjust_orig) if adjust_orig is not None else None)
+        frame = _fetch(list(dict.fromkeys(ids)),
+                       dict(start_date=start_date,
+                            end_date=end_date,
+                            frequency=frequency,
+                            fields=fields,
+                            skip_suspended=skip_suspended,
+                            include_now=include_now,
+                            adjust_type=adjust_type,
+                            adjust_orig=to_date_str(adjust_orig) if adjust_orig is not None else None))
     except RpcError as error:
         if _is_coverage_refusal(error):
             _warn_beyond_coverage(end_date, ids)   # 说出覆盖上界，再把服务端的拒绝原样抛出
@@ -206,6 +212,27 @@ def get_price(
         warn_if_clamped("get_price", start_date)
     _warn_unknown_codes(panel, ids, end_date)
     return panel
+
+
+def _parts(ids, start_date, end_date):
+    """按估计行数（代码数 × 区间内的工作日）把代码切成几份；小查询不切。"""
+    limit = _client_module.PARALLEL_CONNECTIONS
+    days = max(1, len(pd.bdate_range(start_date, end_date)))
+    wanted = -(-len(ids) * days // _ROWS_PER_PART)
+    count = max(1, min(limit, wanted, len(ids)))
+    size = -(-len(ids) // count)
+    return [ids[start:start + size] for start in range(0, len(ids), size)]
+
+
+def _fetch(ids, args):
+    client = get_client()
+    parts = _parts(ids, args["start_date"], args["end_date"])
+    if len(parts) == 1 or not isinstance(client, RpcClient):
+        return client.get_price(order_book_ids=ids, **args)
+    frames = client.map_calls("get_price", [dict(args, order_book_ids=part) for part in parts])
+    if not all(isinstance(frame, pd.DataFrame) for frame in frames):
+        return client.get_price(order_book_ids=ids, **args)   # 不是表的答复无从合并：按一次查询的结果给
+    return pd.concat(frames, ignore_index=True)
 
 
 def _warn_unknown_codes(panel, ids, end_date):

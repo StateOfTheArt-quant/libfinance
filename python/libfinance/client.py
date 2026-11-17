@@ -91,6 +91,16 @@ MAX_FRAME_BODY = 2 * 1024 * 1024 * 1024 - 1
 #: only refreshes that timestamp, so an unsolicited one is safe with every server version (PERF-03).
 KEEPALIVE_INTERVAL = 10.0
 
+#: How many connections one large query may be split across (``RpcClient.map_calls``). Measured
+#: 2026-11-17 over a cross-border path: each connection starts fast (~0.9 MB/s for its first 1-2 MB)
+#: and then settles at 50-80 KB/s, so a 3.2 MB get_price took 180-240 s on one connection and 23 s
+#: split over 8 (33-43 s through get_price's 10 000-row parts, 4 connections: 80 s).
+#: ``LIBFINANCE_PARALLEL=1`` keeps every call on the one connection.
+try:
+    PARALLEL_CONNECTIONS = max(1, int(os.environ.get("LIBFINANCE_PARALLEL") or 8))
+except ValueError:
+    PARALLEL_CONNECTIONS = 8
+
 
 class FrameType:
     RPC_REQUEST = 0x01
@@ -198,6 +208,10 @@ class RpcClient:
         self._credentials = None
         self.auth_level = 0
 
+        # Further connections to the same server for map_calls, opened on first use.
+        self._siblings = []
+        self._siblings_lock = threading.Lock()
+
     def connect(self):
         if self.sock:
             self.close()
@@ -256,6 +270,7 @@ class RpcClient:
         self._pending_lock = threading.Lock()
         self._last_recv_lock = threading.Lock()
         self._connect_lock = threading.Lock()
+        self._siblings_lock = threading.Lock()   # the siblings reset themselves the same way
         self._pending = {}
         self._expired_requests = set()
         self._expired_request_order = deque()
@@ -349,6 +364,56 @@ class RpcClient:
         """Send an RPC request, auto-unwrap envelope, return result or raise RpcError."""
         resp = self.call_raw(function_name, args, timeout)
         return self._unwrap_envelope(resp)
+
+    def map_calls(self, function_name, args_list, timeout=None):
+        """Run one call per ``args_list`` entry, each on its own connection, and return the results
+        in order. The first runs on this connection; the others on sibling connections to the same
+        server that carry this connection's login (the server keeps the level on the connection, so
+        an anonymous sibling would answer at the anonymous tier and quota). A refusal (RpcError) of
+        any part is raised, the first in order, after every part has finished.
+
+        Splitting helps where each TCP connection is throttled after its first megabytes (PERF-03);
+        it costs the server nothing extra beyond the per-part request overhead.
+        """
+        args_list = list(args_list)
+        if len(args_list) <= 1:
+            return [self.call(function_name, args, timeout) for args in args_list]
+        clients = [self] + self._sibling_clients(len(args_list) - 1)
+        results, errors = [None] * len(args_list), [None] * len(args_list)
+
+        def run(index):
+            try:
+                client = clients[index % len(clients)]
+                results[index] = client(function_name, **args_list[index]) if timeout is None else \
+                    client.call(function_name, args_list[index], timeout)
+            except BaseException as error:   # re-raised in the caller's thread below
+                errors[index] = error
+
+        threads = [threading.Thread(target=run, args=(index,), daemon=True) for index in range(len(args_list))]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        for error in errors:
+            if error is not None:
+                raise error
+        return results
+
+    def _sibling_clients(self, count):
+        self._ensure_own_process()
+        with self._siblings_lock:
+            while len(self._siblings) < count:
+                self._siblings.append(RpcClient(self.host, self.port))
+            siblings = self._siblings[:count]
+            for sibling in siblings:
+                sibling._ensure_own_process()
+                if sibling._credentials != self._credentials:
+                    # a login or logout on this client since the sibling was opened: start it over
+                    sibling.close()
+                    sibling._credentials = self._credentials
+                    sibling.auth_level = 0
+                sibling._ensure_connected()   # connects, and logs in with _credentials when set
+            return siblings
 
     def call_async(self, function_name, args=None):
         """Send an RPC request and return a Future (non-blocking)."""
