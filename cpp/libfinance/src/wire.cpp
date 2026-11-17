@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include <cerrno>
+#include <chrono>
 #include <cstring>
 #include <memory>
 
@@ -23,6 +24,11 @@ constexpr uint8_t kRequest = 0x01, kResponse = 0x02, kPing = 0x03, kPong = 0x04;
 constexpr uint8_t kLz4 = 0x01;
 constexpr size_t kMetaSize = 6;                       // type(1) + request_id(4) + flags(1)
 constexpr uint32_t kMaxBody = 2u * 1024 * 1024 * 1024 - 1;  // guards against a corrupt length only
+//: While an answer is arriving, an unsolicited PONG at least this often (Python: KEEPALIVE_INTERVAL).
+//: The server PINGs every 15 s and drops a connection whose last PONG is older than 45 s, but its PING
+//: is queued behind the answer it is writing: on a slow link a few-MB answer takes minutes and the
+//: server closes the connection under it (PERF-03). Its PONG handler only refreshes that timestamp.
+constexpr auto kKeepalive = std::chrono::seconds(10);
 
 void put_u32(std::string& out, uint32_t value) {
   for (int shift = 24; shift >= 0; shift -= 8) out.push_back(static_cast<char>((value >> shift) & 0xff));
@@ -137,8 +143,13 @@ void Connection::send_frame(uint8_t type, uint32_t request_id, uint8_t flags, co
 }
 
 bool Connection::read_frame(uint8_t& type, uint32_t& request_id, uint8_t& flags, std::string& payload) {
+  auto keepalive = std::chrono::steady_clock::now();
   auto read_exact = [&](char* out, size_t size) {
     for (size_t got = 0; got < size;) {
+      if (got > 0 && std::chrono::steady_clock::now() - keepalive >= kKeepalive) {
+        keepalive = std::chrono::steady_clock::now();
+        send_frame(kPong, 0, 0, "");
+      }
       const ssize_t n = ::recv(socket_, out + got, size - got, 0);
       if (n == 0) throw TransportError(kConnectionFailed, "the server closed the connection");
       if (n < 0) {

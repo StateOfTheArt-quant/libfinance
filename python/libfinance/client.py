@@ -82,6 +82,16 @@ FRAME_HEADER_SIZE = FRAME_LEN_SIZE + FRAME_META_SIZE  # 10
 MAX_FRAME_BODY = 2 * 1024 * 1024 * 1024 - 1
 
 
+#: While an answer is arriving, send the server an unsolicited PONG at least this often. The server
+#: sends PING every 15 s and drops a connection whose last PONG is older than 45 s, but its PING is
+#: queued *behind* the answer being written: on a slow link (cross-border, ~15-60 KB/s per connection)
+#: a few-MB answer takes minutes, the PING arrives only after it, and the server has already closed
+#: the connection ("Server closed connection." after every bulk call; once an answer outgrows the
+#: buffers on the way it is cut off and the retry downloads it all again). The server's PONG handler
+#: only refreshes that timestamp, so an unsolicited one is safe with every server version (PERF-03).
+KEEPALIVE_INTERVAL = 10.0
+
+
 class FrameType:
     RPC_REQUEST = 0x01
     RPC_RESPONSE = 0x02
@@ -412,23 +422,38 @@ class RpcClient:
         return datetime.datetime.now()
 
     def _recv_exact(self, n):
-        data = b''
-        while len(data) < n and self.running:
+        # Into one preallocated buffer: ``data += chunk`` copies everything received so far on every
+        # chunk, which is quadratic in the answer (hundreds of MB arrive in tens of thousands of chunks).
+        data = bytearray(n)
+        view = memoryview(data)
+        got = 0
+        keepalive = time.monotonic()
+        while got < n and self.running:
             try:
-                chunk = self.sock.recv(n - len(data))
+                count = self.sock.recv_into(view[got:], n - got)
             except socket.timeout:
                 continue
             except socket.error as e:
                 if self.running:
                     print(f"Socket error in reader: {e}", file=sys.stderr)
                 return b''
-            if not chunk:
+            if not count:
                 if self.running:
                     print("Server closed connection.", file=sys.stderr)
                 self.running = False
                 return b''
-            data += chunk
+            got += count
+            if got < n and time.monotonic() - keepalive >= KEEPALIVE_INTERVAL:
+                keepalive = time.monotonic()
+                self._send_keepalive()
         return data
+
+    def _send_keepalive(self):
+        """An unsolicited PONG while a long answer is arriving (see KEEPALIVE_INTERVAL)."""
+        try:
+            self._send(encode_control_frame(FrameType.PONG))
+        except (OSError, AttributeError):
+            pass   # the read that follows reports a dead connection
 
     def _read_one_frame(self):
         len_data = self._recv_exact(FRAME_LEN_SIZE)
