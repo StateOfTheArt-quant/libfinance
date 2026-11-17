@@ -17,3 +17,6 @@ libfinance_test(test_login test_login.cpp)
 # its loopback server reads the client's LZ4-framed requests
 target_link_libraries(test_login PRIVATE LZ4::lz4)
 libfinance_test(test_keepalive test_keepalive.cpp)
+libfinance_test(test_striped_get_price test_striped_get_price.cpp)
+# its loopback server reads the client's LZ4-framed requests and writes Arrow IPC answers
+target_link_libraries(test_striped_get_price PRIVATE LZ4::lz4)

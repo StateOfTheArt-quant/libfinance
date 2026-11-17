@@ -4,6 +4,17 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
+0.1.12 (unreleased)
+===================
+
+- C++: **a table no longer reads the freed answer.** A table read from an Arrow answer kept pointing into the bytes of
+  the answer when a column had one chunk (the usual case), and read them after they were freed: values could be
+  wrong, or the program could crash, depending on whether that memory had been reused. Every C++ function returning
+  a table is affected; the table now owns its data.
+- C++: **a large ``get_price`` runs on several connections,** as in Python since 0.1.11: a query estimated above
+  10 000 rows is split by code into up to ``LIBFINANCE_PARALLEL`` (default 8) parts that run in parallel on the
+  client's connection pool and are merged; the result is identical to one query.
+
 0.1.11 (2026-11-17)
 ===================
 
