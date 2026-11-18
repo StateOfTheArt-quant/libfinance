@@ -4,7 +4,7 @@ Changelog
 
 Only changes that alter the behaviour of **existing code** are listed.
 
-0.1.12 (unreleased)
+0.1.12 (2026-11-17)
 ===================
 
 - C++: **a table no longer reads the freed answer.** A table read from an Arrow answer kept pointing into the bytes of
